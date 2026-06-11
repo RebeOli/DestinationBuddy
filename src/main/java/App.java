@@ -1,45 +1,21 @@
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class App {
     public static void main(String[] args) {
-        
-        String url = "jdbc:mysql://localhost:3306/DestinationBuddy";
-        String user = "app_java";
-        String password = "DestinationBuddy_ACR"; // Rimetti la tua password vera
-        
-        System.out.println("⏳ Connessione in corso...\n");
+        System.out.println("🚀 Avvio di DestinationBuddy in corso...");
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+        // Guarda com'è pulito! Nessuna password, nessun IP, nessuna stringa chilometrica qui dentro.
+        // Chiediamo semplicemente al "Tecnico" di darci la connessione.
+        try (Connection conn = Database.connetti()) {
             
-            System.out.println("🎉 BINGO! Connessi al database.");
-            System.out.println("-----------------------------------");
+            System.out.println("✅ Connessione stabilita! Il motore è acceso.");
             
-            // 1. Scriviamo la nostra query SQL
-            String query = "SELECT nome, cognome, email FROM PERSONE";
-            
-            // 2. Prepariamo la query ed eseguiamola
-            try (PreparedStatement stmt = conn.prepareStatement(query);
-                 ResultSet rs = stmt.executeQuery()) {
-                 
-                System.out.println("📋 ELENCO UTENTI REGISTRATI:");
-                
-                // 3. Il ciclo while legge i risultati riga per riga finché ce ne sono
-                while (rs.next()) {
-                    String nome = rs.getString("nome");
-                    String cognome = rs.getString("cognome");
-                    String email = rs.getString("email");
-                    
-                    System.out.println("- " + nome + " " + cognome + " (" + email + ")");
-                }
-            }
-            System.out.println("-----------------------------------");
-            
+            // Da qui in poi, più avanti, scriveremo il codice per far apparire 
+            // la primissima finestra grafica della vostra applicazione!
+
         } catch (SQLException e) {
-            System.out.println("❌ Errore di connessione o di esecuzione query:");
+            System.out.println("Errore critico all'avvio:");
             e.printStackTrace();
         }
     }
