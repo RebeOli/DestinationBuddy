@@ -4,20 +4,18 @@ import java.time.LocalDate;
 
 public class Certificazione {
 
-    private String idCertificazione; // Fa parte della PK e FK verso TIPOLOGIE_CERTIFICAZIONE
-    private String nCertificazione;  // Fa parte della PK
+    private String idCertificazione;
+    private String nCertificazione;
     private String enteRilasciante;
     private LocalDate dataRilascio;
     private LocalDate dataScadenza;
     private String statoValidazione;
-    private String cf;               // FK verso PERSONE
-    private String guidaCf;          // FK verso GUIDE
+    private String cf;
+    private String guidaCf;
 
-    // 2. COSTRUTTORE VUOTO (Obbligatorio per JDBC)
     public Certificazione() {
     }
 
-    // 3. COSTRUTTORE COMPLETO
     public Certificazione(String idCertificazione, String nCertificazione, String enteRilasciante, 
                           LocalDate dataRilascio, LocalDate dataScadenza, String statoValidazione, 
                           String cf, String guidaCf) {
@@ -31,8 +29,6 @@ public class Certificazione {
         this.guidaCf = guidaCf;
     }
 
-    // 4. METODI GETTER E SETTER
-    
     public String getIdCertificazione() {
         return idCertificazione;
     }
@@ -97,7 +93,6 @@ public class Certificazione {
         this.guidaCf = guidaCf;
     }
 
-    // 5. METODO TOSTRING
     @Override
     public String toString() {
         return "Certificazione {" +
