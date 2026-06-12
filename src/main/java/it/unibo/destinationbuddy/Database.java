@@ -15,7 +15,6 @@ public class Database {
     
     // SE SEI SU MAC (VS CODE SU MAC, DATABASE SU VM): Togli i commenti a questa riga e metti l'IP della tua VM
     //private static final String URL = "jdbc:mysql://10.211.55.3:3306/DestinationBuddy";
-    //private static final String URL = "jdbc:mysql://10.211.55.3:3306/destinationbuddy";
 
     // ==========================================
     
