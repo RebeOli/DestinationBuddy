@@ -61,7 +61,6 @@ public class Abbonamento {
         this.durata = durata;
     }
 
-    // METODO TOSTRING (Utilissimo per stampare i dati in console durante i test)
     @Override
     public String toString() {
         return "Abbonamento{" +
