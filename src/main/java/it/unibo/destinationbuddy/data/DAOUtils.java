@@ -12,10 +12,10 @@ public final class DAOUtils {
     // ==========================================
     
     // SE SEI SU PC WINDOWS LOCALE: Togli i commenti a questa riga
-    //private static final String URL = "jdbc:mysql://localhost:3306/DestinationBuddy";
+    private static final String URL = "jdbc:mysql://localhost:3306/DestinationBuddy";
     
     // SE SEI SU MAC (VS CODE SU MAC, DATABASE SU VM): Togli i commenti a questa riga
-    private static final String URL = "jdbc:mysql://10.211.55.3:3306/DestinationBuddy";
+    //private static final String URL = "jdbc:mysql://10.211.55.3:3306/DestinationBuddy";
 
     // ==========================================
     
