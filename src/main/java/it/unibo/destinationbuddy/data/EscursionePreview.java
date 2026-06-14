@@ -72,6 +72,11 @@ public final class EscursionePreview {
             return execute(connection, Queries.ESCURSIONI_PER_MESE, mese);
         }
 
+        //seleziono in base alla categoria. 
+        public static List<EscursionePreview> listByCategoria(Connection connection, String nomeCategoria) {
+            return execute(connection, Queries.ESCURSIONI_PER_CATEGORIA, nomeCategoria);
+        }
+
         private static List<EscursionePreview> execute(Connection connection, String query, Object... params) {
             var previews = new ArrayList<EscursionePreview>();
             try (
