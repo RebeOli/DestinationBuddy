@@ -361,6 +361,13 @@ public final class Queries {
         WHERE L.nome_categoria = ?
         """;
 
+    public static final String CATEGORIE_ALL =
+        """
+        SELECT nome_categoria
+        FROM CATEGORIE
+        ORDER BY nome_categoria
+        """;
+
 }
 
 
