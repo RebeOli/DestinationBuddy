@@ -178,12 +178,12 @@ public final class Queries {
 
     public static final String MIGLIORI_ESCURSIONI =
         """
-        SELECT E.ID_escursione, E.titolo, E.difficolta,
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
             AVG(R.voto) AS media_voti,
             COUNT(R.voto) AS numero_recensioni
         FROM ESCURSIONI E
         JOIN RECENSIONI R ON E.ID_escursione = R.ID_escursione
-        GROUP BY E.ID_escursione, E.titolo, E.difficolta
+        GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo
         HAVING COUNT(R.voto) >= ?
         ORDER BY media_voti DESC
         LIMIT 5
@@ -193,12 +193,13 @@ public final class Queries {
 
     public static final String ESCURSIONI_PER_MESE =
         """
-        SELECT e.titolo AS Escursione, COUNT(p.CF) AS numero_prenotazioni
+        SELECT e.ID_escursione, e.titolo, e.difficolta, e.costo,
+            COUNT(p.CF) AS numero_prenotazioni
         FROM ESCURSIONI e
         JOIN prenota p ON e.ID_escursione = p.ID_escursione
         JOIN GIORNATE g ON g.ID_escursione = e.ID_escursione
         WHERE MONTH(g.data) = ?
-        GROUP BY e.titolo, e.ID_escursione
+        GROUP BY e.ID_escursione, e.titolo, e.difficolta, e.costo
         ORDER BY numero_prenotazioni DESC
         LIMIT 3
         """;
