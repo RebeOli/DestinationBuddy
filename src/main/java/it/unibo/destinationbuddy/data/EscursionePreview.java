@@ -14,15 +14,13 @@ public final class EscursionePreview {
     public final String titolo;
     public final String difficolta;
     public final double costo;
-    public final int postiDisponibili;
 
     public EscursionePreview(String idEscursione, String titolo, String difficolta,
-                              double costo, int postiDisponibili) {
+                              double costo) {
         this.idEscursione = idEscursione == null ? "" : idEscursione;
         this.titolo = titolo == null ? "" : titolo;
         this.difficolta = difficolta == null ? "" : difficolta;
         this.costo = costo;
-        this.postiDisponibili = postiDisponibili;
     }
 
     @Override
@@ -36,8 +34,7 @@ public final class EscursionePreview {
             return e.idEscursione.equals(this.idEscursione)
                 && e.titolo.equals(this.titolo)
                 && e.difficolta.equals(this.difficolta)
-                && e.costo == this.costo
-                && e.postiDisponibili == this.postiDisponibili;
+                && e.costo == this.costo;
         } else {
             return false;
         }
@@ -46,7 +43,7 @@ public final class EscursionePreview {
     @Override
     public int hashCode() {
         return Objects.hash(this.idEscursione, this.titolo, this.difficolta,
-                            this.costo, this.postiDisponibili);
+                            this.costo);
     }
 
     @Override
@@ -55,15 +52,35 @@ public final class EscursionePreview {
             + ", titolo=" + titolo
             + ", difficolta=" + difficolta
             + ", costo=" + costo
-            + ", postiDisponibili=" + postiDisponibili + "}";
+            + "}";
     }
 
     public static final class DAO {
 
+        //lista con le preview di tutte le escursioni
         public static List<EscursionePreview> list(Connection connection) {
+            return execute(connection, Queries.LIST_ESCURSIONI);
+        }
+
+        //lisat con le top 5 escursioni in base alle recensioni
+        public static List<EscursionePreview> top5(Connection connection) {
+            return execute(connection, Queries.MIGLIORI_ESCURSIONI, 3);
+        }
+
+        //lista con le top 5 escursioni in base alle recensioni
+        public static List<EscursionePreview> perMese (Connection connection, int mese) {
+            return execute(connection, Queries.ESCURSIONI_PER_MESE, mese);
+        }
+
+        //seleziono in base alla categoria. 
+        public static List<EscursionePreview> listByCategoria(Connection connection, String nomeCategoria) {
+            return execute(connection, Queries.ESCURSIONI_PER_CATEGORIA, nomeCategoria);
+        }
+
+        private static List<EscursionePreview> execute(Connection connection, String query, Object... params) {
             var previews = new ArrayList<EscursionePreview>();
             try (
-                var statement = DAOUtils.prepare(connection, Queries.LIST_ESCURSIONI);
+                var statement = DAOUtils.prepare(connection, query, params);
                 var resultSet = statement.executeQuery();
             ) {
                 while (resultSet.next()) {
@@ -71,9 +88,8 @@ public final class EscursionePreview {
                     var titolo = resultSet.getString("titolo");
                     var difficolta = resultSet.getString("difficolta");
                     var costo = resultSet.getDouble("costo");
-                    var postiDisponibili = resultSet.getInt("posti_disponibili");
                     var preview = new EscursionePreview(idEscursione, titolo, difficolta,
-                                                         costo, postiDisponibili);
+                                                         costo);
                     previews.add(preview);
                 }
             } catch (Exception e) {

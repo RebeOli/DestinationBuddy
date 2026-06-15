@@ -178,12 +178,12 @@ public final class Queries {
 
     public static final String MIGLIORI_ESCURSIONI =
         """
-        SELECT E.ID_escursione, E.titolo, E.difficolta,
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
             AVG(R.voto) AS media_voti,
             COUNT(R.voto) AS numero_recensioni
         FROM ESCURSIONI E
         JOIN RECENSIONI R ON E.ID_escursione = R.ID_escursione
-        GROUP BY E.ID_escursione, E.titolo, E.difficolta
+        GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo
         HAVING COUNT(R.voto) >= ?
         ORDER BY media_voti DESC
         LIMIT 5
@@ -193,12 +193,13 @@ public final class Queries {
 
     public static final String ESCURSIONI_PER_MESE =
         """
-        SELECT e.titolo AS Escursione, COUNT(p.CF) AS numero_prenotazioni
+        SELECT e.ID_escursione, e.titolo, e.difficolta, e.costo,
+            COUNT(p.CF) AS numero_prenotazioni
         FROM ESCURSIONI e
         JOIN prenota p ON e.ID_escursione = p.ID_escursione
         JOIN GIORNATE g ON g.ID_escursione = e.ID_escursione
         WHERE MONTH(g.data) = ?
-        GROUP BY e.titolo, e.ID_escursione
+        GROUP BY e.ID_escursione, e.titolo, e.difficolta, e.costo
         ORDER BY numero_prenotazioni DESC
         LIMIT 3
         """;
@@ -227,13 +228,12 @@ public final class Queries {
 
     public static final String CERTIFICAZIONI_IN_ATTESA =
         """
-        SELECT C.*, P.email, T.livello
+        SELECT C.ID_certificazione, C.n_certificazione, C.ente_rilasciante,
+            C.data_rilascio, C.data_scadenza, C.stato_validazione, C.CF, C.Guida_CF,
+            T.livello
         FROM CERTIFICAZIONI C
-        JOIN PERSONE P ON P.CF = C.CF
         JOIN TIPOLOGIE_CERTIFICAZIONE T ON C.ID_certificazione = T.ID_certificazione
-        WHERE P.tipo_utente = 1
-          AND C.n_certificazione = ?
-          AND C.stato_validazione = 'in attesa'
+        WHERE C.stato_validazione = 'In attesa di validazione'
         """;
 
     public static final String VALIDA_CERTIFICAZIONE =
@@ -288,6 +288,91 @@ public final class Queries {
         GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
         """;
 
+<<<<<<< HEAD
     // ==================== QUERY PER PERSONA ====================
     
+=======
+    public static final String FIND_ESCURSIONE =
+        """
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
+            (E.numero_partecipanti - COUNT(DISTINCT p.CF)) AS posti_disponibili,
+            E.data_apertura_iscrizione, E.data_chiusura_iscrizione,
+            P.nome AS guida_nome, P.cognome AS guida_cognome
+        FROM ESCURSIONI E
+        JOIN PERSONE P ON E.Guida_CF = P.CF
+        LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
+        WHERE E.ID_escursione = ?
+        GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti,
+                E.data_apertura_iscrizione, E.data_chiusura_iscrizione, P.nome, P.cognome
+        """;
+
+    public static final String CERTIFICAZIONI_RICHIESTE_ESCURSIONE =
+        """
+        SELECT DISTINCT TC.ID_certificazione, TC.livello
+        FROM assume A
+        JOIN richiede R ON A.ID_tipologia = R.ID_tipologia
+        JOIN TIPOLOGIE_CERTIFICAZIONE TC ON R.ID_certificazione = TC.ID_certificazione
+        WHERE A.ID_escursione = ?
+        """;
+
+    public static final String TAPPE_PER_GIORNATA =
+        """
+        SELECT ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo
+        FROM TAPPE
+        WHERE ID_escursione = ? AND data = ?
+        """;
+
+    public static final String GIORNATE_PER_ESCURSIONE =
+        """
+        SELECT ID_escursione, data, programma
+        FROM GIORNATE
+        WHERE ID_escursione = ?
+        ORDER BY data
+        """;
+    
+    public static final String EQUIPAGGIAMENTI_RICHIESTI_ESCURSIONE =
+        """
+        SELECT DISTINCT EQ.ID_categoria, EQ.costo_totale_giornaliero
+        FROM assume A
+        JOIN necessita N ON A.ID_tipologia = R.ID_tipologia
+        JOIN EQUIPAGGIAMENTI EQ ON N.ID_categoria = EQ.ID_categoria
+        WHERE A.ID_escursione = ?
+        """;
+    public static final String CERTIFICAZIONI_UTENTE =
+        """
+        SELECT ID_certificazione, n_certificazione, ente_rilasciante,
+            data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF
+        FROM CERTIFICAZIONI
+        WHERE CF = ?
+        """;
+
+    public static final String TIPOLOGIE_CERTIFICAZIONE_ALL =
+        """
+        SELECT ID_certificazione, livello
+        FROM TIPOLOGIE_CERTIFICAZIONE
+        ORDER BY livello
+        """;
+
+    public static final String ESCURSIONI_PER_CATEGORIA =
+        """
+        SELECT DISTINCT E.ID_escursione, E.titolo, E.difficolta, E.costo
+        FROM ESCURSIONI E
+        JOIN GIORNATE G ON E.ID_escursione = G.ID_escursione
+        JOIN TAPPE T ON G.ID_escursione = T.ID_escursione AND G.data = T.data
+        JOIN LUOGHI_ESPLORABILI L ON T.nome_paese = L.nome_paese
+            AND T.nome_zona = L.nome_zona
+            AND T.nome_luogo = L.nome
+        WHERE L.nome_categoria = ?
+        """;
+
+    public static final String CATEGORIE_ALL =
+        """
+        SELECT nome_categoria
+        FROM CATEGORIE
+        ORDER BY nome_categoria
+        """;
+
+>>>>>>> a2721f1d60d33789305d854a0b2ebdd3dfa863ba
 }
+
+
