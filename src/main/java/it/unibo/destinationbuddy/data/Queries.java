@@ -378,6 +378,15 @@ public final class Queries {
         AND PASSWORD = ?
         """;
 
+    public static final String ULTIMO_ABBONAMENTO_UTENTE =
+        """
+        SELECT *
+        FROM ABBONAMENTI
+        WHERE CF = ?
+        ORDER BY data_abbonamento DESC
+        LIMIT 1
+        """;
+
 
 }
 
