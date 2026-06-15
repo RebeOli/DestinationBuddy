@@ -147,11 +147,60 @@ public final class Persona {
 
     public static final class DAO {
         public static Optional<Persona> autentica (Connection connection, String email, String password) {
+        try (
+            var statement = DAOUtils.prepare(connection, Queries.AUTENTICA_PERSONA, email, password);
+            var resultSet = statement.executeQuery();
+        ) {
+            if (resultSet.next()) {
+                var cf = resultSet.getString("CF");
+                var nome = resultSet.getString("nome");
+                var cognome = resultSet.getString("cognome");
+                var tipoUtente = resultSet.getBoolean("tipo_utente");
+                var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
+                var idAccount = resultSet.getString("ID_account");
+                var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
+                var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
+                LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
+                var sqlDataAssunzione = resultSet.getDate("data_assunzione");
+                LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
+                Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
+
+                caricaCertificazioni(connection, utente);
+
+                return Optional.of(utente);
+            } else {
+                return Optional.empty();
+            }
+        } catch (Exception e) {
+            throw new DAOException(e);
+        }
+
+    }
+
+        public static void caricaCertificazioni(Connection connection, Persona utente) {
+            var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
+            for (var cert : listaCert) {
+                utente.aggiungiCertificazione(cert);
+            }
+        }
+
+        public static void registraUtente(Connection connection, Persona u) {
             try (
-                var statement = DAOUtils.prepare(connection, Queries.AUTENTICA_PERSONA, email, password);
+                var statement = DAOUtils.prepare(connection, Queries.REGISTRA_PERSONA, u.cf, u.nome, u.cognome, u.idAccount, u.email, u.password);
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+
+        public static List<Persona> getUtentiDaPremiare(Connection connection) {
+            final List<Persona> utenti = new ArrayList<>();
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.UTENTI_TUTTI_PAESI);
                 var resultSet = statement.executeQuery();
             ) {
-                if (resultSet.next()) {
+                while (resultSet.next()) {
                     var cf = resultSet.getString("CF");
                     var nome = resultSet.getString("nome");
                     var cognome = resultSet.getString("cognome");
@@ -163,31 +212,19 @@ public final class Persona {
                     LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
                     var sqlDataAssunzione = resultSet.getDate("data_assunzione");
                     LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
+                    var email = resultSet.getString("email");
+                    var password = resultSet.getString("password");
                     Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
 
-                    caricaCertificazioni(connection, utente);
+                    utenti.add(utente);
 
-                    return Optional.of(utente);
-                } else {
-                    return Optional.empty();
                 }
             } catch (Exception e) {
                 throw new DAOException(e);
             }
 
-        }
+            return utenti;
 
-        public static void caricaCertificazioni(Connection connection, Persona utente) {
-            var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
-            for (var cert : listaCert) {
-                utente.aggiungiCertificazione(cert);
-            }
-        }
-
-        public static void registraUtente() {}
-
-        public static List<Persona> getUtentiDaPremiare() {
-            return new ArrayList<>();
         }
 
         public static void impostaStatoGuida() {}
