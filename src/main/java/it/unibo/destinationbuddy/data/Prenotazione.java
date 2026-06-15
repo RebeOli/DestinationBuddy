@@ -39,7 +39,7 @@ public final class Prenotazione {
 
     @Override
     public String toString() {
-        return "Prenotazione{cf='" + cf + "', escursione='" + idEscursione + "', stato='" + stato + "'}";
+        return "Prenotazione [ cf='" + cf + "', escursione='" + idEscursione + "', stato='" + stato + "']";
     }
 
     public static final class DAO {
