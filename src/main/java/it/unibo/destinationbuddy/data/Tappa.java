@@ -88,6 +88,18 @@ public final class Tappa {
         return true;
     }
 
+    
+
+
+
+    @Override
+    public String toString() {
+        return "Tappa [idTappa=" + idTappa + ", durata=" + durata + ", idEscursione=" + idEscursione + ", data=" + data
+                + ", nomePaese=" + nomePaese + ", nomeZona=" + nomeZona + ", nomeLuogo=" + nomeLuogo + "]";
+    }
+
+
+
 
 
     public static final class DAO {

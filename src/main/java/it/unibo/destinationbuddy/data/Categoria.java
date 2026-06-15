@@ -37,6 +37,13 @@ public final class Categoria {
         return true;
     }
 
+
+    @Override
+    public String toString() {
+        return "Categoria [nomeCategoria=" + nomeCategoria + "]";
+    }
+
+
     public static final class DAO {
 
         // Lista di tutte le categorie disponibili (per popolare il dropdown del filtro)

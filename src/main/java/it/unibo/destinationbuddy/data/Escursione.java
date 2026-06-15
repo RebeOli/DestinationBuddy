@@ -125,6 +125,18 @@ public final class Escursione {
         return true;
     }
 
+
+    @Override
+    public String toString() {
+        return "Escursione [idEscursione=" + idEscursione + ", titolo=" + titolo + ", difficolta=" + difficolta
+                + ", costo=" + costo + ", postiDisponibili=" + postiDisponibili + ", dataAperturaEscursione="
+                + dataAperturaEscursione + ", dataChiusuraEscursione=" + dataChiusuraEscursione
+                + ", certificazioniRichieste=" + certificazioniRichieste + ", guidaNome=" + guidaNome
+                + ", guidaCognome=" + guidaCognome + ", giornate=" + giornate + ", equipaggiamento=" + equipaggiamento
+                + "]";
+    }
+
+
     public static final class DAO {
         public static Optional<Escursione> find(Connection connection, String idEscursione) {
             try (

@@ -44,6 +44,15 @@ public final class TipologiaCertificazione {
         return true;
     }
 
+    
+
+    @Override
+    public String toString() {
+        return "TipologiaCertificazione [idCertificazione=" + idCertificazione + ", livello=" + livello + "]";
+    }
+
+
+
     public static final class DAO {
 
         public static List<TipologiaCertificazione> listForEscursione(Connection connection, String idEscursione) {

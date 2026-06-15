@@ -93,6 +93,15 @@ public final class Certificazione {
         return true;
     }
 
+
+    @Override
+    public String toString() {
+        return "Certificazione [tipologia=" + tipologia + ", nCertificazione=" + nCertificazione + ", enteRilasciante="
+                + enteRilasciante + ", dataRilascio=" + dataRilascio + ", dataScadenza=" + dataScadenza
+                + ", statoValidazione=" + statoValidazione + ", cf=" + cf + ", guidaCF=" + guidaCF + "]";
+    }
+
+
     public static final class DAO {
         // Metodo privato per leggere una certificazione dal ResultSet (riduce ripetizione)
             private static Certificazione readCertificazione(ResultSet rs) throws SQLException {

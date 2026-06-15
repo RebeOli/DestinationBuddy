@@ -61,6 +61,12 @@ public final class Giornata {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "Giornata [idEscursione=" + idEscursione + ", data=" + data + ", programma=" + programma + ", tappe="
+                + tappe + "]";
+    }
+
     public static final class DAO {
     // Lista delle giornate di una specifica escursione di una specifica escursione
         public static List<Giornata> listForEscursione(Connection connection, String idEscursione) {

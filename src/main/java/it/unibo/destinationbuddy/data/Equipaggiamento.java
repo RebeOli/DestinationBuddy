@@ -43,6 +43,16 @@ public final class Equipaggiamento {
         return true;
     }
 
+    
+
+    @Override
+    public String toString() {
+        return "Equipaggiamento [idCategoria=" + idCategoria + ", costoTotaleGiornaliero=" + costoTotaleGiornaliero
+                + "]";
+    }
+
+
+
     public static final class DAO {
     // Lista delle giornate di una specifica escursione di una specifica escursione
         public static List<Equipaggiamento> listForEscursione(Connection connection, String idEscursione) {
