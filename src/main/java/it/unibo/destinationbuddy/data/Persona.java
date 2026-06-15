@@ -1,9 +1,9 @@
 package it.unibo.destinationbuddy.data;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,11 +130,19 @@ public final class Persona {
     }
 
     public boolean puoPrenotare(Escursione escursione) {
-        return this.certificazioni.containsAll(escursione.certificazioniRichieste);
+        var tipo_certificazioni = new HashSet<>();
+        for (var c : certificazioni) {
+            tipo_certificazioni.add(c.tipologia);
+        }
+        return tipo_certificazioni.containsAll(escursione.certificazioniRichieste);
     }
 
     public void aggiungiCertificazione(Certificazione c) {
         this.certificazioni.add(c);
+    }
+
+    public boolean isAmministratore() {
+        return this.tipoAmministratore;
     }
 
     public static final class DAO {
@@ -157,6 +165,8 @@ public final class Persona {
                     LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
                     Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
 
+                    caricaCertificazioni(connection, utente);
+
                     return Optional.of(utente);
                 } else {
                     return Optional.empty();
@@ -167,30 +177,19 @@ public final class Persona {
 
         }
 
-        public static Optional<List<Certificazione>> certificazioniPossedute(Connection connection) {
-        final List<Certificazione> certificazioni = new ArrayList<>();
-        try (
-            var statement = DAOUtils.prepare(connection, Queries.LIST_ESCURSIONI);
-            var resultSet = statement.executeQuery();
-        ) {
-            while (resultSet.next()) {
-                var idEscursione = resultSet.getString("ID_escursione");
-                var titolo = resultSet.getString("titolo");
-                var difficolta = resultSet.getString("difficolta");
-                var costo = resultSet.getDouble("costo");
-                var postiDisponibili = resultSet.getInt("posti_disponibili");
-                // var certificazione = new Certificazione(idEscursione, titolo, difficolta,
-                //                                         costo, postiDisponibili);
-                // certificazioni.add(preview);
+        public static void caricaCertificazioni(Connection connection, Persona utente) {
+            var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
+            for (var cert : listaCert) {
+                utente.aggiungiCertificazione(cert);
             }
-            if (certificazioni.size() == 0) {
-                return Optional.empty();
-            } else {
-                return Optional.of(certificazioni);
-            }
-        } catch (Exception e) {
-            throw new DAOException(e);
         }
+
+        public static void registraUtente() {}
+
+        public static List<Persona> getUtentiDaPremiare() {
+            return new ArrayList<>();
         }
+
+        public static void impostaStatoGuida() {}
     }
 }

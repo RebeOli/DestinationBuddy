@@ -288,8 +288,6 @@ public final class Queries {
         LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
         GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
         """;
-
-//==================== QUERY PER PERSONA ====================
     
     public static final String FIND_ESCURSIONE =
         """
@@ -371,6 +369,7 @@ public final class Queries {
         ORDER BY nome_categoria
         """;
 
+    //==================== QUERY PER PERSONA ====================
     public static final String AUTENTICA_PERSONA = 
         """
         SELECT *
