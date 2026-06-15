@@ -67,14 +67,19 @@ public final class EscursionePreview {
             return execute(connection, Queries.MIGLIORI_ESCURSIONI, 3);
         }
 
-        //lista con le top 5 escursioni in base alle recensioni
+        //lista con le escursioni in base al mese
         public static List<EscursionePreview> perMese (Connection connection, int mese) {
             return execute(connection, Queries.ESCURSIONI_PER_MESE, mese);
         }
 
         //seleziono in base alla categoria. 
-        public static List<EscursionePreview> listByCategoria(Connection connection, String nomeCategoria) {
+        /*public static List<EscursionePreview> listByCategoria(Connection connection, String nomeCategoria) {
             return execute(connection, Queries.ESCURSIONI_PER_CATEGORIA, nomeCategoria);
+        }*/
+
+        // Filtro per tipologia (es. "Trekking", "Alpinismo")
+        public static List<EscursionePreview> listByTipologia(Connection connection, String idTipologia) {
+            return execute(connection, Queries.ESCURSIONI_PER_TIPOLOGIA, idTipologia);
         }
 
         private static List<EscursionePreview> execute(Connection connection, String query, Object... params) {

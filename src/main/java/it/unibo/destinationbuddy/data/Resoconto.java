@@ -52,16 +52,15 @@ public final class Resoconto {
          * Operazione 4: Consente alla guida di inserire i dati reali a conclusione dell'escursione.
          * Sfrutta la stringa SQL centralizzata Queries.INSERISCI_RESOCONTO.
          */
-        public static boolean inserisci(Connection connection, String idEscursione, LocalDate dataInizio, 
-                                        LocalDate dataFine, double temperaturaRilevata, double precipitazioni, String cfGuida) {
+        public static boolean inserisci(Connection connection, Resoconto r) {
             try (
                 var stmt = DAOUtils.prepare(connection, Queries.INSERISCI_RESOCONTO, 
-                                             idEscursione, 
-                                             java.sql.Date.valueOf(dataInizio), 
-                                             java.sql.Date.valueOf(dataFine), 
-                                             temperaturaRilevata, 
-                                             precipitazioni, 
-                                             cfGuida)
+                                             r.idEscursione, 
+                                             java.sql.Date.valueOf(r.dataInizio), 
+                                             java.sql.Date.valueOf(r.dataFine), 
+                                             r.temperaturaRilevata, 
+                                             r.precipitazioni, 
+                                             r.cfGuida)
             ) {
                 // Restituisce true se l'inserimento nella tabella RIEPILOGA va a buon fine
                 return stmt.executeUpdate() > 0;

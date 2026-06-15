@@ -3,7 +3,7 @@ package it.unibo.destinationbuddy.data;
 import java.sql.Connection;
 import java.util.Objects;
 
-public class Recensione {
+public final class Recensione {
 
     public final String titolo;
     public final String cf;
@@ -53,11 +53,10 @@ public class Recensione {
         /**
          * Operazione 4: Inserimento di una nuova recensione al termine dell'escursione.
          */
-        public static boolean inserisci(Connection connection, String titolo, int voto, String immagini, 
-                                        String descrizione, String statoRecensione, String cf, String idEscursione) {
+        public static boolean inserisci(Connection connection, Recensione r) {
             try (
                 var stmt = DAOUtils.prepare(connection, Queries.INSERISCI_RECENSIONE, 
-                                                 titolo, voto, immagini, descrizione, statoRecensione, cf, idEscursione)
+                                                 r.titolo, r.voto, r.immagini, r.descrizione, r.statoRecensione, r.cf, r.idEscursione)
             ) {
                 int affectedRows = stmt.executeUpdate();
                 return affectedRows > 0;

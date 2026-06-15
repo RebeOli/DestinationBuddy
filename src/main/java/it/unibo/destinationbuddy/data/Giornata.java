@@ -93,12 +93,17 @@ public final class Giornata {
 
         // Inserisce una nuova tappa
         public static void create(Connection connection, Giornata g) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.INSERISCI_GIORNATA,
-                    g.idEscursione, java.sql.Date.valueOf(g.data), //da formato LocalDate a formato SQL
-                    g.programma);
-            ) {
-                statement.executeUpdate();
+            try {
+                // Inserisce la giornata
+                try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_GIORNATA,
+                        g.idEscursione, java.sql.Date.valueOf(g.data), g.programma)) {
+                    statement.executeUpdate();
+                }
+                
+                // Inserisce a cascata tutte le tappe della giornata
+                for (Tappa t : g.tappe) {
+                    Tappa.DAO.create(connection, t);
+                }
             } catch (Exception e) {
                 throw new DAOException(e);
             }

@@ -282,11 +282,8 @@ public final class Queries {
     // ==================== QUERY PER LA HOME ====================
     public static final String LIST_ESCURSIONI =
         """
-        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
-            (E.numero_partecipanti - COUNT(p.CF)) AS posti_disponibili
-        FROM ESCURSIONI E
-        LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
-        GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
+        SELECT ID_escursione, titolo, difficolta, costo
+        FROM ESCURSIONI
         """;
     
     public static final String FIND_ESCURSIONE =
@@ -294,13 +291,14 @@ public final class Queries {
         SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
             (E.numero_partecipanti - COUNT(DISTINCT p.CF)) AS posti_disponibili,
             E.data_apertura_iscrizione, E.data_chiusura_iscrizione,
-            P.nome AS guida_nome, P.cognome AS guida_cognome
+            P.nome AS guida_nome, P.cognome AS guida_cognome, A.ID_tipologia
         FROM ESCURSIONI E
         JOIN PERSONE P ON E.Guida_CF = P.CF
+        JOIN assume A ON E.ID_escursione = A.ID_escursione
         LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
         WHERE E.ID_escursione = ?
         GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti,
-                E.data_apertura_iscrizione, E.data_chiusura_iscrizione, P.nome, P.cognome
+                E.data_apertura_iscrizione, E.data_chiusura_iscrizione, P.nome, P.cognome, A.ID_tipologia
         """;
 
     public static final String CERTIFICAZIONI_RICHIESTE_ESCURSIONE =
@@ -331,7 +329,7 @@ public final class Queries {
         """
         SELECT DISTINCT EQ.ID_categoria, EQ.costo_totale_giornaliero
         FROM assume A
-        JOIN necessita N ON A.ID_tipologia = R.ID_tipologia
+        JOIN necessita N ON A.ID_tipologia = N.ID_tipologia
         JOIN EQUIPAGGIAMENTI EQ ON N.ID_categoria = EQ.ID_categoria
         WHERE A.ID_escursione = ?
         """;
@@ -350,7 +348,21 @@ public final class Queries {
         ORDER BY livello
         """;
 
-    public static final String ESCURSIONI_PER_CATEGORIA =
+    public static final String TIPOLOGIE_ESCURSIONE =
+        """
+        SELECT ID_tipologia
+        FROM assume
+        WHERE ID_escursione = ?
+        """;
+
+    //tabella associa -> escursione-tipologia
+    public static final String ASSOCIA_ESCURSIONE_TIPOLOGIA =
+        """
+        INSERT INTO assume (ID_escursione, ID_tipologia)
+        VALUES (?, ?)
+        """;
+
+    /*public static final String ESCURSIONI_PER_CATEGORIA =
         """
         SELECT DISTINCT E.ID_escursione, E.titolo, E.difficolta, E.costo
         FROM ESCURSIONI E
@@ -360,7 +372,15 @@ public final class Queries {
             AND T.nome_zona = L.nome_zona
             AND T.nome_luogo = L.nome
         WHERE L.nome_categoria = ?
-        """;
+        """;*/
+        // Per EscursionePreview.DAO
+        public static final String ESCURSIONI_PER_TIPOLOGIA =
+            """
+            SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
+            FROM ESCURSIONI E
+            JOIN assume A ON E.ID_escursione = A.ID_escursione
+            WHERE A.ID_tipologia = ?
+            """;
 
     public static final String CATEGORIE_ALL =
         """
