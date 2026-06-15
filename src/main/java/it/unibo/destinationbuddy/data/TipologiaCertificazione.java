@@ -44,7 +44,6 @@ public final class TipologiaCertificazione {
         return true;
     }
 
-    
 
     @Override
     public String toString() {
