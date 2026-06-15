@@ -19,13 +19,14 @@ public final class Persona {
     public LocalDate dataAssunzione;
     public String email;
     public String password;
+    public String statoAccount; // Sarà null per gli utenti normali, "attivo" o "disattivo" per le guide
 
     public List<Certificazione> certificazioni = new ArrayList<>();
     //public String ruolo;
 
     public Persona(String cf, String nome, String cognome, boolean tipoUtente, boolean tipoAmministratore,
             String idAccount, int escursioniEffettuate, LocalDate dataIscrizione, LocalDate dataAssunzione,
-            String email, String password) {
+            String email, String password, String statoAccount) {
         this.cf = cf;
         this.nome = nome == null ? "" : nome;
         this.cognome = cognome == null ? "" : cognome;
@@ -37,6 +38,7 @@ public final class Persona {
         this.dataAssunzione = dataAssunzione;
         this.email = email == null ? "" : email;
         this.password = password == null ? "" : password;
+        this.statoAccount = statoAccount == null ? "" : statoAccount;
     }
 
     @Override
@@ -54,6 +56,7 @@ public final class Persona {
         result = prime * result + ((dataAssunzione == null) ? 0 : dataAssunzione.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
+        result = prime * result + ((statoAccount == null) ? 0 : statoAccount.hashCode());
         result = prime * result + ((certificazioni == null) ? 0 : certificazioni.hashCode());
         return result;
     }
@@ -113,6 +116,11 @@ public final class Persona {
                 return false;
         } else if (!password.equals(other.password))
             return false;
+        if (statoAccount == null) {
+            if (other.statoAccount != null)
+                return false;
+        } else if (!statoAccount.equals(other.statoAccount))
+            return false;
         if (certificazioni == null) {
             if (other.certificazioni != null)
                 return false;
@@ -126,7 +134,8 @@ public final class Persona {
         return "Persona [cf=" + cf + ", nome=" + nome + ", cognome=" + cognome + ", tipoUtente=" + tipoUtente
                 + ", tipoAmministratore=" + tipoAmministratore + ", idAccount=" + idAccount + ", escursioniEffettuate="
                 + escursioniEffettuate + ", dataIscrizione=" + dataIscrizione + ", dataAssunzione=" + dataAssunzione
-                + ", email=" + email + ", password=" + password + ", certificazioni=" + certificazioni + "]";
+                + ", email=" + email + ", password=" + password + ", stato_account=" + statoAccount
+                + ", certificazioni=" + certificazioni + "]";
     }
 
     public boolean puoPrenotare(Escursione escursione) {
@@ -163,7 +172,8 @@ public final class Persona {
                 LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
                 var sqlDataAssunzione = resultSet.getDate("data_assunzione");
                 LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
-                Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
+                var statoAccount = resultSet.getString("stato_account");
+                Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
 
                 caricaCertificazioni(connection, utente);
 
@@ -214,7 +224,8 @@ public final class Persona {
                     LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
                     var email = resultSet.getString("email");
                     var password = resultSet.getString("password");
-                    Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
+                    var statoAccount = resultSet.getString("stato_account");
+                    Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
 
                     utenti.add(utente);
 
@@ -227,6 +238,24 @@ public final class Persona {
 
         }
 
-        public static void impostaStatoGuida() {}
+        public static void disattivaGuida(Connection connection, Persona guida) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.SOSPENDI_GUIDA, guida.cf);
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
+
+        public static void attivaGuida(Connection connection, Persona guida) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.RIATTIVA_GUIDA, guida.cf);
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
     }
 }
