@@ -138,32 +138,37 @@ public final class Persona {
     }
 
     public static final class DAO {
-        public static Persona autentica (Connection connection, String email, String password) {
-            Persona utente;
+        public static Optional<Persona> autentica (Connection connection, String email, String password) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.AUTENTICA_PERSONA, email, password);
                 var resultSet = statement.executeQuery();
             ) {
-                var cf = resultSet.getString("CF");
-                var nome = resultSet.getString("nome");
-                var cognome = resultSet.getString("cognome");
-                var tipoUtente = resultSet.getBoolean("tipo_utente");
-                var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
-                var idAccount = resultSet.getString("ID_account");
-                var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
-                var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
-                LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
-                var sqlDataAssunzione = resultSet.getDate("data_assunzione");
-                LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
-                utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
+                if (resultSet.next()) {
+                    var cf = resultSet.getString("CF");
+                    var nome = resultSet.getString("nome");
+                    var cognome = resultSet.getString("cognome");
+                    var tipoUtente = resultSet.getBoolean("tipo_utente");
+                    var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
+                    var idAccount = resultSet.getString("ID_account");
+                    var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
+                    var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
+                    LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
+                    var sqlDataAssunzione = resultSet.getDate("data_assunzione");
+                    LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
+                    Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password);
+
+                    return Optional.of(utente);
+                } else {
+                    return Optional.empty();
+                }
             } catch (Exception e) {
                 throw new DAOException(e);
             }
-            return utente;
+
         }
 
-        public static List<Certificazione> certificazioniPossedute(Connection connection) {
-        var certificazioni = new ArrayList<EscursionePreview>();
+        public static Optional<List<Certificazione>> certificazioniPossedute(Connection connection) {
+        final List<Certificazione> certificazioni = new ArrayList<>();
         try (
             var statement = DAOUtils.prepare(connection, Queries.LIST_ESCURSIONI);
             var resultSet = statement.executeQuery();
@@ -174,14 +179,18 @@ public final class Persona {
                 var difficolta = resultSet.getString("difficolta");
                 var costo = resultSet.getDouble("costo");
                 var postiDisponibili = resultSet.getInt("posti_disponibili");
-                var preview = new EscursionePreview(idEscursione, titolo, difficolta,
-                                                        costo, postiDisponibili);
-                certificazioni.add(preview);
+                // var certificazione = new Certificazione(idEscursione, titolo, difficolta,
+                //                                         costo, postiDisponibili);
+                // certificazioni.add(preview);
+            }
+            if (certificazioni.size() == 0) {
+                return Optional.empty();
+            } else {
+                return Optional.of(certificazioni);
             }
         } catch (Exception e) {
             throw new DAOException(e);
         }
-        return certificazioni;
         }
     }
 }

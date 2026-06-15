@@ -232,6 +232,7 @@ public final class Queries {
             C.data_rilascio, C.data_scadenza, C.stato_validazione, C.CF, C.Guida_CF,
             T.livello
         FROM CERTIFICAZIONI C
+        JOIN PERSONE P ON P.CF = C.CF
         JOIN TIPOLOGIE_CERTIFICAZIONE T ON C.ID_certificazione = T.ID_certificazione
         WHERE C.stato_validazione = 'In attesa di validazione'
         """;
@@ -288,10 +289,8 @@ public final class Queries {
         GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
         """;
 
-<<<<<<< HEAD
-    // ==================== QUERY PER PERSONA ====================
+//==================== QUERY PER PERSONA ====================
     
-=======
     public static final String FIND_ESCURSIONE =
         """
         SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
@@ -372,7 +371,15 @@ public final class Queries {
         ORDER BY nome_categoria
         """;
 
->>>>>>> a2721f1d60d33789305d854a0b2ebdd3dfa863ba
+    public static final String AUTENTICA_PERSONA = 
+        """
+        SELECT *
+        FROM PERSONE
+        WHERE EMAIL = ?
+        AND PASSWORD = ?
+        """;
+
+
 }
 
 

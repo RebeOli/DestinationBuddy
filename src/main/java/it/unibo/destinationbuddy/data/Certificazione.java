@@ -136,6 +136,7 @@ public final class Certificazione {
             }
             return certificazioni;
         }
+
         //Lista di certificazioni in attesa, serve per l'operazione 9
         public static List<Certificazione> listInAttesa(Connection connection) {
             var certificazioni = new ArrayList<Certificazione>();
