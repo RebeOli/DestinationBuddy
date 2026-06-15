@@ -278,13 +278,16 @@ public final class Queries {
         VALUES (?, ?)
         """;
 
-// ==================== QUERY PER LA HOME ====================
-public static final String LIST_ESCURSIONI =
-    """
-    SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
-           (E.numero_partecipanti - COUNT(p.CF)) AS posti_disponibili
-    FROM ESCURSIONI E
-    LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
-    GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
-    """;
+    // ==================== QUERY PER LA HOME ====================
+    public static final String LIST_ESCURSIONI =
+        """
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
+            (E.numero_partecipanti - COUNT(p.CF)) AS posti_disponibili
+        FROM ESCURSIONI E
+        LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
+        GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti
+        """;
+
+    // ==================== QUERY PER PERSONA ====================
+    
 }
