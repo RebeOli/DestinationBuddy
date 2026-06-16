@@ -1,0 +1,68 @@
+package it.unibo.destinationbuddy.model;
+
+import java.sql.Connection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import it.unibo.destinationbuddy.data.Certificazione;
+import it.unibo.destinationbuddy.data.TipologiaCertificazione;
+
+public class DBCertificazioniModel implements CertificazioniModel {
+
+    private final Connection connection;
+    private Optional<List<Certificazione>> cacheInAttesa;
+    private Optional<List<TipologiaCertificazione>> cacheTipologie;
+
+
+
+    public DBCertificazioniModel(Connection connection) {
+        Objects.requireNonNull(connection, "Model created with null connection");
+        this.connection = connection;
+        this.cacheInAttesa = Optional.empty();
+        this.cacheTipologie = Optional.empty();
+
+    }
+
+    @Override
+    public List<Certificazione> getCertificazioniUtente(String cf) {
+        return Certificazione.DAO.listForUtente(connection, cf); //non uso la cache perchè quando cambia utente la cache rimarrebbe la stessa, 
+    }
+
+    @Override
+    public List<Certificazione> getCertificazioniInAttesa() {
+        if (cacheInAttesa.isEmpty()) {
+            // Prima volta: chiama il DAO e salva in cache
+            var risultato = Certificazione.DAO.listInAttesa(connection);
+            cacheInAttesa = Optional.of(risultato);
+        }
+        // Successive: restituisci direttamente la cache
+        return cacheInAttesa.get();
+    }
+
+    @Override
+    public List<TipologiaCertificazione> getTipologieDisponibili() {
+        if (cacheTipologie.isEmpty()) {
+            // Prima volta: chiama il DAO e salva in cache
+            var risultato = TipologiaCertificazione.DAO.listAll(connection);
+            cacheTipologie = Optional.of(risultato);
+        }
+        // Successive: restituisci direttamente la cache
+        return cacheTipologie.get();
+    }
+
+    @Override
+    public void aggiungiCertificazione(Certificazione c) {
+        Certificazione.DAO.create(connection, c);
+        cacheInAttesa = Optional.empty();
+
+    }
+
+    @Override
+    public void validaCertificazione(String nCertificazione) {
+        Certificazione.DAO.valida(connection, nCertificazione);
+        cacheInAttesa = Optional.empty();  // la certificazione validata non è più in attesa
+
+    }
+    
+}
