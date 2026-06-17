@@ -2,6 +2,8 @@ package it.unibo.destinationbuddy.data;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class Prenotazione {
@@ -10,36 +12,70 @@ public final class Prenotazione {
     public final String idEscursione;
     public final LocalDate dataPrenotazione;
     public final String stato;
+    public final String titoloEscursione;
 
-    public Prenotazione(String cf, String idEscursione, LocalDate dataPrenotazione, String stato) {
-        this.cf = cf == null ? "" : cf;
-        this.idEscursione = idEscursione == null ? "" : idEscursione;
-        this.dataPrenotazione = dataPrenotazione;
-        this.stato = stato == null ? "" : stato;
-    }
+    public Prenotazione(String cf, String idEscursione, String titoloEscursione, 
+                    LocalDate dataPrenotazione, String stato) {
+    this.cf = cf == null ? "" : cf;
+    this.idEscursione = idEscursione == null ? "" : idEscursione;
+    this.titoloEscursione = titoloEscursione == null ? "" : titoloEscursione;
+    this.dataPrenotazione = dataPrenotazione;
+    this.stato = stato == null ? "" : stato;
+}
 
     @Override
-    public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) {
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
             return false;
-        }
-        
-        Prenotazione that = (Prenotazione) other;
-        return Objects.equals(cf, that.cf) &&
-               Objects.equals(idEscursione, that.idEscursione) &&
-               Objects.equals(dataPrenotazione, that.dataPrenotazione) &&
-               Objects.equals(stato, that.stato);
+        if (getClass() != obj.getClass())
+            return false;
+        Prenotazione other = (Prenotazione) obj;
+        if (cf == null) {
+            if (other.cf != null)
+                return false;
+        } else if (!cf.equals(other.cf))
+            return false;
+        if (idEscursione == null) {
+            if (other.idEscursione != null)
+                return false;
+        } else if (!idEscursione.equals(other.idEscursione))
+            return false;
+        if (dataPrenotazione == null) {
+            if (other.dataPrenotazione != null)
+                return false;
+        } else if (!dataPrenotazione.equals(other.dataPrenotazione))
+            return false;
+        if (stato == null) {
+            if (other.stato != null)
+                return false;
+        } else if (!stato.equals(other.stato))
+            return false;
+        if (titoloEscursione == null) {
+            if (other.titoloEscursione != null)
+                return false;
+        } else if (!titoloEscursione.equals(other.titoloEscursione))
+            return false;
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cf, idEscursione, dataPrenotazione, stato);
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((cf == null) ? 0 : cf.hashCode());
+        result = prime * result + ((idEscursione == null) ? 0 : idEscursione.hashCode());
+        result = prime * result + ((dataPrenotazione == null) ? 0 : dataPrenotazione.hashCode());
+        result = prime * result + ((stato == null) ? 0 : stato.hashCode());
+        result = prime * result + ((titoloEscursione == null) ? 0 : titoloEscursione.hashCode());
+        return result;
     }
 
     @Override
     public String toString() {
-        return "Prenotazione [ cf='" + cf + "', escursione='" + idEscursione + "', stato='" + stato + "']";
+        return "Prenotazione [cf=" + cf + ", idEscursione=" + idEscursione + ", dataPrenotazione=" + dataPrenotazione
+                + ", stato=" + stato + ", titoloEscursione=" + titoloEscursione + "]";
     }
 
     public static final class DAO {
@@ -104,5 +140,26 @@ public final class Prenotazione {
                 throw new DAOException(e);
             }
         }
-    }
+
+        public static List<Prenotazione> getPrenotazioniUtente(Connection connection, String cf) {
+            var prenotazioni = new ArrayList<Prenotazione>();
+            try (
+                var stmt = DAOUtils.prepare(connection, Queries.PRENOTAZIONI_UTENTE, cf);
+                var rs = stmt.executeQuery()
+            ) {
+                while (rs.next()) {
+                    prenotazioni.add(new Prenotazione(
+                        rs.getString("CF"),
+                        rs.getString("ID_escursione"),
+                        rs.getString("titolo"),
+                        rs.getDate("data_prenotazione").toLocalDate(),
+                        rs.getString("stato")
+                    ));
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+            return prenotazioni;
+        }
+            }
 }

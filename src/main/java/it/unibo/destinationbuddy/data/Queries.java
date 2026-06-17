@@ -280,6 +280,15 @@ public final class Queries {
         """;
 
     // ==================== QUERY PER LA HOME ====================
+    public static final String PRENOTAZIONI_UTENTE =
+        """
+        SELECT p.CF, p.ID_escursione, p.data_prenotazione, p.stato,
+            e.titolo
+        FROM prenota p
+        JOIN ESCURSIONI e ON p.ID_escursione = e.ID_escursione
+        WHERE p.CF = ?
+        ORDER BY p.data_prenotazione DESC
+        """;
     public static final String LIST_ESCURSIONI =
         """
         SELECT ID_escursione, titolo, difficolta, costo
