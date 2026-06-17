@@ -77,12 +77,10 @@ public final class Pezzo {
          */
         public static boolean noleggiaPezzo(Connection connection, String idPezzo, String idEscursione, String cf, int durataNoleggio) {
             try {
-                // Inseriamo la riga nella tabella ponte 'assegna'
                 try (var stmtAssegna = DAOUtils.prepare(connection, Queries.ASSEGNA_PEZZO, idPezzo, idEscursione, cf, durataNoleggio)) {
                     stmtAssegna.executeUpdate();
                 }
 
-                // Aggiorniamo la tabella 'PEZZI' impostando la disponibilità a 0 (false)
                 try (var stmtAggiorna = DAOUtils.prepare(connection, Queries.AGGIORNA_DISPONIBILITA_PEZZO, idPezzo)) {
                     return stmtAggiorna.executeUpdate() > 0;
                 }
