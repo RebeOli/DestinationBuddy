@@ -407,6 +407,21 @@ public final class Queries {
         LIMIT 1
         """;
 
+    public static final String AGGIORNA_ESCURSIONI_EFFETTUATE = 
+        """
+        UPDATE PERSONE
+        SET escursioni_effettuate = escursioni_effettuate + 1
+        WHERE CF IN (
+            SELECT CF FROM prenota WHERE ID_escursione = ?
+        )
+        """;
+
+    public static final String RECENSIONI_SCRITTE = 
+        """
+        SELECT *
+        FROM RECENSIONI
+        WHERE CF = ?
+        """;
 
 }
 

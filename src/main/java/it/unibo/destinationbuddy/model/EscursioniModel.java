@@ -8,7 +8,7 @@ import it.unibo.destinationbuddy.data.EscursionePreview;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
 
 public interface EscursioniModel {
-    
+
     List<EscursionePreview> getTop5();
 
     List<EscursionePreview> getEscursioniPerMese(int mese);

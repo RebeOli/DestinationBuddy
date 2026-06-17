@@ -1,7 +1,10 @@
 package it.unibo.destinationbuddy.data;
 
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Recensione {
 
@@ -64,6 +67,32 @@ public final class Recensione {
             } catch (Exception e) {
                 throw new DAOException(e);
             }
+        }
+
+        public static Optional<List<Recensione>> getRecensioniPerUtente(Connection connection, Persona utente) {
+            final List<Recensione> recensioni = new ArrayList<>();
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.RECENSIONI_SCRITTE, utente.cf);
+                var resultSet = statement.executeQuery();
+            ) {
+                while (resultSet.next()) {
+                    var titolo = resultSet.getString("titolo");
+                    var voto = resultSet.getInt("voto");
+                    var immagini = resultSet.getString("immagini");
+                    var descrizione = resultSet.getString("descrizione");
+                    var statoRecensione = resultSet.getString("statoRecensione");
+                    var idEscursione = resultSet.getString("idEscursione");
+                    var recensione = new Recensione(titolo, utente.cf, voto, immagini, descrizione, statoRecensione, idEscursione);
+                    recensioni.add(recensione);
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+
+            if (recensioni.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(recensioni);
         }
     }
 }

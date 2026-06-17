@@ -21,7 +21,7 @@ public final class Persona {
     public String password;
     public String statoAccount; // Sarà null per gli utenti normali, "attivo" o "disattivo" per le guide
 
-    public List<Certificazione> certificazioni = new ArrayList<>();
+    //public List<Certificazione> certificazioni = new ArrayList<>();
     //public String ruolo;
 
     public Persona(String cf, String nome, String cognome, boolean tipoUtente, boolean tipoAmministratore,
@@ -57,7 +57,6 @@ public final class Persona {
         result = prime * result + ((email == null) ? 0 : email.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
         result = prime * result + ((statoAccount == null) ? 0 : statoAccount.hashCode());
-        result = prime * result + ((certificazioni == null) ? 0 : certificazioni.hashCode());
         return result;
     }
 
@@ -121,11 +120,6 @@ public final class Persona {
                 return false;
         } else if (!statoAccount.equals(other.statoAccount))
             return false;
-        if (certificazioni == null) {
-            if (other.certificazioni != null)
-                return false;
-        } else if (!certificazioni.equals(other.certificazioni))
-            return false;
         return true;
     }
 
@@ -135,20 +129,20 @@ public final class Persona {
                 + ", tipoAmministratore=" + tipoAmministratore + ", idAccount=" + idAccount + ", escursioniEffettuate="
                 + escursioniEffettuate + ", dataIscrizione=" + dataIscrizione + ", dataAssunzione=" + dataAssunzione
                 + ", email=" + email + ", password=" + password + ", stato_account=" + statoAccount
-                + ", certificazioni=" + certificazioni + "]";
+                + "]";
     }
 
-    public boolean puoPrenotare(Escursione escursione) {
-        var tipo_certificazioni = new HashSet<>();
-        for (var c : certificazioni) {
-            tipo_certificazioni.add(c.tipologia);
-        }
-        return tipo_certificazioni.containsAll(escursione.certificazioniRichieste);
-    }
+    // public boolean puoPrenotare(Escursione escursione) {
+    //     var tipo_certificazioni = new HashSet<>();
+    //     for (var c : Certificazioni.) {
+    //         tipo_certificazioni.add(c.tipologia);
+    //     }
+    //     return tipo_certificazioni.containsAll(escursione.certificazioniRichieste);
+    // }
 
-    public void aggiungiCertificazione(Certificazione c) {
-        this.certificazioni.add(c);
-    }
+    // public void aggiungiCertificazione(Certificazione c) {
+    //     this.certificazioni.add(c);
+    // }
 
     public boolean isAmministratore() {
         return this.tipoAmministratore;
@@ -176,7 +170,7 @@ public final class Persona {
 
                 var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
 
-                caricaCertificazioni(connection, utente);
+                //caricaCertificazioni(connection, utente);
 
                 return Optional.of(utente);
             } else {
@@ -186,14 +180,24 @@ public final class Persona {
             throw new DAOException(e);
         }
 
-    }
+        }
 
-        public static void caricaCertificazioni(Connection connection, Persona utente) {
-            var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
-            for (var cert : listaCert) {
-                utente.aggiungiCertificazione(cert);
+        public static void incrementaEscursioniEffettuate(Connection connection, Escursione esc) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.AGGIORNA_ESCURSIONI_EFFETTUATE, esc.idEscursione);
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
             }
         }
+
+        // public static void caricaCertificazioni(Connection connection, Persona utente) {
+        //     var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
+        //     for (var cert : listaCert) {
+        //         utente.aggiungiCertificazione(cert);
+        //     }
+        // }
 
         public static void registraUtente(Connection connection, Persona u) {
             try (
