@@ -166,9 +166,9 @@ public final class Persona {
                 LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
                 var sqlDataAssunzione = resultSet.getDate("data_assunzione");
                 LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
-                var statoAccount = resultSet.getString("stato_account");
+                //var statoAccount = resultSet.getString("stato_account");
 
-                var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
+                var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, null);
 
                 //caricaCertificazioni(connection, utente);
 

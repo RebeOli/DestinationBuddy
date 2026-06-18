@@ -69,6 +69,11 @@ public class App extends Application {
                 mainView.setContenuto(homeView.getRoot());
                 mainView.setNavAttiva("home"); // <--- RIMETTE LA RIGA SU CATALOG
             });
+
+            mainView.setOnLogin(() -> {
+                mainView.setContenuto(authView.getRoot());
+                mainView.setNavAttiva("");
+            });
             
             mainView.setOnPrenotaNuova(() -> {
                 mainView.setContenuto(exploreView.getRoot());
@@ -126,22 +131,32 @@ public class App extends Application {
             adminView.setOnDisattivaGuida(p -> adminModel.disattivaGuida(p));
 
             // ── 8. Collega AuthView ───────────────────────────────────────
-            authView.setOnLogin((email, password) -> {
-            utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
-                persona -> {
-                    mainView.setUtente(persona);
-                    mainView.setAutenticato(true);   // ← cambia il pulsante in "Esci"
-                    homeView.setUtente(persona);
-                    profiloView.setUtente(persona);
-                    profiloView.setCertificazioni(
-                        certsModel.getCertificazioniUtente(persona.cf)
+                authView.setOnLogin((email, password) -> {
+                    utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
+                        persona -> {
+                            // 1. Aggiorna i dati dell'utente
+                            mainView.setUtente(persona);
+                            mainView.setAutenticato(true);
+                            homeView.setUtente(persona);
+                            profiloView.setUtente(persona);
+                            
+                            // Proteggiamo questo blocco: se il database non trova certificazioni, 
+                            // evitiamo che l'app si blocchi nascondendo la Home!
+                            try {
+                                profiloView.setCertificazioni(certsModel.getCertificazioniUtente(persona.cf));
+                            } catch (Exception e) {
+                                System.out.println("⚠️ Nota: Errore nel caricare le certificazioni. " + e.getMessage());
+                            }
+
+                            // 2. CAMBIA PAGINA AUTOMATICAMENTE
+                            mainView.setContenuto(homeView.getRoot());
+                            
+                            // 3. AGGIORNA LA RIGA ARANCIONE
+                            mainView.setNavAttiva("catalog"); 
+                        },
+                        () -> authView.mostraErroreLogin("Email o password errati.")
                     );
-                    // Torna alla home dopo il login
-                    mainView.setContenuto(homeView.getRoot());
-                },
-                () -> authView.mostraErroreLogin("Email o password errati.")
-            );
-        });
+                });
             authView.setOnRegistra(campi -> {
                 // campi = [nome, cognome, cf, email, password]
                 var nuovoUtente = new it.unibo.destinationbuddy.data.Persona(

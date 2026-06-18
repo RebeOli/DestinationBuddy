@@ -41,6 +41,7 @@ public class MainView {
     private Runnable onAdmin    = () -> {};
     private Runnable onLogout   = () -> {};
     private Runnable onPrenotaNuova = () -> {};
+    private Runnable onLogin    = () -> {};
 
     private final BorderPane root;
     private final BorderPane body;
@@ -122,6 +123,7 @@ public class MainView {
     public void setOnAdmin(Runnable h)        { this.onAdmin        = h; }
     public void setOnLogout(Runnable h)       { this.onLogout       = h; }
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
+    public void setOnLogin(Runnable h)       { this.onLogin         = h; }
 
     public BorderPane getRoot() { return root; }
 
@@ -150,7 +152,7 @@ public class MainView {
 
         Button signOutBtn = new Button("Accedi");
         signOutBtn.setId("btn-auth");
-        signOutBtn.setOnAction(e -> onLogout.run());
+        signOutBtn.setOnAction(e -> onLogin.run());
 
         bar.getChildren().addAll(logo, navLinks, spacer, signOutBtn);
         return bar;
@@ -308,10 +310,23 @@ public class MainView {
     }
 
     public void setAutenticato(boolean autenticato) {
-        // Trova il pulsante e cambia testo
+        // Trova il pulsante in alto a destra
         root.getTop().lookupAll(".button").stream()
             .filter(n -> "btn-auth".equals(n.getId()))
             .findFirst()
-            .ifPresent(n -> ((Button) n).setText(autenticato ? "Esci" : "Accedi"));
+            .ifPresent(n -> {
+                Button btn = (Button) n;
+                // Cambia il testo
+                btn.setText(autenticato ? "Esci" : "Accedi");
+                
+                // Cambia l'azione: se è autenticato fa Logout, altrimenti fa Login
+                btn.setOnAction(e -> {
+                    if (autenticato) {
+                        onLogout.run();
+                    } else {
+                        onLogin.run();
+                    }
+                });
+            });
     }
 }
