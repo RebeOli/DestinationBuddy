@@ -41,20 +41,39 @@ public class App extends Application {
             AdminView              adminView    = new AdminView();
 
             // ── 3. Collega i callback della MainView ──────────────────────
-            mainView.setOnCatalog(()  -> mainView.setContenuto(homeView.getRoot()));
-            mainView.setOnExplore(()  -> mainView.setContenuto(exploreView.getRoot()));
-            mainView.setOnProfilo(()  -> mainView.setContenuto(profiloView.getRoot()));
+            mainView.setOnCatalog(()  -> {
+                mainView.setContenuto(homeView.getRoot());
+                mainView.setNavAttiva("catalog"); // <--- MUOVE LA RIGA
+            });
+            
+            mainView.setOnExplore(()  -> {
+                mainView.setContenuto(exploreView.getRoot());
+                mainView.setNavAttiva("explore"); // <--- MUOVE LA RIGA
+            });
+            
+            mainView.setOnProfilo(()  -> {
+                mainView.setContenuto(profiloView.getRoot());
+                mainView.setNavAttiva("profilo"); // <--- MUOVE LA RIGA
+            });
+            
             mainView.setOnAdmin(()    -> {
                 adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
                 adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
                 mainView.setContenuto(adminView.getRoot());
+                // Se admin non ha una riga nella topbar, non serve chiamare setNavAttiva
             });
+            
             mainView.setOnLogout(() -> {
                 // Se autenticato → esci; se non autenticato → vai al login
                 mainView.setAutenticato(false);
                 mainView.setContenuto(homeView.getRoot());
+                mainView.setNavAttiva("catalog"); // <--- RIMETTE LA RIGA SU CATALOG
             });
-            mainView.setOnPrenotaNuova(() -> mainView.setContenuto(exploreView.getRoot()));
+            
+            mainView.setOnPrenotaNuova(() -> {
+                mainView.setContenuto(exploreView.getRoot());
+                mainView.setNavAttiva("explore"); // <--- SPOSTA LA RIGA SU EXPLORE
+            });
 
             // ── 4. Collega HomeView ───────────────────────────────────────
             homeView.setTop5(escursioniModel.getTop5());

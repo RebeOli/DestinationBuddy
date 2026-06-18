@@ -100,6 +100,20 @@ public class MainView {
     public void setNavAttiva(String nav) {
         this.activeNav = nav;
         // Il rebuild della sidebar non è necessario: usiamo ID sui pulsanti
+        // Cerca i nodi nella TopBar e aggiorna lo stile visivo
+        if (root.getTop() != null) {
+            String[] menuIds = {"catalog", "explore", "profilo"};
+            for (String id : menuIds) {
+                javafx.scene.Node node = root.getTop().lookup("#nav-" + id);
+                if (node instanceof Label lbl) {
+                    boolean active = activeNav.equals(id);
+                    lbl.setTextFill(active ? Color.WHITE : Color.web(TEXT_MUTED));
+                    lbl.setStyle(active
+                            ? "-fx-border-color: transparent transparent " + ACCENT + " transparent; -fx-border-width: 0 0 2 0;"
+                            : "");
+                }
+            }
+        }
     }
 
     public void setOnCatalog(Runnable h)      { this.onCatalog      = h; }
@@ -144,6 +158,7 @@ public class MainView {
 
     private Label navLink(String text, String id) {
         Label lbl = new Label(text);
+        lbl.setId("nav-" + id);
         lbl.setFont(Font.font("System", 13));
         lbl.setPadding(new Insets(0, 14, 0, 14));
         lbl.setPrefHeight(56);
