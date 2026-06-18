@@ -17,7 +17,7 @@ import javafx.scene.text.FontWeight;
  *
  * UTILIZZO DAL CONTROLLER (AppController):
  *   MainView main = new MainView();
- *   main.setOnCatalog(()  -> controller.mostraHome());
+ *   main.setOnHome(()  -> controller.mostraHome());
  *   main.setOnExplore(()  -> controller.mostraExplore());
  *   main.setOnProfilo(()  -> controller.mostraProfilo());
  *   main.setOnAdmin(()    -> controller.mostraAdmin());
@@ -35,7 +35,7 @@ public class MainView {
     private static final String TEXT_MUTED   = "#A0B8AA";
     private static final String SIDEBAR_ACT  = "#C95E2E";
 
-    private Runnable onCatalog  = () -> {};
+    private Runnable onHome  = () -> {};
     private Runnable onExplore  = () -> {};
     private Runnable onProfilo  = () -> {};
     private Runnable onAdmin    = () -> {};
@@ -52,7 +52,7 @@ public class MainView {
     private final Button adminBtn;
     private final Button creaEscBtn;
 
-    private String activeNav = "catalog";
+    private String activeNav = "home";
 
     public MainView() {
         root = new BorderPane();
@@ -102,7 +102,7 @@ public class MainView {
         // Il rebuild della sidebar non è necessario: usiamo ID sui pulsanti
         // Cerca i nodi nella TopBar e aggiorna lo stile visivo
         if (root.getTop() != null) {
-            String[] menuIds = {"catalog", "explore", "profilo"};
+            String[] menuIds = {"home", "explore", "profilo"};
             for (String id : menuIds) {
                 javafx.scene.Node node = root.getTop().lookup("#nav-" + id);
                 if (node instanceof Label lbl) {
@@ -116,7 +116,7 @@ public class MainView {
         }
     }
 
-    public void setOnCatalog(Runnable h)      { this.onCatalog      = h; }
+    public void setOnHome(Runnable h)      { this.onHome         = h; }
     public void setOnExplore(Runnable h)      { this.onExplore      = h; }
     public void setOnProfilo(Runnable h)      { this.onProfilo      = h; }
     public void setOnAdmin(Runnable h)        { this.onAdmin        = h; }
@@ -141,7 +141,7 @@ public class MainView {
         logo.setPadding(new Insets(0, 32, 0, 0));
 
         HBox navLinks = new HBox(0,
-                navLink("Catalog",  "catalog"),
+                navLink("Home",  "home"),
                 navLink("Explore",  "explore"),
                 navLink("Profilo",  "profilo"));
 
@@ -171,7 +171,7 @@ public class MainView {
                 : "");
         lbl.setOnMouseClicked(e -> {
             switch (id) {
-                case "catalog" -> onCatalog.run();
+                case "home" -> onHome.run();
                 case "explore" -> onExplore.run();
                 case "profilo" -> onProfilo.run();
             }
@@ -214,9 +214,9 @@ public class MainView {
         VBox menu = new VBox(2);
         menu.setPadding(new Insets(12, 8, 12, 8));
         menu.getChildren().addAll(
-                sidebarItem("📋", "Catalog",         () -> onCatalog.run()),
+                sidebarItem("🏠", "Home",         () -> onHome.run()),
                 sidebarItem("🗓", "Prenotazioni",    () -> onProfilo.run()),
-                sidebarItem("📊", "Dashboard",       () -> onProfilo.run()),
+                //sidebarItem("📊", "Dashboard",       () -> onProfilo.run()),
                 sidebarItem("🏅", "Certificazioni",  () -> onProfilo.run())
         );
 
@@ -267,7 +267,7 @@ public class MainView {
         adminBlock.setPadding(new Insets(0, 0, 8, 0));
 
         bottom.getChildren().addAll(adminBlock,
-                sidebarItem("❓", "Aiuto",   () -> {}),
+                //sidebarItem("❓", "Aiuto",   () -> {}),
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
         sidebar.getChildren().addAll(profileBlock, menu, bookBlock, creaBlock, spacer, bottom);

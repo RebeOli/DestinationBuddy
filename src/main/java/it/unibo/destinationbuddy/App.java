@@ -41,9 +41,9 @@ public class App extends Application {
             AdminView              adminView    = new AdminView();
 
             // ── 3. Collega i callback della MainView ──────────────────────
-            mainView.setOnCatalog(()  -> {
+            mainView.setOnHome(()  -> {
                 mainView.setContenuto(homeView.getRoot());
-                mainView.setNavAttiva("catalog"); // <--- MUOVE LA RIGA
+                mainView.setNavAttiva("home"); // <--- MUOVE LA RIGA
             });
             
             mainView.setOnExplore(()  -> {
@@ -67,7 +67,7 @@ public class App extends Application {
                 // Se autenticato → esci; se non autenticato → vai al login
                 mainView.setAutenticato(false);
                 mainView.setContenuto(homeView.getRoot());
-                mainView.setNavAttiva("catalog"); // <--- RIMETTE LA RIGA SU CATALOG
+                mainView.setNavAttiva("home"); // <--- RIMETTE LA RIGA SU CATALOG
             });
             
             mainView.setOnPrenotaNuova(() -> {
