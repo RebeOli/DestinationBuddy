@@ -68,7 +68,7 @@ public class MainView {
         body = new BorderPane();
         body.setLeft(buildSidebar());
         root.setCenter(body);
-
+        
         // Pulsanti speciali costruiti con riferimento per poterli mostrare/nascondere
         adminBtn   = findBtn("btn-admin");
         creaEscBtn = findBtn("btn-crea-esc");
@@ -263,6 +263,7 @@ public class MainView {
         creaBlock.setManaged(false);
         creaBlock.setId("btn-crea-esc");
 
+        // 1. Ripristiniamo lo spacer (spinge tutto il resto verso il basso)
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
