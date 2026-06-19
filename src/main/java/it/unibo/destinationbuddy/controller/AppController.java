@@ -26,6 +26,7 @@ public class AppController {
     private final BookingView                 bookingView   = new BookingView();
     private final CreaEscursioneView          creaView      = new CreaEscursioneView();
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
+    private final PremiumView premiumView = new PremiumView();
 
     private Persona utenteCorrente = null;
 
@@ -54,6 +55,7 @@ public class AppController {
         collegaProfiloView();
         collegaCreaView();
         collegaAggCertView();
+        collegaPremiumView();
 
         homeView.setTop5(escursioniModel.getTop5());
         exploreView.setEscursioni(escursioniModel.getAll());
@@ -87,8 +89,9 @@ public class AppController {
     private void mostraProfilo() {
         if (utenteCorrente != null) {
             profiloView.setUtente(utenteCorrente);
-            profiloView.setCertificazioni(
-                certsModel.getCertificazioniUtente(utenteCorrente.cf));
+            profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
+            profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
+
         }
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
@@ -184,7 +187,7 @@ public class AppController {
             homeView.setEscursioniMese(escursioniModel.getEscursioniPerMese(mese))
         );
         homeView.setOnExploreClick(() -> mostraExplore());
-        homeView.setOnUpgradeClick(() -> { });
+        homeView.setOnUpgradeClick(() -> mainView.setContenuto(premiumView.getRoot()));
     }
 
     // ── Explore ───────────────────────────────────────────────────
@@ -333,5 +336,22 @@ public class AppController {
         } else {
             System.err.println("⚠️  CSS non trovato, continuo senza stili.");
         }
+    }
+    private void collegaPremiumView() {
+        premiumView.setOnIndietro(() -> mostraHome());
+        premiumView.setOnScegliPiano(piano -> {
+            if (utenteCorrente == null) {
+                mostraLogin();
+                return;
+            }
+            boolean ok = utentiModel.sottoscriviAbbonamento(
+                piano.prezzoMensile, piano.mesi, utenteCorrente.cf
+            );
+            if (!ok) {
+                premiumView.mostraErrore("Hai già sottoscritto un abbonamento oggi.");
+                return;
+            }
+            mostraProfilo();
+        });
     }
 }

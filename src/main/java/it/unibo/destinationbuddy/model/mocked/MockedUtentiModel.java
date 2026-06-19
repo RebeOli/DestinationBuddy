@@ -1,5 +1,6 @@
 package it.unibo.destinationbuddy.model.mocked;
 
+import it.unibo.destinationbuddy.data.Abbonamento;
 import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.model.UtentiModel;
 
@@ -52,5 +53,17 @@ public class MockedUtentiModel implements UtentiModel {
     public int numeroEscursioniEffettuate(Persona utente) {
         // Restituisce direttamente il valore salvato nell'oggetto Persona
         return utente.escursioniEffettuate;
+    }
+
+    @Override
+    public boolean sottoscriviAbbonamento(double costoMensile, int durata, String cf) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'sottoscriviAbbonamento'");
+    }
+
+    @Override
+    public Optional<Abbonamento> getUltimoAbbonamento(Persona utente) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUltimoAbbonamento'");
     }
 }

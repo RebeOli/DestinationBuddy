@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.util.Objects;
 import java.util.Optional;
 
+import it.unibo.destinationbuddy.data.Abbonamento;
 import it.unibo.destinationbuddy.data.Persona;
 
 public class DBUtentiModel implements UtentiModel{
@@ -28,6 +29,16 @@ public class DBUtentiModel implements UtentiModel{
     @Override
     public int numeroEscursioniEffettuate(Persona utente) {
         return utente.escursioniEffettuate;
+    }
+
+    @Override
+    public boolean sottoscriviAbbonamento(double costoMensile, int durata, String cf) {
+        return Abbonamento.DAO.acquistaAbbonamento(connection, costoMensile, durata, cf);
+    }
+
+    @Override
+    public Optional<Abbonamento> getUltimoAbbonamento(Persona utente) {
+        return Abbonamento.DAO.trovaUltimoAbbonamento(connection, utente);
     }
 
 }
