@@ -1,5 +1,6 @@
 package it.unibo.destinationbuddy.controller;
 
+import it.unibo.destinationbuddy.data.Abbonamento;
 import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.model.*;
 import it.unibo.destinationbuddy.view.*;
@@ -83,8 +84,22 @@ public class AppController {
         primaryStage.show();
     }
 
-    private void mostraHome()    { mainView.setContenuto(homeView.getRoot()); mainView.setNavAttiva("home"); }
-    private void mostraExplore() { mainView.setContenuto(exploreView.getRoot()); mainView.setNavAttiva("explore"); }
+    private void mostraHome() {
+        mainView.setContenuto(homeView.getRoot());
+        mainView.setNavAttiva("home");
+
+        if (utenteCorrente != null) {
+            boolean haAbbonamentoAttivo = utentiModel.getUltimoAbbonamento(utenteCorrente)
+                    .map(Abbonamento::isAttivo)
+                    .orElse(false);
+            homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
+        } else {
+            homeView.setHaAbbonamentoAttivo(false); // utente non loggato → mostra comunque l'invito
+        }
+    }
+    private void mostraExplore() { 
+        mainView.setContenuto(exploreView.getRoot()); mainView.setNavAttiva("explore"); 
+    }
 
     private void mostraProfilo() {
         if (utenteCorrente != null) {
@@ -187,7 +202,13 @@ public class AppController {
             homeView.setEscursioniMese(escursioniModel.getEscursioniPerMese(mese))
         );
         homeView.setOnExploreClick(() -> mostraExplore());
-        homeView.setOnUpgradeClick(() -> mainView.setContenuto(premiumView.getRoot()));
+        homeView.setOnUpgradeClick(() -> {
+            if (utenteCorrente == null) {
+                mostraLogin();
+            } else {
+                mainView.setContenuto(premiumView.getRoot());
+            }
+        });
     }
 
     // ── Explore ───────────────────────────────────────────────────
