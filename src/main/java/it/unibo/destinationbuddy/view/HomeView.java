@@ -212,15 +212,12 @@ public class HomeView {
             card.setId("mese-" + mese);
             GridPane.setFillWidth(card, true);
 
-            Label nomeLbl = new Label(nomi[i]);
-            nomeLbl.getStyleClass().add("text-muted");
-            nomeLbl.setId("month-name-lbl");
 
-            Label valLbl = new Label(nomi[i].toUpperCase());
-            valLbl.getStyleClass().add("month-num");
-            valLbl.setId("month-num-lbl");
+            Label nameLabel = new Label(nomi[i].toUpperCase());
+            nameLabel.getStyleClass().add("month-num");
+            nameLabel.setId("month-num-lbl");
 
-            card.getChildren().addAll(nomeLbl, valLbl);
+            card.getChildren().addAll(nameLabel);
 
             card.setOnMouseClicked(e -> {
                 meseSelezionato = mese;
