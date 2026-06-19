@@ -13,21 +13,20 @@ import java.util.function.Consumer;
 
 /**
  * AuthView — Login e Registrazione in un'unica view con toggle.
- *
- * UTILIZZO DAL CONTROLLER:
- *   AuthView view = new AuthView();
- *   view.setOnLogin((email, password) -> controller.login(email, password));
- *   view.setOnRegistra((nome, cognome, cf, email, password) -> controller.registra(...));
- *   view.mostraErrore("Email o password errati.");
- *   root.setCenter(view.getRoot());
+ * Stile "Ibrido" Light Theme: Card bianca su sfondo sabbia, bottoni terracotta.
  */
 public class AuthView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
+    // ── VARIABILI LIGHT THEME ─────────────────────────────────────────────────
+    private static final String APP_BG       = "transparent"; // Prende il sabbia dal MainView
+    private static final String CARD_BG      = "#FFFFFF";     // Card bianca
+    private static final String BORDER_COLOR = "#DCD5C6";     // Bordo delicato
+    private static final String ACCENT       = "#B85D38";     // Terracotta
+    private static final String ACCENT_HOVER = "#4A7C59";     // Verde foresta
+    private static final String TEXT_DARK    = "#2C2A26";     // Testo scuro
+    private static final String TEXT_MUTED   = "#807B73";     // Testo secondario
+    private static final String FIELD_BG     = "#FAFAF9";     // Sfondo input leggermente grigio
+    // ──────────────────────────────────────────────────────────────────────────
 
     // Callbacks
     private BiConsumer<String, String>                        onLogin     = (e, p) -> {};
@@ -62,11 +61,11 @@ public class AuthView {
         VBox page = new VBox(center);
         page.setAlignment(Pos.CENTER);
         page.setPadding(new Insets(40, 24, 40, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
+        page.setStyle("-fx-background-color: " + APP_BG + ";");
         VBox.setVgrow(center, Priority.ALWAYS);
 
         root = new StackPane(page);
-        root.setStyle("-fx-background-color: " + DARK_BG + ";");
+        root.setStyle("-fx-background-color: " + APP_BG + ";");
     }
 
     // ── API pubblica ──────────────────────────────────────────────────────────
@@ -96,9 +95,11 @@ public class AuthView {
 
     private VBox buildLoginCard() {
         VBox card = new VBox(16);
-        card.setPadding(new Insets(28, 28, 28, 28));
+        card.setPadding(new Insets(32, 32, 32, 32));
+        // Stile della Card con ombra leggera
         card.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 16;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 16; -fx-border-width: 0.5;");
+                + "-fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 16; -fx-border-width: 1;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 15, 0, 0, 4);");
         card.setMaxWidth(440);
 
         Label logo = new Label("Destination Buddy");
@@ -106,10 +107,10 @@ public class AuthView {
         logo.setTextFill(Color.web(ACCENT));
 
         Label title = new Label("Accedi");
-        title.setFont(Font.font("System", FontWeight.BOLD, 22));
-        title.setTextFill(Color.WHITE);
+        title.setFont(Font.font("System", FontWeight.BOLD, 24));
+        title.setTextFill(Color.web(TEXT_DARK));
 
-        Label sub = new Label("Bentornato su Destination Buddy");
+        Label sub = new Label("Bentornato! Inserisci i tuoi dati.");
         sub.setFont(Font.font("System", 13));
         sub.setTextFill(Color.web(TEXT_MUTED));
 
@@ -117,7 +118,7 @@ public class AuthView {
         styleField(loginPassword, "Password");
 
         loginError.setFont(Font.font("System", 12));
-        loginError.setTextFill(Color.web("#EF4444"));
+        loginError.setTextFill(Color.web("#B03A2E")); // Rosso scuro per gli errori
         loginError.setVisible(false);
 
         Button loginBtn = new Button("Accedi");
@@ -134,13 +135,16 @@ public class AuthView {
         switchLbl.setTextFill(Color.web(TEXT_MUTED));
 
         Label switchLink = new Label("Registrati");
-        switchLink.setFont(Font.font("System", 13));
+        switchLink.setFont(Font.font("System", FontWeight.BOLD, 13));
         switchLink.setTextFill(Color.web(ACCENT));
         switchLink.setCursor(javafx.scene.Cursor.HAND);
         switchLink.setOnMouseClicked(e -> showPanel(false));
+        switchLink.setOnMouseEntered(e -> switchLink.setTextFill(Color.web(ACCENT_HOVER)));
+        switchLink.setOnMouseExited(e -> switchLink.setTextFill(Color.web(ACCENT)));
 
         HBox switchRow = new HBox(4, switchLbl, switchLink);
         switchRow.setAlignment(Pos.CENTER);
+        VBox.setMargin(switchRow, new Insets(10, 0, 0, 0));
 
         card.getChildren().addAll(logo, title, sub, loginEmail, loginPassword,
                 loginError, loginBtn, switchRow);
@@ -151,16 +155,17 @@ public class AuthView {
 
     private VBox buildRegisterCard() {
         VBox card = new VBox(14);
-        card.setPadding(new Insets(28, 28, 28, 28));
+        card.setPadding(new Insets(32, 32, 32, 32));
         card.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 16;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 16; -fx-border-width: 0.5;");
+                + "-fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 16; -fx-border-width: 1;"
+                + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 15, 0, 0, 4);");
         card.setMaxWidth(440);
 
         Label title = new Label("Crea account");
-        title.setFont(Font.font("System", FontWeight.BOLD, 22));
-        title.setTextFill(Color.WHITE);
+        title.setFont(Font.font("System", FontWeight.BOLD, 24));
+        title.setTextFill(Color.web(TEXT_DARK));
 
-        Label sub = new Label("Iscriviti gratuitamente");
+        Label sub = new Label("Iscriviti gratuitamente a Destination Buddy");
         sub.setFont(Font.font("System", 13));
         sub.setTextFill(Color.web(TEXT_MUTED));
 
@@ -176,7 +181,7 @@ public class AuthView {
         styleField(regPassword, "Password (min. 8 caratteri)");
 
         regError.setFont(Font.font("System", 12));
-        regError.setTextFill(Color.web("#EF4444"));
+        regError.setTextFill(Color.web("#B03A2E"));
         regError.setVisible(false);
 
         Button regBtn = new Button("Crea account gratuito");
@@ -197,14 +202,18 @@ public class AuthView {
         Label switchLbl = new Label("Hai già un account? ");
         switchLbl.setFont(Font.font("System", 13));
         switchLbl.setTextFill(Color.web(TEXT_MUTED));
+        
         Label switchLink = new Label("Accedi");
-        switchLink.setFont(Font.font("System", 13));
+        switchLink.setFont(Font.font("System", FontWeight.BOLD, 13));
         switchLink.setTextFill(Color.web(ACCENT));
         switchLink.setCursor(javafx.scene.Cursor.HAND);
         switchLink.setOnMouseClicked(e -> showPanel(true));
+        switchLink.setOnMouseEntered(e -> switchLink.setTextFill(Color.web(ACCENT_HOVER)));
+        switchLink.setOnMouseExited(e -> switchLink.setTextFill(Color.web(ACCENT)));
 
         HBox switchRow = new HBox(4, switchLbl, switchLink);
         switchRow.setAlignment(Pos.CENTER);
+        VBox.setMargin(switchRow, new Insets(10, 0, 0, 0));
 
         card.getChildren().addAll(title, sub, nomeRow, regCF, regEmail,
                 regPassword, regError, regBtn, switchRow);
@@ -222,10 +231,10 @@ public class AuthView {
 
     private void styleField(TextInputControl field, String prompt) {
         field.setPromptText(prompt);
-        field.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-text-fill: white;"
-                + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 10 14;");
+        field.setStyle("-fx-background-color: " + FIELD_BG + ";"
+                + "-fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8;"
+                + "-fx-background-radius: 8; -fx-text-fill: " + TEXT_DARK + ";"
+                + "-fx-prompt-text-fill: " + TEXT_MUTED + "; -fx-padding: 10 14;");
     }
 
     private void styleAccentBtn(Button btn, int padV, int padH) {

@@ -16,24 +16,28 @@ import javafx.scene.text.FontWeight;
  * Gestisce la navigazione tra le pagine sostituendo il centro del BorderPane.
  *
  * UTILIZZO DAL CONTROLLER (AppController):
- *   MainView main = new MainView();
- *   main.setOnHome(()  -> controller.mostraHome());
- *   main.setOnExplore(()  -> controller.mostraExplore());
- *   main.setOnProfilo(()  -> controller.mostraProfilo());
- *   main.setOnAdmin(()    -> controller.mostraAdmin());
- *   main.setOnLogout(()   -> controller.logout());
- *   main.setUtente(persona);
- *   main.setContenuto(homeView.getRoot());
- *   primaryStage.setScene(new Scene(main.getRoot(), 1200, 700));
+ * MainView main = new MainView();
+ * main.setOnHome(()  -> controller.mostraHome());
+ * main.setOnExplore(()  -> controller.mostraExplore());
+ * main.setOnProfilo(()  -> controller.mostraProfilo());
+ * main.setOnAdmin(()    -> controller.mostraAdmin());
+ * main.setOnLogout(()   -> controller.logout());
+ * main.setUtente(persona);
+ * main.setContenuto(homeView.getRoot());
+ * primaryStage.setScene(new Scene(main.getRoot(), 1200, 700));
  */
 public class MainView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String TOPBAR_BG    = "#0B2316";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
-    private static final String SIDEBAR_ACT  = "#C95E2E";
+    // ── VARIABILI AGGIORNATE AL LIGHT THEME ─────────────────────────────
+    private static final String APP_BG       = "#F4EFE6"; // Sabbia
+    private static final String SIDEBAR_BG   = "#E8EFE8"; // Bianco per barre
+    private static final String BORDER_COLOR = "#DCD5C6"; // Bordo chiaro
+    private static final String ACCENT       = "#B85D38"; // Terracotta
+    private static final String ACCENT_HOVER = "#4A7C59"; // Verde foresta
+    private static final String TEXT_DARK    = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED   = "#807B73"; // Testo grigino
+    private static final String HOVER_BG     = "#EBF5F8"; // Azzurrino per hover
+    // ────────────────────────────────────────────────────────────────────
 
     private Runnable onHome  = () -> {};
     private Runnable onExplore  = () -> {};
@@ -43,7 +47,6 @@ public class MainView {
     private Runnable onPrenotaNuova = () -> {};
     private Runnable onLogin    = () -> {};
     private Runnable onImpostazioni = () -> {};
-
 
     private final BorderPane root;
     private final BorderPane body;
@@ -59,7 +62,7 @@ public class MainView {
 
     public MainView() {
         root = new BorderPane();
-        root.setStyle("-fx-background-color: " + DARK_BG + ";");
+        root.setStyle("-fx-background-color: " + APP_BG + ";");
         root.setTop(buildTopBar());
 
         body = new BorderPane();
@@ -102,15 +105,14 @@ public class MainView {
     /** Evidenzia la voce di navigazione attiva. */
     public void setNavAttiva(String nav) {
         this.activeNav = nav;
-        // Il rebuild della sidebar non è necessario: usiamo ID sui pulsanti
-        // Cerca i nodi nella TopBar e aggiorna lo stile visivo
         if (root.getTop() != null) {
             String[] menuIds = {"home", "explore", "profilo"};
             for (String id : menuIds) {
                 javafx.scene.Node node = root.getTop().lookup("#nav-" + id);
                 if (node instanceof Label lbl) {
                     boolean active = activeNav.equals(id);
-                    lbl.setTextFill(active ? Color.WHITE : Color.web(TEXT_MUTED));
+                    // Usa colore testo scuro
+                    lbl.setTextFill(active ? Color.web(TEXT_DARK) : Color.web(TEXT_MUTED));
                     lbl.setStyle(active
                             ? "-fx-border-color: transparent transparent " + ACCENT + " transparent; -fx-border-width: 0 0 2 0;"
                             : "");
@@ -119,13 +121,13 @@ public class MainView {
         }
     }
 
-    public void setOnHome(Runnable h)      { this.onHome         = h; }
+    public void setOnHome(Runnable h)         { this.onHome         = h; }
     public void setOnExplore(Runnable h)      { this.onExplore      = h; }
     public void setOnProfilo(Runnable h)      { this.onProfilo      = h; }
     public void setOnAdmin(Runnable h)        { this.onAdmin        = h; }
     public void setOnLogout(Runnable h)       { this.onLogout       = h; }
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
-    public void setOnLogin(Runnable h)       { this.onLogin         = h; }
+    public void setOnLogin(Runnable h)        { this.onLogin        = h; }
     public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
 
     public BorderPane getRoot() { return root; }
@@ -137,8 +139,8 @@ public class MainView {
         bar.setAlignment(Pos.CENTER_LEFT);
         bar.setPadding(new Insets(0, 20, 0, 20));
         bar.setPrefHeight(56);
-        bar.setStyle("-fx-background-color: " + TOPBAR_BG
-                + "; -fx-border-color: #1E4030; -fx-border-width: 0 0 1 0;");
+        bar.setStyle("-fx-background-color: " + SIDEBAR_BG
+                + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 0 0 1 0;");
 
         Label logo = new Label("Destination Buddy");
         logo.setFont(Font.font("System", FontWeight.BOLD, 20));
@@ -155,7 +157,14 @@ public class MainView {
 
         Button signOutBtn = new Button("Accedi");
         signOutBtn.setId("btn-auth");
+        signOutBtn.setFont(Font.font("System", 13));
+        signOutBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + TEXT_DARK 
+                + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 6 14;");
         signOutBtn.setOnAction(e -> onLogin.run());
+        signOutBtn.setOnMouseEntered(e -> signOutBtn.setStyle("-fx-background-color: " + HOVER_BG 
+                + "; -fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + ACCENT_HOVER + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 6 14;"));
+        signOutBtn.setOnMouseExited(e -> signOutBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + TEXT_DARK 
+                + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 6 14;"));
 
         bar.getChildren().addAll(logo, navLinks, spacer, signOutBtn);
         return bar;
@@ -170,7 +179,7 @@ public class MainView {
         lbl.setAlignment(Pos.CENTER);
         lbl.setCursor(javafx.scene.Cursor.HAND);
         boolean active = activeNav.equals(id);
-        lbl.setTextFill(active ? Color.WHITE : Color.web(TEXT_MUTED));
+        lbl.setTextFill(active ? Color.web(TEXT_DARK) : Color.web(TEXT_MUTED));
         lbl.setStyle(active
                 ? "-fx-border-color: transparent transparent " + ACCENT + " transparent; -fx-border-width: 0 0 2 0;"
                 : "");
@@ -181,7 +190,7 @@ public class MainView {
                 case "profilo" -> onProfilo.run();
             }
         });
-        lbl.setOnMouseEntered(ev -> { if (!activeNav.equals(id)) lbl.setTextFill(Color.WHITE); });
+        lbl.setOnMouseEntered(ev -> { if (!activeNav.equals(id)) lbl.setTextFill(Color.web(ACCENT_HOVER)); });
         lbl.setOnMouseExited(ev  -> { if (!activeNav.equals(id)) lbl.setTextFill(Color.web(TEXT_MUTED)); });
         return lbl;
     }
@@ -192,13 +201,13 @@ public class MainView {
         VBox sidebar = new VBox(0);
         sidebar.setPrefWidth(190);
         sidebar.setMinWidth(190);
-        sidebar.setStyle("-fx-background-color: " + DARK_BG
-                + "; -fx-border-color: #1E4030; -fx-border-width: 0 1 0 0;");
+        sidebar.setStyle("-fx-background-color: " + SIDEBAR_BG
+                + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 0 1 0 0;");
 
         // Profilo
         VBox profileBlock = new VBox(4);
         profileBlock.setPadding(new Insets(20, 14, 20, 14));
-        profileBlock.setStyle("-fx-border-color: #1E4030; -fx-border-width: 0 0 1 0;");
+        profileBlock.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 0 0 1 0;");
 
         Circle circle = new Circle(26, Color.web(ACCENT));
         inizialeAvatar.setFont(Font.font("System", FontWeight.BOLD, 18));
@@ -209,7 +218,7 @@ public class MainView {
         VBox.setMargin(avatar, new Insets(0, 0, 10, 0));
 
         nomeLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
-        nomeLabel.setTextFill(Color.WHITE);
+        nomeLabel.setTextFill(Color.web(TEXT_DARK));
         ruoloLabel.setFont(Font.font("System", 10));
         ruoloLabel.setTextFill(Color.web(TEXT_MUTED));
 
@@ -221,7 +230,6 @@ public class MainView {
         menu.getChildren().addAll(
                 sidebarItem("🏠", "Home",         () -> onHome.run()),
                 sidebarItem("🗓", "Prenotazioni",    () -> onProfilo.run()),
-                //sidebarItem("📊", "Dashboard",       () -> onProfilo.run()),
                 sidebarItem("🏅", "Certificazioni",  () -> onProfilo.run())
         );
 
@@ -241,9 +249,14 @@ public class MainView {
         creaEscursBtn.setId("btn-crea-esc");
         creaEscursBtn.setMaxWidth(Double.MAX_VALUE);
         creaEscursBtn.setFont(Font.font("System", 12));
-        creaEscursBtn.setStyle("-fx-background-color: rgba(212,103,58,0.15);"
+        creaEscursBtn.setStyle("-fx-background-color: transparent;"
                 + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
-                + "-fx-border-radius: 8; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+                + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+        creaEscursBtn.setOnMouseEntered(e -> creaEscursBtn.setStyle("-fx-background-color: " + HOVER_BG 
+                + "; -fx-text-fill: " + ACCENT_HOVER + "; -fx-border-color: " + ACCENT_HOVER + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+        creaEscursBtn.setOnMouseExited(e -> creaEscursBtn.setStyle("-fx-background-color: transparent;"
+                + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+
         VBox creaBlock = new VBox(creaEscursBtn);
         creaBlock.setPadding(new Insets(0, 12, 8, 12));
         creaBlock.setVisible(false);
@@ -256,15 +269,20 @@ public class MainView {
         // Bottom
         VBox bottom = new VBox(0);
         bottom.setPadding(new Insets(12, 8, 16, 8));
-        bottom.setStyle("-fx-border-color: #1E4030; -fx-border-width: 1 0 0 0;");
+        bottom.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 1 0 0 0;");
 
         // Pulsante admin (nascosto di default)
         Button adminButton = new Button("⚙ Admin");
         adminButton.setId("btn-admin");
         adminButton.setMaxWidth(Double.MAX_VALUE);
         adminButton.setFont(Font.font("System", 12));
-        adminButton.setStyle("-fx-background-color: rgba(167,139,250,0.12);"
-                + "-fx-text-fill: #C4B5FD; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+        adminButton.setStyle("-fx-background-color: transparent;"
+                + "-fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+        adminButton.setOnMouseEntered(e -> adminButton.setStyle("-fx-background-color: " + HOVER_BG 
+                + "; -fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + ACCENT_HOVER + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+        adminButton.setOnMouseExited(e -> adminButton.setStyle("-fx-background-color: transparent;"
+                + "-fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+
         adminButton.setVisible(false);
         adminButton.setManaged(false);
         adminButton.setOnAction(e -> onAdmin.run());
@@ -272,7 +290,6 @@ public class MainView {
         adminBlock.setPadding(new Insets(0, 0, 8, 0));
 
         bottom.getChildren().addAll(adminBlock,
-                //sidebarItem("❓", "Aiuto",   () -> {}),
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
         sidebar.getChildren().addAll(profileBlock, menu, bookBlock, creaBlock, spacer, bottom);
@@ -285,7 +302,7 @@ public class MainView {
         item.setPadding(new Insets(10, 12, 10, 12));
         item.setCursor(javafx.scene.Cursor.HAND);
         item.setStyle("-fx-background-radius: 8;");
-        item.setOnMouseEntered(e -> item.setStyle("-fx-background-color: #1E4030; -fx-background-radius: 8;"));
+        item.setOnMouseEntered(e -> item.setStyle("-fx-background-color: " + HOVER_BG + "; -fx-background-radius: 8;"));
         item.setOnMouseExited(e  -> item.setStyle("-fx-background-radius: 8;"));
         item.setOnMouseClicked(e -> action.run());
 
@@ -293,7 +310,7 @@ public class MainView {
         iconLbl.setFont(Font.font(14));
         Label textLbl = new Label(text);
         textLbl.setFont(Font.font("System", 13));
-        textLbl.setTextFill(Color.web(TEXT_MUTED));
+        textLbl.setTextFill(Color.web(TEXT_DARK));
         item.getChildren().addAll(iconLbl, textLbl);
         return item;
     }
@@ -306,7 +323,8 @@ public class MainView {
     private void styleAccentBtn(Button btn) {
         String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
                 + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 10 14;";
-        String hover = base.replace(ACCENT, ACCENT_HOVER);
+        String hover = "-fx-background-color: " + ACCENT_HOVER + "; -fx-text-fill: white;"
+                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 10 14;";
         btn.setStyle(base);
         btn.setOnMouseEntered(e -> btn.setStyle(hover));
         btn.setOnMouseExited(e  -> btn.setStyle(base));

@@ -327,7 +327,7 @@ public class AppController {
     // ── CSS ───────────────────────────────────────────────────────
 
     private void applicaCSS(Scene scene) {
-        var css = getClass().getResource("/it/unibo/destinationbuddy/style.css");
+        var css = getClass().getResource("/style.css");
         if (css != null) {
             scene.getStylesheets().add(css.toExternalForm());
         } else {

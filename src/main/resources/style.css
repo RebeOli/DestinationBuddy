@@ -344,3 +344,17 @@
 .text-price      { -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: -db-accent; }
 .text-bold       { -fx-font-weight: bold; }
 .auth-title, .profile-name, .card-title, .cert-title { -fx-text-fill: -db-text-dark; }
+
+.switch-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: -db-muted;
+}
+.switch-link {
+    -fx-font-size: 13px;
+    -fx-text-fill: -db-accent;
+    -fx-cursor: hand;
+}
+.error-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #B03A2E; /* Un rosso che sta bene sul tema chiaro */
+}
