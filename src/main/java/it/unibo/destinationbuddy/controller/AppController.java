@@ -113,13 +113,11 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
-                    mainView.setUtente(persona);
+                    mainView.setUtente(persona); // Questo aggiornerà la barra laterale!
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
                     profiloView.setUtente(persona);
 
-                    // Protegge il flusso login: se le certificazioni falliscono,
-                    // l'app non deve bloccarsi prima di mostrare la Home.
                     try {
                         profiloView.setCertificazioni(
                             certsModel.getCertificazioniUtente(persona.cf));
@@ -127,7 +125,11 @@ public class AppController {
                         System.out.println("⚠️ Errore nel caricare le certificazioni: " + ex.getMessage());
                     }
 
-                    mostraHome();
+                    if (persona.isAmministratore()) {
+                        mostraAdmin(); // Se è admin, lo butti dritto nel Pannello Amministratore!
+                    } else {
+                        mostraHome();  // Altrimenti vede le Top 5 escursioni
+                    }
                 },
                 () -> authView.mostraErroreLogin("Email o password errati.")
             )
@@ -327,7 +329,7 @@ public class AppController {
     // ── CSS ───────────────────────────────────────────────────────
 
     private void applicaCSS(Scene scene) {
-        var css = getClass().getResource("/style.css");
+        var css = getClass().getResource("/it/unibo/destinationbuddy/style.css");
         if (css != null) {
             scene.getStylesheets().add(css.toExternalForm());
         } else {
