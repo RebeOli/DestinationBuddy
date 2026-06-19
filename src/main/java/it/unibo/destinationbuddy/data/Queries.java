@@ -344,10 +344,12 @@ public final class Queries {
         """;
     public static final String CERTIFICAZIONI_UTENTE =
         """
-        SELECT ID_certificazione, n_certificazione, ente_rilasciante,
-            data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF
-        FROM CERTIFICAZIONI
-        WHERE CF = ?
+        SELECT c.ID_certificazione, c.n_certificazione, c.ente_rilasciante,
+            c.data_rilascio, c.data_scadenza, c.stato_validazione, c.CF, c.Guida_CF,
+            t.livello
+        FROM CERTIFICAZIONI c
+        JOIN TIPOLOGIE_CERTIFICAZIONE t ON c.ID_certificazione = t.ID_certificazione
+        WHERE c.CF = ?
         """;
 
     public static final String TIPOLOGIE_CERTIFICAZIONE_ALL =
@@ -432,6 +434,8 @@ public final class Queries {
         WHERE CF = ?
         """;
 
+    public static final String LIST_TIPOLOGIE_ESCURSIONE =
+        "SELECT ID_tipologia FROM tipologia_escursione";
 }
 
 

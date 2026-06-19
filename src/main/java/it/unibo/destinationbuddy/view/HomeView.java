@@ -87,9 +87,20 @@ public class HomeView {
         mesiTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
         mesiTitle.setTextFill(Color.WHITE);
 
+        // ── MODIFICA QUI ──────────────────────────────────────────────
         mesiGrid = new GridPane();
-        mesiGrid.setHgap(8);
-        mesiGrid.setVgap(8);
+        mesiGrid.setHgap(12);
+        mesiGrid.setVgap(12);
+
+        // 6 colonne responsive che occupano tutta la larghezza
+        for (int col = 0; col < 6; col++) {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(100.0 / 6);
+            cc.setFillWidth(true);
+            mesiGrid.getColumnConstraints().add(cc);
+        }
+        // ─────────────────────────────────────────────────────────────
+
         buildMesiGrid();
 
         mesiRisultati = new VBox(8);
@@ -251,25 +262,26 @@ public class HomeView {
     }
 
     private void buildMesiGrid() {
-        String[] nomi = {"Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"};
+        String[] nomi = {"Gen","Feb","Mar","Apr","Mag","Giu",
+                        "Lug","Ago","Set","Ott","Nov","Dic"};
         for (int i = 0; i < 12; i++) {
             int mese = i + 1;
-            VBox card = new VBox(4);
+            VBox card = new VBox(6);
             card.setAlignment(Pos.CENTER);
-            card.setPadding(new Insets(10, 8, 10, 8));
-            card.setPrefWidth(70);
+            card.setPadding(new Insets(16, 0, 16, 0));
+            card.setMaxWidth(Double.MAX_VALUE);   // occupa tutta la colonna
             card.setCursor(javafx.scene.Cursor.HAND);
             card.setStyle(styleMonthCard(false));
+            card.setId("mese-" + mese);
 
-            Label nomeLbl = new Label(nomi[i]);
-            nomeLbl.setFont(Font.font("System", 11));
-            nomeLbl.setTextFill(Color.web(TEXT_MUTED));
+            GridPane.setFillWidth(card, true);    // si allarga con la colonna
 
-            Label numLbl = new Label(String.valueOf(mese));
-            numLbl.setFont(Font.font("System", FontWeight.BOLD, 16));
-            numLbl.setTextFill(Color.web(ACCENT));
 
-            card.getChildren().addAll(nomeLbl, numLbl);
+            Label nameLabel = new Label(nomi[i].toUpperCase());
+            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
+            nameLabel.setTextFill(Color.web(ACCENT));
+
+            card.getChildren().addAll(nameLabel);
 
             card.setOnMouseClicked(e -> {
                 meseSelezionato = mese;
@@ -284,9 +296,8 @@ public class HomeView {
                 if (meseSelezionato != mese)
                     card.setStyle(styleMonthCard(false));
             });
-            card.setId("mese-" + mese);
 
-            mesiGrid.add(card, i % 4, i / 4);
+            mesiGrid.add(card, i % 6, i / 6);
         }
     }
 

@@ -42,6 +42,8 @@ public class MainView {
     private Runnable onLogout   = () -> {};
     private Runnable onPrenotaNuova = () -> {};
     private Runnable onLogin    = () -> {};
+    private Runnable onImpostazioni = () -> {};
+
 
     private final BorderPane root;
     private final BorderPane body;
@@ -124,6 +126,7 @@ public class MainView {
     public void setOnLogout(Runnable h)       { this.onLogout       = h; }
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
     public void setOnLogin(Runnable h)       { this.onLogin         = h; }
+    public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
 
     public BorderPane getRoot() { return root; }
 
@@ -329,4 +332,5 @@ public class MainView {
                 });
             });
     }
+
 }

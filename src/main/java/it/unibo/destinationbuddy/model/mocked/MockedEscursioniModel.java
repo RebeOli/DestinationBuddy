@@ -63,4 +63,13 @@ public class MockedEscursioniModel implements EscursioniModel {
     public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, List<String> tipologie) {
         System.out.println("[MOCK] Creata nuova escursione: " + e.titolo + " (Guida CF: " + guidaCF + ")");
     }
+
+    @Override
+    public List<TipologiaEscursione> getTipologie() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTipologieDisponibili'");
+    }
+
+
+
 }

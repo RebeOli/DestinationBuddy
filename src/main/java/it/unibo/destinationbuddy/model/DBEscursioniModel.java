@@ -67,5 +67,10 @@ public class DBEscursioniModel implements EscursioniModel {
         cacheAll = Optional.empty();
         cacheTop5 = Optional.empty(); //resetto la cache in modo da vedere poi la nuova escursione creata. 
     }
+
+    @Override
+    public List<TipologiaEscursione> getTipologie() {
+        return TipologiaEscursione.DAO.list(connection);
+    }
     
 }

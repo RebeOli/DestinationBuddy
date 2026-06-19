@@ -201,6 +201,7 @@ public final class Escursione {
                 throw new DAOException(ex);
             }
         }
+        
     }
 }
 

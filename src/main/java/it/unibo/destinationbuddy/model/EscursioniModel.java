@@ -22,4 +22,5 @@ public interface EscursioniModel {
     void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, 
                     String guidaCF, List<String> tipologie);
 
+    List<TipologiaEscursione> getTipologie();
 }

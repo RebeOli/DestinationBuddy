@@ -82,5 +82,21 @@ public final class TipologiaEscursione {
             }
             return tipologie;
         }
+        public static List<TipologiaEscursione> list(Connection connection) {
+            var tipologie = new ArrayList<TipologiaEscursione>();
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.LIST_TIPOLOGIE_ESCURSIONE);
+                var resultSet = statement.executeQuery();
+            ) {
+                while (resultSet.next()) {
+                    var idTipologia = resultSet.getString("ID_tipologia");
+                    tipologie.add(new TipologiaEscursione(idTipologia, new ArrayList<>()));
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+
+            return tipologie;
+        }
     }
 }
