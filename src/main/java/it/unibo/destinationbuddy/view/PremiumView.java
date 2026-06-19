@@ -50,6 +50,7 @@ public class PremiumView {
 
     private final Label errorLabel = new Label();
     private final ScrollPane root;
+    private final Label errorLabel;
 
     public PremiumView() {
         VBox page = new VBox(24);
