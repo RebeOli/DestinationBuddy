@@ -25,29 +25,23 @@ import java.util.function.IntConsumer;
  * HomeView — schermata principale di Destination Buddy.
  *
  * UTILIZZO DAL CONTROLLER:
- *   HomeView view = new HomeView();
- *   view.setUtente(persona);
- *   view.setTop5(escursioniList);
- *   view.setOnEscursioneClick(exc -> { ... });
- *   view.setOnMeseClick(mese -> { ... });
- *   view.setOnUpgradeClick(() -> { ... });
- *   view.setOnExploreClick(() -> { ... });
- *   root.setCenter(view.getRoot());
- *
- *   // Quando l'utente clicca un mese, il controller carica le escursioni
- *   // e chiama:
- *   view.setEscursioniMese(listaFiltrata);
+ * HomeView view = new HomeView();
+ * view.setUtente(persona);
+ * view.setTop5(escursioniList);
+ * view.setOnEscursioneClick(exc -> { ... });
+ * view.setOnMeseClick(mese -> { ... });
+ * view.setOnUpgradeClick(() -> { ... });
+ * view.setOnExploreClick(() -> { ... });
+ * root.setCenter(view.getRoot());
  */
 public class HomeView {
 
-    // ── Palette ───────────────────────────────────────────────────────────────
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String BANNER_BG    = "#D4EDE0";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
-    private static final String TEXT_DARK    = "#1A1A1A";
+    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
+    private static final String APP_BG       = "#F4EFE6"; // Sabbia
+    private static final String ACCENT       = "#B85D38"; // Terracotta
+    private static final String TEXT_DARK    = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED   = "#807B73"; // Testo secondario
+    // ──────────────────────────────────────────────────────────────────────────
 
     // ── State ─────────────────────────────────────────────────────────────────
     private Persona utenteCorrente;
@@ -70,7 +64,7 @@ public class HomeView {
     public HomeView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
+        page.setStyle("-fx-background-color: " + APP_BG + ";");
 
         // Banner benvenuto
         welcomeBanner = buildWelcomeBanner();
@@ -85,14 +79,13 @@ public class HomeView {
         VBox mesiSection = new VBox(12);
         Label mesiTitle = new Label("Le migliori per mese");
         mesiTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
-        mesiTitle.setTextFill(Color.WHITE);
+        mesiTitle.setTextFill(Color.web(TEXT_DARK)); // Titolo scuro
 
-        // ── MODIFICA QUI ──────────────────────────────────────────────
+        // ── GRIGLIA A 6 COLONNE DELLA TUA AMICA ───────────────────────
         mesiGrid = new GridPane();
         mesiGrid.setHgap(12);
         mesiGrid.setVgap(12);
 
-        // 6 colonne responsive che occupano tutta la larghezza
         for (int col = 0; col < 6; col++) {
             ColumnConstraints cc = new ColumnConstraints();
             cc.setPercentWidth(100.0 / 6);
@@ -111,19 +104,17 @@ public class HomeView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG
                 + "; -fx-border-color: transparent;");
     }
 
     // ── Metodi pubblici chiamati dal Controller ───────────────────────────────
 
-    /** Mostra nome e tipo utente nel banner. */
     public void setUtente(Persona p) {
         this.utenteCorrente = p;
         refreshBanner();
     }
 
-    /** Popola la lista Top 5. */
     public void setTop5(List<EscursionePreview> lista) {
         top5Container.getChildren().clear();
         if (lista == null || lista.isEmpty()) {
@@ -136,7 +127,6 @@ public class HomeView {
         }
     }
 
-    /** Mostra le escursioni filtrate per mese (chiamato dopo onMeseClick). */
     public void setEscursioniMese(List<EscursionePreview> lista) {
         mesiRisultati.getChildren().clear();
         if (lista == null || lista.isEmpty()) {
@@ -155,30 +145,11 @@ public class HomeView {
         }
     }
 
-    /** Callback: clic su una card escursione → il controller apre il dettaglio. */
-    public void setOnEscursioneClick(Consumer<EscursionePreview> handler) {
-        this.onEscursioneClick = handler;
-    }
-
-    /** Callback: clic su un mese → il controller carica le escursioni del mese. */
-    public void setOnMeseClick(IntConsumer handler) {
-        this.onMeseClick = handler;
-    }
-
-    /** Callback: clic su "Upgrade" nel banner. */
-    public void setOnUpgradeClick(Runnable handler) {
-        this.onUpgradeClick = handler;
-    }
-
-    /** Callback: clic su "Vedi tutte →". */
-    public void setOnExploreClick(Runnable handler) {
-        this.onExploreClick = handler;
-    }
-
-    /** Nodo radice da inserire nel BorderPane principale. */
-    public ScrollPane getRoot() {
-        return root;
-    }
+    public void setOnEscursioneClick(Consumer<EscursionePreview> handler) { this.onEscursioneClick = handler; }
+    public void setOnMeseClick(IntConsumer handler)                       { this.onMeseClick = handler; }
+    public void setOnUpgradeClick(Runnable handler)                       { this.onUpgradeClick = handler; }
+    public void setOnExploreClick(Runnable handler)                       { this.onExploreClick = handler; }
+    public ScrollPane getRoot()                                           { return root; }
 
     // ── Costruzione UI ────────────────────────────────────────────────────────
 
@@ -186,7 +157,7 @@ public class HomeView {
         HBox banner = new HBox(14);
         banner.setPadding(new Insets(16, 20, 16, 20));
         banner.setAlignment(Pos.CENTER_LEFT);
-        banner.setStyle("-fx-background-color: " + BANNER_BG + "; -fx-background-radius: 12;");
+        banner.getStyleClass().add("welcome-banner"); // Usa il CSS
 
         // Avatar
         StackPane avatar = buildAvatar("?");
@@ -201,7 +172,7 @@ public class HomeView {
 
         Label status = new Label("Account base");
         status.setFont(Font.font("System", 12));
-        status.setTextFill(Color.web("#555"));
+        status.setTextFill(Color.web(TEXT_MUTED));
         status.setId("lbl-status");
 
         textBox.getChildren().addAll(benvenuto, status);
@@ -214,12 +185,11 @@ public class HomeView {
         upgradeBox.setAlignment(Pos.CENTER_RIGHT);
         Label upgradeMsg = new Label("Passa a Premium: sconto del 20%\nsul noleggio e prenotazione prioritaria.");
         upgradeMsg.setFont(Font.font("System", 11));
-        upgradeMsg.setTextFill(Color.web("#444"));
+        upgradeMsg.setTextFill(Color.web("#666666")); // Grigio scuro
         upgradeMsg.setTextAlignment(TextAlignment.RIGHT);
 
         Button upgradeBtn = new Button("Upgrade ora");
-        upgradeBtn.setFont(Font.font("System", FontWeight.BOLD, 12));
-        styleAccentBtn(upgradeBtn);
+        upgradeBtn.getStyleClass().add("btn-outline-accent"); // Usa il CSS
         upgradeBtn.setOnAction(e -> onUpgradeClick.run());
 
         upgradeBox.getChildren().addAll(upgradeMsg, upgradeBtn);
@@ -242,7 +212,7 @@ public class HomeView {
                                     utenteCorrente.nome.isEmpty() ? "?" :
                                     String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase()));
                 });
-        // aggiorna label benvenuto
+        
         welcomeBanner.getChildren().stream()
                 .filter(n -> n instanceof VBox)
                 .findFirst()
@@ -269,17 +239,19 @@ public class HomeView {
             VBox card = new VBox(6);
             card.setAlignment(Pos.CENTER);
             card.setPadding(new Insets(16, 0, 16, 0));
-            card.setMaxWidth(Double.MAX_VALUE);   // occupa tutta la colonna
+            card.setMaxWidth(Double.MAX_VALUE);   
             card.setCursor(javafx.scene.Cursor.HAND);
-            card.setStyle(styleMonthCard(false));
+            
+            card.getStyleClass().add("month-card"); // Usa il CSS
             card.setId("mese-" + mese);
 
-            GridPane.setFillWidth(card, true);    // si allarga con la colonna
+            GridPane.setFillWidth(card, true);
 
-
+            // La tua amica ha deciso di mostrare solo il nome grande
             Label nameLabel = new Label(nomi[i].toUpperCase());
             nameLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
-            nameLabel.setTextFill(Color.web(ACCENT));
+            // Lascio l'accent color via codice per essere sicuro che prenda il Terracotta corretto
+            nameLabel.setTextFill(Color.web(ACCENT)); 
 
             card.getChildren().addAll(nameLabel);
 
@@ -287,14 +259,6 @@ public class HomeView {
                 meseSelezionato = mese;
                 refreshMesiGrid();
                 onMeseClick.accept(mese);
-            });
-            card.setOnMouseEntered(e -> {
-                if (meseSelezionato != mese)
-                    card.setStyle(styleMonthCard(true));
-            });
-            card.setOnMouseExited(e -> {
-                if (meseSelezionato != mese)
-                    card.setStyle(styleMonthCard(false));
             });
 
             mesiGrid.add(card, i % 6, i / 6);
@@ -307,7 +271,16 @@ public class HomeView {
             mesiGrid.getChildren().stream()
                     .filter(n -> ("mese-" + mese).equals(n.getId()))
                     .findFirst()
-                    .ifPresent(n -> n.setStyle(styleMonthCard(mese == meseSelezionato)));
+                    .ifPresent(n -> {
+                        // Togliamo e mettiamo la classe CSS al click
+                        if (mese == meseSelezionato) {
+                            if (!n.getStyleClass().contains("month-card-active")) {
+                                n.getStyleClass().add("month-card-active");
+                            }
+                        } else {
+                            n.getStyleClass().remove("month-card-active");
+                        }
+                    });
         }
     }
 
@@ -315,9 +288,7 @@ public class HomeView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 16, 12, 16));
-        row.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 10;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 10; -fx-border-width: 0.5;");
-        row.setCursor(javafx.scene.Cursor.HAND);
+        row.getStyleClass().add("top5-row"); // Usa il CSS
 
         Label medalLbl = new Label(medal);
         medalLbl.setFont(Font.font(20));
@@ -325,13 +296,12 @@ public class HomeView {
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
+        
         Label titoloLbl = new Label(exc.titolo);
-        titoloLbl.setFont(Font.font("System", FontWeight.BOLD, 14));
-        titoloLbl.setTextFill(Color.WHITE);
+        titoloLbl.getStyleClass().add("top5-title"); // Usa il CSS
 
         Label subLbl = new Label("Difficoltà: " + exc.difficolta);
-        subLbl.setFont(Font.font("System", 12));
-        subLbl.setTextFill(Color.web(TEXT_MUTED));
+        subLbl.getStyleClass().add("top5-sub"); // Usa il CSS
 
         info.getChildren().addAll(titoloLbl, subLbl);
 
@@ -340,14 +310,6 @@ public class HomeView {
         prezzoLbl.setTextFill(Color.web(ACCENT));
 
         row.getChildren().addAll(medalLbl, info, prezzoLbl);
-
-        // Hover
-        row.setOnMouseEntered(e -> row.setStyle(
-                "-fx-background-color: #1E4030; -fx-background-radius: 10;"
-                + "-fx-border-color: " + ACCENT + "; -fx-border-radius: 10; -fx-border-width: 0.5;"));
-        row.setOnMouseExited(e -> row.setStyle(
-                "-fx-background-color: " + CARD_BG + "; -fx-background-radius: 10;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 10; -fx-border-width: 0.5;"));
         row.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
 
         return row;
@@ -357,21 +319,22 @@ public class HomeView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(10, 14, 10, 14));
-        row.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 8;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 8; -fx-border-width: 0.5;");
-        row.setCursor(javafx.scene.Cursor.HAND);
+        row.getStyleClass().add("mini-card"); // Usa il CSS (assicurati di averlo in style.css come ti avevo indicato)
 
         Label icon = new Label("🏔");
         icon.setFont(Font.font(18));
 
         VBox info = new VBox(2);
         HBox.setHgrow(info, Priority.ALWAYS);
+        
         Label titoloLbl = new Label(exc.titolo);
         titoloLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        titoloLbl.setTextFill(Color.WHITE);
+        titoloLbl.setTextFill(Color.web(TEXT_DARK));
+        
         Label sub = new Label(exc.difficolta);
         sub.setFont(Font.font("System", 11));
         sub.setTextFill(Color.web(TEXT_MUTED));
+        
         info.getChildren().addAll(titoloLbl, sub);
 
         Label prezzo = new Label(String.format("€ %.2f", exc.costo));
@@ -379,13 +342,6 @@ public class HomeView {
         prezzo.setTextFill(Color.web(ACCENT));
 
         row.getChildren().addAll(icon, info, prezzo);
-
-        row.setOnMouseEntered(e -> row.setStyle(
-                "-fx-background-color: #1E4030; -fx-background-radius: 8;"
-                + "-fx-border-color: " + ACCENT + "; -fx-border-radius: 8; -fx-border-width: 0.5;"));
-        row.setOnMouseExited(e -> row.setStyle(
-                "-fx-background-color: " + CARD_BG + "; -fx-background-radius: 8;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 8; -fx-border-width: 0.5;"));
         row.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
 
         return row;
@@ -399,7 +355,7 @@ public class HomeView {
 
         Label titleLbl = new Label(title);
         titleLbl.setFont(Font.font("System", FontWeight.BOLD, 18));
-        titleLbl.setTextFill(Color.WHITE);
+        titleLbl.setTextFill(Color.web(TEXT_DARK)); // Testo Scuro
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -431,24 +387,5 @@ public class HomeView {
         l.setTextFill(Color.web(TEXT_MUTED));
         l.setPadding(new Insets(8, 0, 8, 0));
         return l;
-    }
-
-    private void styleAccentBtn(Button btn) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 16;";
-        String hover = "-fx-background-color: " + ACCENT_HOVER + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 16;";
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(hover));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
-    }
-
-    private String styleMonthCard(boolean active) {
-        if (active) {
-            return "-fx-background-color: rgba(212,103,58,0.12); -fx-background-radius: 10;"
-                    + "-fx-border-color: " + ACCENT + "; -fx-border-radius: 10; -fx-border-width: 1;";
-        }
-        return "-fx-background-color: " + CARD_BG + "; -fx-background-radius: 10;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 10; -fx-border-width: 0.5;";
     }
 }

@@ -15,23 +15,25 @@ import java.util.function.Consumer;
 
 /**
  * ExploreView — griglia di tutte le escursioni con ricerca e filtri per tipologia.
+ * Aggiornata al Light Theme.
  *
  * UTILIZZO DAL CONTROLLER:
- *   ExploreView view = new ExploreView();
- *   view.setEscursioni(lista);
- *   view.setTipologie(tipologieList);
- *   view.setOnEscursioneClick(exc -> controller.apriDettaglio(exc));
- *   view.setOnFiltraPerTipologia(tip -> controller.filtra(tip));
- *   view.setOnRicerca(query -> controller.ricerca(query));
- *   root.setCenter(view.getRoot());
+ * ExploreView view = new ExploreView();
+ * view.setEscursioni(lista);
+ * view.setTipologie(tipologieList);
+ * view.setOnEscursioneClick(exc -> controller.apriDettaglio(exc));
+ * view.setOnFiltraPerTipologia(tip -> controller.filtra(tip));
+ * view.setOnRicerca(query -> controller.ricerca(query));
+ * root.setCenter(view.getRoot());
  */
 public class ExploreView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
+    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
+    private static final String APP_BG     = "#F4EFE6"; // Sabbia
+    private static final String ACCENT     = "#B85D38"; // Terracotta
+    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
+    // ──────────────────────────────────────────────────────────────────────────
 
     private Consumer<EscursionePreview>  onEscursioneClick   = e -> {};
     private Consumer<TipologiaEscursione> onFiltraTipologia  = t -> {};
@@ -46,20 +48,17 @@ public class ExploreView {
     public ExploreView() {
         VBox page = new VBox(16);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
+        page.setStyle("-fx-background-color: " + APP_BG + ";");
 
         // Titolo
         Label titolo = new Label("Esplora escursioni");
-        titolo.setFont(Font.font("System", FontWeight.BOLD, 22));
-        titolo.setTextFill(Color.WHITE);
+        titolo.setFont(Font.font("System", FontWeight.BOLD, 24));
+        titolo.setTextFill(Color.web(TEXT_DARK));
 
         // Barra ricerca
         TextField searchField = new TextField();
         searchField.setPromptText("Cerca per titolo o difficoltà...");
-        searchField.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-text-fill: white;"
-                + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 8 14;");
+        searchField.getStyleClass().add("search-field"); // Usa il CSS
         searchField.setPrefWidth(260);
         searchField.textProperty().addListener((obs, old, val) -> onRicerca.accept(val));
 
@@ -68,6 +67,7 @@ public class ExploreView {
         filtriBar.setAlignment(Pos.CENTER_LEFT);
 
         Button btnTutte = filterBtn("Tutte", null);
+        btnTutte.getStyleClass().add("filter-btn-active"); // Selezionato di default
         filtriBar.getChildren().add(btnTutte);
 
         HBox topBar = new HBox(12, searchField, filtriBar);
@@ -84,13 +84,12 @@ public class ExploreView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG
                 + "; -fx-border-color: transparent;");
     }
 
     // ── API pubblica ──────────────────────────────────────────────────────────
 
-    /** Popola la griglia con le escursioni (tutte o filtrate). */
     public void setEscursioni(List<EscursionePreview> lista) {
         cardsPane.getChildren().clear();
         if (lista == null || lista.isEmpty()) {
@@ -105,9 +104,7 @@ public class ExploreView {
         }
     }
 
-    /** Aggiunge i bottoni filtro per ogni tipologia disponibile nel DB. */
     public void setTipologie(List<TipologiaEscursione> tipologie) {
-        // Mantieni il pulsante "Tutte" già esistente
         if (filtriBar.getChildren().size() > 1) {
             filtriBar.getChildren().subList(1, filtriBar.getChildren().size()).clear();
         }
@@ -130,19 +127,26 @@ public class ExploreView {
         VBox card = new VBox(10);
         card.setPrefWidth(240);
         card.setPadding(new Insets(0, 0, 14, 0));
-        card.setStyle(styleCard(false));
+        card.getStyleClass().add("exc-card"); // Usa il CSS per ombre, sfondi e bordi
         card.setCursor(javafx.scene.Cursor.HAND);
 
-        // Immagine placeholder con gradiente
+        // Immagine placeholder con gradiente aggiornato al Light Theme
         StackPane imgBox = new StackPane();
         imgBox.setPrefHeight(130);
         javafx.scene.shape.Rectangle bg = new javafx.scene.shape.Rectangle(240, 130);
+        // Sfumatura da un azzurrino chiaro a un beige
         bg.setFill(new javafx.scene.paint.LinearGradient(0, 0, 0, 1, true,
                 javafx.scene.paint.CycleMethod.NO_CYCLE,
-                new javafx.scene.paint.Stop(0, Color.web("#2D4A35")),
-                new javafx.scene.paint.Stop(1, Color.web("#0E200E"))));
+                new javafx.scene.paint.Stop(0, Color.web("#EBF5F8")),
+                new javafx.scene.paint.Stop(1, Color.web("#DCD5C6"))));
+        
+        // Per smussare gli angoli superiori dell'immagine
+        bg.setArcWidth(12);
+        bg.setArcHeight(12);
+
         Label icon = new Label("⛰");
         icon.setFont(Font.font(40));
+        icon.setTextFill(Color.web(TEXT_MUTED));
         icon.setOpacity(0.5);
         imgBox.getChildren().addAll(bg, icon);
 
@@ -151,10 +155,8 @@ public class ExploreView {
 
         // Titolo
         Label titoloLbl = new Label(exc.titolo);
-        titoloLbl.setFont(Font.font("System", FontWeight.BOLD, 14));
-        titoloLbl.setTextFill(Color.WHITE);
+        titoloLbl.getStyleClass().add("exc-card-title"); // Usa il CSS
         titoloLbl.setWrapText(true);
-        titoloLbl.setPadding(new Insets(0, 12, 0, 12));
 
         // Prezzo + pulsante
         HBox bottom = new HBox();
@@ -163,12 +165,15 @@ public class ExploreView {
         Label prezzoLbl = new Label(String.format("€ %.2f", exc.costo));
         prezzoLbl.setFont(Font.font("System", FontWeight.BOLD, 15));
         prezzoLbl.setTextFill(Color.web(ACCENT));
+        
         Region sp = new Region();
         HBox.setHgrow(sp, Priority.ALWAYS);
+        
         Button detailBtn = new Button("Dettagli");
         detailBtn.setFont(Font.font("System", 12));
-        styleAccentBtn(detailBtn);
+        detailBtn.getStyleClass().add("btn-accent"); // Usa il CSS
         detailBtn.setOnAction(e -> onEscursioneClick.accept(exc));
+        
         bottom.getChildren().addAll(prezzoLbl, sp, detailBtn);
 
         VBox body = new VBox(8, badge, titoloLbl, bottom);
@@ -176,8 +181,7 @@ public class ExploreView {
 
         card.getChildren().addAll(imgBox, body);
 
-        card.setOnMouseEntered(e -> card.setStyle(styleCard(true)));
-        card.setOnMouseExited(e -> card.setStyle(styleCard(false)));
+        // Il click è in Java, ma gli hover li gestisce in automatico .exc-card:hover nel CSS!
         card.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
 
         return card;
@@ -186,23 +190,25 @@ public class ExploreView {
     private Button filterBtn(String label, TipologiaEscursione tipologia) {
         Button btn = new Button(label);
         btn.setFont(Font.font("System", 12));
-        btn.setStyle(styleFilterBtn(false));
+        btn.getStyleClass().add("filter-btn"); // Usa il CSS
+        
         btn.setOnAction(e -> {
-            // Reset stile tutti i filtri
+            // Reset stile tutti i filtri rimuovendo la classe active
             filtriBar.getChildren().forEach(n -> {
-                if (n instanceof Button) ((Button) n).setStyle(styleFilterBtn(false));
+                if (n instanceof Button) {
+                    n.getStyleClass().remove("filter-btn-active");
+                }
             });
-            btn.setStyle(styleFilterBtn(true));
+            // Aggiungi la classe active a quello cliccato
+            if (!btn.getStyleClass().contains("filter-btn-active")) {
+                btn.getStyleClass().add("filter-btn-active");
+            }
+            
             tipologiaAttiva = tipologia;
             if (tipologia == null) onFiltraReset.run();
             else onFiltraTipologia.accept(tipologia);
         });
-        btn.setOnMouseEntered(ev -> {
-            if (tipologiaAttiva != tipologia) btn.setStyle(styleFilterBtn(true));
-        });
-        btn.setOnMouseExited(ev -> {
-            if (tipologiaAttiva != tipologia) btn.setStyle(styleFilterBtn(false));
-        });
+        
         return btn;
     }
 
@@ -210,39 +216,9 @@ public class ExploreView {
 
     private Label pill(String testo) {
         Label l = new Label(testo);
-        l.setFont(Font.font("System", FontWeight.BOLD, 10));
-        l.setTextFill(Color.web(ACCENT));
-        l.setStyle("-fx-background-color: rgba(212,103,58,0.18); -fx-background-radius: 4;"
-                + "-fx-padding: 3 8;");
+        l.getStyleClass().addAll("badge", "badge-accent"); // Usa il CSS
         l.setAlignment(Pos.CENTER_LEFT);
         VBox.setMargin(l, new Insets(0, 12, 0, 12));
         return l;
-    }
-
-    private String styleCard(boolean hover) {
-        return "-fx-background-color: " + (hover ? "#1E4030" : CARD_BG) + ";"
-                + "-fx-background-radius: 12;"
-                + "-fx-border-color: " + (hover ? ACCENT : "#1E4030") + ";"
-                + "-fx-border-radius: 12; -fx-border-width: 0.5;";
-    }
-
-    private String styleFilterBtn(boolean active) {
-        if (active)
-            return "-fx-background-color: rgba(212,103,58,0.18); -fx-text-fill: " + ACCENT + ";"
-                    + "-fx-border-color: " + ACCENT + "; -fx-border-radius: 20;"
-                    + "-fx-background-radius: 20; -fx-border-width: 1; -fx-padding: 5 14; -fx-cursor: hand;";
-        return "-fx-background-color: rgba(255,255,255,0.06); -fx-text-fill: rgba(255,255,255,0.6);"
-                + "-fx-border-color: rgba(255,255,255,0.15); -fx-border-radius: 20;"
-                + "-fx-background-radius: 20; -fx-border-width: 0.5; -fx-padding: 5 14; -fx-cursor: hand;";
-    }
-
-    private void styleAccentBtn(Button btn) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 6 14;";
-        String hover = "-fx-background-color: " + ACCENT_HOVER + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 6 14;";
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(hover));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
     }
 }
