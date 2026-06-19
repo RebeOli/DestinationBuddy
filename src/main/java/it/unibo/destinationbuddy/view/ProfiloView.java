@@ -15,22 +15,24 @@ import java.util.List;
 
 /**
  * ProfiloView — pagina profilo utente con certificazioni e info account.
+ * Totalmente basata su classi CSS per la UI (Light Theme).
  *
  * UTILIZZO DAL CONTROLLER:
- *   ProfiloView view = new ProfiloView();
- *   view.setUtente(persona);
- *   view.setCertificazioni(lista);
- *   view.setOnAggiungiCertificazione(c -> controller.aggiungi(c));
- *   view.setOnCreaEscursione(() -> controller.apriCreaEscursione()); // solo se guida
- *   root.setCenter(view.getRoot());
+ * ProfiloView view = new ProfiloView();
+ * view.setUtente(persona);
+ * view.setCertificazioni(lista);
+ * view.setOnAggiungiCertificazione(c -> controller.aggiungi(c));
+ * view.setOnCreaEscursione(() -> controller.apriCreaEscursione()); // solo se guida
+ * root.setCenter(view.getRoot());
  */
 public class ProfiloView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
+    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
+    private static final String APP_BG     = "#F4EFE6"; // Sabbia
+    private static final String ACCENT     = "#B85D38"; // Terracotta
+    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
+    // ──────────────────────────────────────────────────────────────────────────
 
     private Runnable                  onCreaEscursione        = () -> {};
     private Runnable                  onAggiungiCert          = () -> {};
@@ -47,14 +49,13 @@ public class ProfiloView {
     public ProfiloView() {
         contentBox = new VBox(20);
         contentBox.setPadding(new Insets(20, 24, 24, 24));
-        contentBox.setStyle("-fx-background-color: " + DARK_BG + ";");
+        contentBox.setStyle("-fx-background-color: " + APP_BG + ";");
         contentBox.getChildren().addAll(buildProfileHeader(), buildCertSection());
 
         root = new ScrollPane(contentBox);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
-                + "; -fx-border-color: transparent;");
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG + "; -fx-border-color: transparent;");
     }
 
     // ── API pubblica ──────────────────────────────────────────────────────────
@@ -65,7 +66,7 @@ public class ProfiloView {
                 + "  ·  " + p.escursioniEffettuate + " escursioni effettuate");
         inizialeLabel.setText(p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase());
 
-        // Mostra pulsante "Crea escursione" solo se è una guida (tipoUtente = false = guida nel vostro schema)
+        // Mostra pulsante "Crea escursione" solo se è una guida
         boolean isGuida = !p.tipoUtente || (p.statoAccount != null && !p.statoAccount.isEmpty());
         contentBox.getChildren().stream()
                 .filter(n -> "btn-crea".equals(n.getId()))
@@ -96,12 +97,11 @@ public class ProfiloView {
         HBox header = new HBox(18);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(20));
-        header.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 14;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 14; -fx-border-width: 0.5;");
+        header.getStyleClass().add("profile-header"); // Usa il CSS
 
         // Avatar
         StackPane avatar = new StackPane();
-        Circle circle = new Circle(32, Color.web(ACCENT));
+        Circle circle = new Circle(32, Color.web(ACCENT)); 
         inizialeLabel.setFont(Font.font("System", FontWeight.BOLD, 22));
         inizialeLabel.setTextFill(Color.WHITE);
         avatar.getChildren().addAll(circle, inizialeLabel);
@@ -112,7 +112,7 @@ public class ProfiloView {
         VBox textBox = new VBox(4);
         HBox.setHgrow(textBox, Priority.ALWAYS);
         nomeLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
-        nomeLabel.setTextFill(Color.WHITE);
+        nomeLabel.setTextFill(Color.web(TEXT_DARK)); 
         subLabel.setFont(Font.font("System", 13));
         subLabel.setTextFill(Color.web(TEXT_MUTED));
         textBox.getChildren().addAll(nomeLabel, subLabel);
@@ -121,9 +121,9 @@ public class ProfiloView {
         Button creaBtn = new Button("+ Nuova escursione");
         creaBtn.setId("btn-crea");
         creaBtn.setFont(Font.font("System", FontWeight.BOLD, 13));
-        styleAccentBtn(creaBtn);
+        creaBtn.getStyleClass().add("btn-accent"); // Usa il CSS
         creaBtn.setOnAction(e -> onCreaEscursione.run());
-        creaBtn.setVisible(false); // nascosto di default, setUtente lo mostra se guida
+        creaBtn.setVisible(false);
 
         header.getChildren().addAll(avatar, textBox, creaBtn);
         return header;
@@ -132,20 +132,22 @@ public class ProfiloView {
     private VBox buildCertSection() {
         VBox section = new VBox(14);
         section.setPadding(new Insets(18));
-        section.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 12;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 12; -fx-border-width: 0.5;");
+        section.getStyleClass().add("card"); // Usa il CSS
 
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
         Label titolo = new Label("Le mie certificazioni");
         titolo.setFont(Font.font("System", FontWeight.BOLD, 16));
-        titolo.setTextFill(Color.WHITE);
+        titolo.setTextFill(Color.web(TEXT_DARK));
+        
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
+        
         Button addBtn = new Button("+ Aggiungi");
         addBtn.setFont(Font.font("System", 12));
-        styleAccentBtn(addBtn);
+        addBtn.getStyleClass().add("btn-accent"); // Usa il CSS
         addBtn.setOnAction(e -> onAggiungiCert.run());
+        
         header.getChildren().addAll(titolo, spacer, addBtn);
 
         section.getChildren().addAll(header, certsContainer);
@@ -156,8 +158,8 @@ public class ProfiloView {
         HBox card = new HBox(14);
         card.setPadding(new Insets(12, 14, 12, 14));
         card.setAlignment(Pos.CENTER_LEFT);
-        card.setStyle("-fx-background-color: #0E2A1A; -fx-background-radius: 10;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 10; -fx-border-width: 0.5;");
+
+        card.getStyleClass().add("cert-row"); 
 
         Label icon = new Label("🏅");
         icon.setFont(Font.font(20));
@@ -170,7 +172,7 @@ public class ProfiloView {
                 : "Certificazione";
         Label tipoLbl = new Label(tipoTesto);
         tipoLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        tipoLbl.setTextFill(Color.WHITE);
+        tipoLbl.setTextFill(Color.web(TEXT_DARK));
 
         String details = "Codice: " + c.nCertificazione
                 + "  ·  Ente: " + c.enteRilasciante
@@ -182,25 +184,19 @@ public class ProfiloView {
 
         info.getChildren().addAll(tipoLbl, detailsLbl);
 
-        // Badge stato validazione
+        // Badge stato validazione con classi CSS Native
         boolean valida = "validata".equalsIgnoreCase(c.statoValidazione);
         Label stato = new Label(valida ? "✓ Validata" : "⏳ In attesa");
-        stato.setFont(Font.font("System", FontWeight.BOLD, 11));
-        stato.setTextFill(Color.web(valida ? "#4AC582" : "#F59E0B"));
-        stato.setStyle("-fx-background-color: " + (valida ? "rgba(74,197,130,0.15)" : "rgba(245,158,11,0.15)")
-                + "; -fx-background-radius: 4; -fx-padding: 3 8;");
+        
+        // Aggiungiamo le classi ".badge" e il colore corretto
+        stato.getStyleClass().add("badge");
+        if(valida) {
+            stato.getStyleClass().add("badge-green");
+        } else {
+            stato.getStyleClass().add("badge-amber");
+        }
 
         card.getChildren().addAll(icon, info, stato);
         return card;
-    }
-
-    private void styleAccentBtn(Button btn) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 16;";
-        String hover = "-fx-background-color: " + ACCENT_HOVER + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 16;";
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(hover));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
     }
 }

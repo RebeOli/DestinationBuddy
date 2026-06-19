@@ -358,3 +358,19 @@
     -fx-font-size: 12px;
     -fx-text-fill: #B03A2E; /* Un rosso che sta bene sul tema chiaro */
 }
+/* ══════════════════════════════════════════════════════════════
+   PROFILO — RIGHE CERTIFICAZIONI
+   ══════════════════════════════════════════════════════════════ */
+   .cert-row {
+    -fx-background-color: #FAFAF9; /* Grigio chiarissimo per staccare dal bianco della card */
+    -fx-background-radius: 8;
+    -fx-border-color: -db-border;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+/* Effetto hover opzionale (se vuoi che si illumini passandoci sopra) */
+.cert-row:hover {
+    -fx-border-color: -db-accent;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);
+}

@@ -16,21 +16,23 @@ import java.util.function.Consumer;
 
 /**
  * AggiungiCertificazioneView — form per aggiungere una certificazione dal profilo.
+ * Aggiornata al Light Theme.
  *
  * UTILIZZO DAL CONTROLLER:
- *   AggiungiCertificazioneView view = new AggiungiCertificazioneView();
- *   view.setTipologie(lista);
- *   view.setOnSalva(cert -> controller.aggiungi(cert));
- *   view.setOnAnnulla(() -> controller.tornaProfilo());
- *   mainView.setContenuto(view.getRoot());
+ * AggiungiCertificazioneView view = new AggiungiCertificazioneView();
+ * view.setTipologie(lista);
+ * view.setOnSalva(cert -> controller.aggiungi(cert));
+ * view.setOnAnnulla(() -> controller.tornaProfilo());
+ * mainView.setContenuto(view.getRoot());
  */
 public class AggiungiCertificazioneView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
+    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
+    private static final String APP_BG     = "#F4EFE6"; // Sabbia
+    private static final String ACCENT     = "#B85D38"; // Terracotta
+    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
+    // ──────────────────────────────────────────────────────────────────────────
 
     private Consumer<Certificazione> onSalva   = c -> {};
     private Runnable                 onAnnulla = () -> {};
@@ -51,7 +53,7 @@ public class AggiungiCertificazioneView {
     public AggiungiCertificazioneView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
+        page.setStyle("-fx-background-color: " + APP_BG + ";");
 
         // Breadcrumb
         Label back = new Label("← Profilo");
@@ -61,27 +63,25 @@ public class AggiungiCertificazioneView {
         back.setOnMouseClicked(e -> onAnnulla.run());
 
         Label titoloPag = new Label("Aggiungi certificazione");
-        titoloPag.setFont(Font.font("System", FontWeight.BOLD, 22));
-        titoloPag.setTextFill(Color.WHITE);
+        titoloPag.setFont(Font.font("System", FontWeight.BOLD, 24));
+        titoloPag.setTextFill(Color.web(TEXT_DARK));
 
         // Card form
         VBox card = new VBox(16);
-        card.setPadding(new Insets(20));
-        card.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 14;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 14; -fx-border-width: 0.5;");
+        card.setPadding(new Insets(24));
+        card.getStyleClass().add("card"); // Usa il CSS!
 
         // Tipologia (ComboBox)
         VBox tipologiaGroup = fieldGroup("Tipologia certificazione");
         tipologiaBox.setMaxWidth(Double.MAX_VALUE);
         tipologiaBox.setPromptText("Seleziona tipologia...");
-        tipologiaBox.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8;");
+        tipologiaBox.getStyleClass().add("form-field"); // Usa il CSS per sfondi chiari
         tipologiaBox.setCellFactory(lv -> new ListCell<>() {
             @Override
             protected void updateItem(TipologiaCertificazione item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? null : item.idCertificazione + " — " + item.livello);
+                setTextFill(Color.web(TEXT_DARK));
             }
         });
         tipologiaBox.setButtonCell(new ListCell<>() {
@@ -89,7 +89,7 @@ public class AggiungiCertificazioneView {
             protected void updateItem(TipologiaCertificazione item, boolean empty) {
                 super.updateItem(item, empty);
                 setText(empty || item == null ? "Seleziona tipologia..." : item.idCertificazione + " — " + item.livello);
-                setTextFill(item == null ? Color.web(TEXT_MUTED) : Color.WHITE);
+                setTextFill(item == null ? Color.web(TEXT_MUTED) : Color.web(TEXT_DARK));
             }
         });
         tipologiaGroup.getChildren().add(tipologiaBox);
@@ -118,16 +118,16 @@ public class AggiungiCertificazioneView {
 
         dateRow.getChildren().addAll(dataRilascioGroup, dataScadenzaGroup);
 
-        // Info stato validazione
+        // Info stato validazione (Azzurro per tema chiaro)
         Label infoLbl = new Label("ℹ La certificazione sarà in stato \"in attesa\" fino alla verifica da parte dell'amministratore.");
         infoLbl.setFont(Font.font("System", 12));
-        infoLbl.setTextFill(Color.web("#60A5FA"));
+        infoLbl.setTextFill(Color.web("#2874A6")); // Azzurro scuro
         infoLbl.setWrapText(true);
-        infoLbl.setStyle("-fx-background-color: rgba(96,165,250,0.1); -fx-background-radius: 8; -fx-padding: 10 14;");
+        infoLbl.setStyle("-fx-background-color: #EBF5F8; -fx-background-radius: 8; -fx-padding: 10 14; -fx-border-color: #B5D2D9; -fx-border-radius: 8;");
 
         // Errore
         errorLabel.setFont(Font.font("System", 12));
-        errorLabel.setTextFill(Color.web("#EF4444"));
+        errorLabel.setTextFill(Color.web("#B03A2E")); // Rosso per tema chiaro
         errorLabel.setVisible(false);
 
         card.getChildren().addAll(tipologiaGroup, nCertGroup, enteGroup, dateRow, infoLbl, errorLabel);
@@ -137,12 +137,11 @@ public class AggiungiCertificazioneView {
         actions.setAlignment(Pos.CENTER_LEFT);
 
         Button salvaBtn = new Button("Aggiungi certificazione");
-        salvaBtn.setFont(Font.font("System", FontWeight.BOLD, 14));
-        styleAccentBtn(salvaBtn);
+        salvaBtn.getStyleClass().add("btn-accent"); // Usa il CSS
         salvaBtn.setOnAction(e -> tentaSalva());
 
         Button annullaBtn = new Button("Annulla");
-        styleGhostBtn(annullaBtn);
+        annullaBtn.getStyleClass().add("btn-ghost"); // Usa il CSS
         annullaBtn.setOnAction(e -> onAnnulla.run());
 
         actions.getChildren().addAll(salvaBtn, annullaBtn);
@@ -152,8 +151,7 @@ public class AggiungiCertificazioneView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
-                + "; -fx-border-color: transparent;");
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG + "; -fx-border-color: transparent;");
     }
 
     // ── API pubblica ──────────────────────────────────────────────
@@ -216,8 +214,8 @@ public class AggiungiCertificazioneView {
     private VBox fieldGroup(String labelTesto) {
         VBox group = new VBox(5);
         Label lbl = new Label(labelTesto);
-        lbl.setFont(Font.font("System", 11));
-        lbl.setTextFill(Color.web(TEXT_MUTED));
+        lbl.setFont(Font.font("System", FontWeight.BOLD, 12));
+        lbl.setTextFill(Color.web(TEXT_DARK));
         group.getChildren().add(lbl);
         return group;
     }
@@ -225,33 +223,11 @@ public class AggiungiCertificazioneView {
     private void styleField(TextField f, String prompt) {
         f.setPromptText(prompt);
         f.setMaxWidth(Double.MAX_VALUE);
-        f.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-text-fill: white;"
-                + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 10 12;");
+        f.getStyleClass().add("form-field"); // Usa il CSS
     }
 
     private void styleDatePicker(DatePicker dp) {
         dp.setMaxWidth(Double.MAX_VALUE);
-        dp.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8;");
-    }
-
-    private void styleAccentBtn(Button btn) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 10 22; -fx-font-weight: bold;";
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(base.replace(ACCENT, ACCENT_HOVER)));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
-    }
-
-    private void styleGhostBtn(Button btn) {
-        String s = "-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white;"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 18;";
-        btn.setStyle(s);
-        btn.setOnMouseEntered(e -> btn.setStyle(s.replace("0.07","0.14")));
-        btn.setOnMouseExited(e -> btn.setStyle(s));
+        dp.getStyleClass().add("form-field"); // Usa il CSS
     }
 }
