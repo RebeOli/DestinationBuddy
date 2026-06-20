@@ -75,11 +75,14 @@ public class Abbonamento {
     }
 
     public static final class DAO {
-        public static void acquistaAbbonamento(Connection connection, double costoMensile, int durata, String cf) {
+        public static boolean acquistaAbbonamento(Connection connection, double costoMensile, int durata, String cf) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.SOTTOSCRIVI_ABBONAMENTO, costoMensile, durata, cf);
             ) {
                 statement.executeUpdate();
+                return true;
+            } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+                return false;
             } catch (Exception e) {
                 throw new DAOException(e);
             }

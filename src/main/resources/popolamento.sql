@@ -57,3 +57,8 @@ VALUES ('Giornata Fantastica', 'BNCGIA90B41F205Z', 5, 'foto_gransasso.jpg', 'Pan
 -- Anna compila il riepilogo a fine giornata
 INSERT INTO riepiloga (ID_escursione, data_inizio, data_fine, temperatura_rilevata, precipitazioni, CF)
 VALUES ('ESC-001', '2024-07-05', '2024-07-05', 18.5, 0.0, 'NNANNA85M22F205Z');
+-- ==========================================
+-- 5. POPOLAMENTO TIPOLOGIE ABBONAMENTO
+-- ==========================================
+INSERT INTO TIPOLOGIE_ABBONAMENTO (costo_mensile, durata) 
+VALUES (9.90, 1), (7.90, 6), (5.90, 12);

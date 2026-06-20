@@ -8,10 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 import java.time.Month;
@@ -21,70 +18,43 @@ import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-/**
- * HomeView — schermata principale di Destination Buddy.
- *
- * UTILIZZO DAL CONTROLLER:
- * HomeView view = new HomeView();
- * view.setUtente(persona);
- * view.setTop5(escursioniList);
- * view.setOnEscursioneClick(exc -> { ... });
- * view.setOnMeseClick(mese -> { ... });
- * view.setOnUpgradeClick(() -> { ... });
- * view.setOnExploreClick(() -> { ... });
- * root.setCenter(view.getRoot());
- */
 public class HomeView {
 
-    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
-    private static final String APP_BG       = "#F4EFE6"; // Sabbia
-    private static final String ACCENT       = "#B85D38"; // Terracotta
-    private static final String TEXT_DARK    = "#2C2A26"; // Testo scuro
-    private static final String TEXT_MUTED   = "#807B73"; // Testo secondario
-    // ──────────────────────────────────────────────────────────────────────────
-
-    // ── State ─────────────────────────────────────────────────────────────────
     private Persona utenteCorrente;
     private int meseSelezionato = -1;
 
-    // ── Callbacks verso il Controller ─────────────────────────────────────────
     private Consumer<EscursionePreview> onEscursioneClick = e -> {};
     private IntConsumer                 onMeseClick       = m -> {};
-    private Runnable                    onUpgradeClick    = () -> {};
     private Runnable                    onExploreClick    = () -> {};
+    private Runnable                    onUpgradeClick    = () -> {};
 
-    // ── UI roots ─────────────────────────────────────────────────────────────
     private final ScrollPane root;
     private final VBox        top5Container;
     private final GridPane    mesiGrid;
     private final VBox        mesiRisultati;
     private final HBox        welcomeBanner;
+    private VBox               upgradeBox;
 
-    // ─────────────────────────────────────────────────────────────────────────
     public HomeView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + APP_BG + ";");
 
-        // Banner benvenuto
         welcomeBanner = buildWelcomeBanner();
 
-        // Sezione Top 5
+        // Top 5
         VBox top5Section = new VBox(12);
-        HBox top5Header = sectionHeader("Top 5 Escursioni", "Vedi tutte →", onExploreClick);
+        HBox top5Header = sectionHeader("Top 5 Escursioni", "Vedi tutte →");
         top5Container = new VBox(10);
         top5Section.getChildren().addAll(top5Header, top5Container);
 
-        // Sezione mesi
+        // Mesi
         VBox mesiSection = new VBox(12);
         Label mesiTitle = new Label("Le migliori per mese");
-        mesiTitle.setFont(Font.font("System", FontWeight.BOLD, 18));
-        mesiTitle.setTextFill(Color.web(TEXT_DARK)); // Titolo scuro
+        mesiTitle.getStyleClass().add("section-title");
 
-        // ── GRIGLIA A 6 COLONNE DELLA TUA AMICA ───────────────────────
         mesiGrid = new GridPane();
-        mesiGrid.setHgap(12);
-        mesiGrid.setVgap(12);
+        mesiGrid.setHgap(10);
+        mesiGrid.setVgap(10);
 
         for (int col = 0; col < 6; col++) {
             ColumnConstraints cc = new ColumnConstraints();
@@ -92,11 +62,11 @@ public class HomeView {
             cc.setFillWidth(true);
             mesiGrid.getColumnConstraints().add(cc);
         }
-        // ─────────────────────────────────────────────────────────────
-
         buildMesiGrid();
 
-        mesiRisultati = new VBox(8);
+        mesiRisultati = new VBox(10);
+        VBox.setVgrow(mesiRisultati, Priority.ALWAYS);
+
         mesiSection.getChildren().addAll(mesiTitle, mesiGrid, mesiRisultati);
 
         page.getChildren().addAll(welcomeBanner, top5Section, mesiSection);
@@ -104,11 +74,10 @@ public class HomeView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG
-                + "; -fx-border-color: transparent;");
+        root.getStyleClass().add("scroll-pane");
     }
 
-    // ── Metodi pubblici chiamati dal Controller ───────────────────────────────
+    // ── API pubblica ──────────────────────────────────────────────
 
     public void setUtente(Persona p) {
         this.utenteCorrente = p;
@@ -136,43 +105,54 @@ public class HomeView {
         String nomeMese = meseSelezionato > 0
                 ? Month.of(meseSelezionato).getDisplayName(TextStyle.FULL, Locale.ITALIAN)
                 : "";
-        Label header = new Label(lista.size() + " escursion" + (lista.size() == 1 ? "e" : "i") + " in " + nomeMese);
-        header.setFont(Font.font("System", 13));
-        header.setTextFill(Color.web(TEXT_MUTED));
+
+        Label header = new Label(lista.size() + " escursion"
+                + (lista.size() == 1 ? "e" : "i") + " in " + nomeMese);
+        header.getStyleClass().add("text-muted");
         mesiRisultati.getChildren().add(header);
+
         for (EscursionePreview e : lista) {
             mesiRisultati.getChildren().add(buildMiniCard(e));
         }
     }
 
-    public void setOnEscursioneClick(Consumer<EscursionePreview> handler) { this.onEscursioneClick = handler; }
-    public void setOnMeseClick(IntConsumer handler)                       { this.onMeseClick = handler; }
-    public void setOnUpgradeClick(Runnable handler)                       { this.onUpgradeClick = handler; }
-    public void setOnExploreClick(Runnable handler)                       { this.onExploreClick = handler; }
-    public ScrollPane getRoot()                                           { return root; }
+    public void setOnEscursioneClick(Consumer<EscursionePreview> h) { this.onEscursioneClick = h; }
+    public void setOnMeseClick(IntConsumer h)                        { this.onMeseClick       = h; }
+    public void setOnExploreClick(Runnable h)                        { this.onExploreClick    = h; }
+    public void setOnUpgradeClick(Runnable h)                        { this.onUpgradeClick    = h; }
+    public ScrollPane getRoot()                                       { return root; }
 
-    // ── Costruzione UI ────────────────────────────────────────────────────────
+    /**
+     * Mostra o nasconde il box "Passa a Premium" del banner.
+     * Chiamare con false se l'utente ha già un abbonamento attivo,
+     * true altrimenti (o se l'abbonamento è scaduto).
+     */
+    public void setHaAbbonamentoAttivo(boolean attivo) {
+        if (upgradeBox != null) {
+            upgradeBox.setVisible(!attivo);
+            upgradeBox.setManaged(!attivo);
+        }
+    }
+
+    // ── UI ────────────────────────────────────────────────────────
 
     private HBox buildWelcomeBanner() {
         HBox banner = new HBox(14);
         banner.setPadding(new Insets(16, 20, 16, 20));
         banner.setAlignment(Pos.CENTER_LEFT);
-        banner.getStyleClass().add("welcome-banner"); // Usa il CSS
+        banner.getStyleClass().add("welcome-banner");
 
-        // Avatar
         StackPane avatar = buildAvatar("?");
         banner.getChildren().add(avatar);
 
-        // Testo benvenuto
         VBox textBox = new VBox(3);
         Label benvenuto = new Label("Benvenuto!");
-        benvenuto.setFont(Font.font("System", FontWeight.BOLD, 15));
-        benvenuto.setTextFill(Color.web(TEXT_DARK));
+        benvenuto.getStyleClass().add("auth-title");
+        benvenuto.setStyle("-fx-font-size: 15px;");
         benvenuto.setId("lbl-benvenuto");
 
-        Label status = new Label("Account base");
-        status.setFont(Font.font("System", 12));
-        status.setTextFill(Color.web(TEXT_MUTED));
+        Label status = new Label("Esplora le nostre escursioni");
+        status.getStyleClass().add("text-muted");
         status.setId("lbl-status");
 
         textBox.getChildren().addAll(benvenuto, status);
@@ -180,16 +160,14 @@ public class HomeView {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Upgrade block
-        VBox upgradeBox = new VBox(6);
+        upgradeBox = new VBox(6);
         upgradeBox.setAlignment(Pos.CENTER_RIGHT);
         Label upgradeMsg = new Label("Passa a Premium: sconto del 20%\nsul noleggio e prenotazione prioritaria.");
-        upgradeMsg.setFont(Font.font("System", 11));
-        upgradeMsg.setTextFill(Color.web("#666666")); // Grigio scuro
+        upgradeMsg.getStyleClass().add("text-muted");
         upgradeMsg.setTextAlignment(TextAlignment.RIGHT);
 
         Button upgradeBtn = new Button("Upgrade ora");
-        upgradeBtn.getStyleClass().add("btn-outline-accent"); // Usa il CSS
+        upgradeBtn.getStyleClass().add("btn-accent");
         upgradeBtn.setOnAction(e -> onUpgradeClick.run());
 
         upgradeBox.getChildren().addAll(upgradeMsg, upgradeBtn);
@@ -201,57 +179,43 @@ public class HomeView {
     private void refreshBanner() {
         if (utenteCorrente == null) return;
         welcomeBanner.getChildren().stream()
-                .filter(n -> n instanceof StackPane)
-                .findFirst()
+                .filter(n -> n instanceof StackPane).findFirst()
                 .ifPresent(n -> {
                     StackPane sp = (StackPane) n;
-                    sp.getChildren().stream()
-                            .filter(c -> c instanceof Label)
-                            .findFirst()
+                    sp.getChildren().stream().filter(c -> c instanceof Label).findFirst()
                             .ifPresent(c -> ((Label) c).setText(
-                                    utenteCorrente.nome.isEmpty() ? "?" :
-                                    String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase()));
+                                    utenteCorrente.nome.isEmpty() ? "?"
+                                    : String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase()));
                 });
-        
         welcomeBanner.getChildren().stream()
-                .filter(n -> n instanceof VBox)
-                .findFirst()
-                .ifPresent(n -> {
-                    VBox vb = (VBox) n;
-                    vb.getChildren().forEach(c -> {
-                        if (c instanceof Label) {
-                            Label l = (Label) c;
-                            if ("lbl-benvenuto".equals(l.getId())) {
-                                l.setText("Bentornato, " + utenteCorrente.nome + "!");
-                            } else if ("lbl-status".equals(l.getId())) {
-                                l.setText(utenteCorrente.tipoUtente ? "Account base" : "Account Premium");
-                            }
-                        }
-                    });
-                });
+                .filter(n -> n instanceof VBox).findFirst()
+                .ifPresent(n -> ((VBox) n).getChildren().forEach(c -> {
+                    if (c instanceof Label l) {
+                        if ("lbl-benvenuto".equals(l.getId()))
+                            l.setText("Bentornato, " + utenteCorrente.nome + "!");
+                        else if ("lbl-status".equals(l.getId()))
+                            l.setText(utenteCorrente.tipoUtente ? "Account base" : "Account Premium");
+                    }
+                }));
     }
 
     private void buildMesiGrid() {
-        String[] nomi = {"Gen","Feb","Mar","Apr","Mag","Giu",
-                        "Lug","Ago","Set","Ott","Nov","Dic"};
+        String[] nomi = {"Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"};
         for (int i = 0; i < 12; i++) {
             int mese = i + 1;
             VBox card = new VBox(6);
             card.setAlignment(Pos.CENTER);
             card.setPadding(new Insets(16, 0, 16, 0));
-            card.setMaxWidth(Double.MAX_VALUE);   
+            card.setMaxWidth(Double.MAX_VALUE);
             card.setCursor(javafx.scene.Cursor.HAND);
-            
-            card.getStyleClass().add("month-card"); // Usa il CSS
+            card.getStyleClass().add("month-card");
             card.setId("mese-" + mese);
-
             GridPane.setFillWidth(card, true);
 
-            // La tua amica ha deciso di mostrare solo il nome grande
+
             Label nameLabel = new Label(nomi[i].toUpperCase());
-            nameLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
-            // Lascio l'accent color via codice per essere sicuro che prenda il Terracotta corretto
-            nameLabel.setTextFill(Color.web(ACCENT)); 
+            nameLabel.getStyleClass().add("month-num");
+            nameLabel.setId("month-num-lbl");
 
             card.getChildren().addAll(nameLabel);
 
@@ -271,110 +235,82 @@ public class HomeView {
             mesiGrid.getChildren().stream()
                     .filter(n -> ("mese-" + mese).equals(n.getId()))
                     .findFirst()
-                    .ifPresent(n -> {
-                        // Togliamo e mettiamo la classe CSS al click
-                        if (mese == meseSelezionato) {
-                            if (!n.getStyleClass().contains("month-card-active")) {
-                                n.getStyleClass().add("month-card-active");
-                            }
-                        } else {
-                            n.getStyleClass().remove("month-card-active");
-                        }
-                    });
+                    .ifPresent(n -> n.getStyleClass().setAll(mese == meseSelezionato
+                            ? "month-card-active" : "month-card"));
         }
     }
 
     private HBox buildTop5Row(EscursionePreview exc, String medal) {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(12, 16, 12, 16));
-        row.getStyleClass().add("top5-row"); // Usa il CSS
+        row.getStyleClass().add("top5-row");
+        row.setCursor(javafx.scene.Cursor.HAND);
 
         Label medalLbl = new Label(medal);
-        medalLbl.setFont(Font.font(20));
-        medalLbl.setMinWidth(32);
+        medalLbl.setStyle("-fx-font-size: 20px; -fx-min-width: 32px;");
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
-        
         Label titoloLbl = new Label(exc.titolo);
-        titoloLbl.getStyleClass().add("top5-title"); // Usa il CSS
-
+        titoloLbl.getStyleClass().add("top5-title");
         Label subLbl = new Label("Difficoltà: " + exc.difficolta);
-        subLbl.getStyleClass().add("top5-sub"); // Usa il CSS
-
+        subLbl.getStyleClass().add("top5-sub");
         info.getChildren().addAll(titoloLbl, subLbl);
 
         Label prezzoLbl = new Label(String.format("€ %.2f", exc.costo));
-        prezzoLbl.setFont(Font.font("System", FontWeight.BOLD, 14));
-        prezzoLbl.setTextFill(Color.web(ACCENT));
+        prezzoLbl.getStyleClass().add("text-price");
 
         row.getChildren().addAll(medalLbl, info, prezzoLbl);
         row.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
-
         return row;
     }
 
     private HBox buildMiniCard(EscursionePreview exc) {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(10, 14, 10, 14));
-        row.getStyleClass().add("mini-card"); // Usa il CSS (assicurati di averlo in style.css come ti avevo indicato)
+        row.getStyleClass().add("top5-row");
+        row.setCursor(javafx.scene.Cursor.HAND);
 
         Label icon = new Label("🏔");
-        icon.setFont(Font.font(18));
 
         VBox info = new VBox(2);
         HBox.setHgrow(info, Priority.ALWAYS);
-        
         Label titoloLbl = new Label(exc.titolo);
-        titoloLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        titoloLbl.setTextFill(Color.web(TEXT_DARK));
-        
+        titoloLbl.getStyleClass().addAll("top5-title");
         Label sub = new Label(exc.difficolta);
-        sub.setFont(Font.font("System", 11));
-        sub.setTextFill(Color.web(TEXT_MUTED));
-        
+        sub.getStyleClass().add("text-muted");
         info.getChildren().addAll(titoloLbl, sub);
 
         Label prezzo = new Label(String.format("€ %.2f", exc.costo));
-        prezzo.setFont(Font.font("System", FontWeight.BOLD, 13));
-        prezzo.setTextFill(Color.web(ACCENT));
+        prezzo.getStyleClass().add("text-price");
 
         row.getChildren().addAll(icon, info, prezzo);
         row.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
-
         return row;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────
 
-    private HBox sectionHeader(String title, String linkText, Runnable linkAction) {
+    private HBox sectionHeader(String title, String linkText) {
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-
         Label titleLbl = new Label(title);
-        titleLbl.setFont(Font.font("System", FontWeight.BOLD, 18));
-        titleLbl.setTextFill(Color.web(TEXT_DARK)); // Testo Scuro
-
+        titleLbl.getStyleClass().add("section-title");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-
         Label link = new Label(linkText);
-        link.setFont(Font.font("System", 12));
-        link.setTextFill(Color.web(ACCENT));
+        link.getStyleClass().add("switch-link");
         link.setCursor(javafx.scene.Cursor.HAND);
         link.setOnMouseClicked(e -> onExploreClick.run());
-
         header.getChildren().addAll(titleLbl, spacer, link);
         return header;
     }
 
     private StackPane buildAvatar(String iniziale) {
-        Circle circle = new Circle(22, Color.web(ACCENT));
+        Circle circle = new Circle(22);
+        circle.setStyle("-fx-fill: -db-accent;");
         Label lbl = new Label(iniziale);
-        lbl.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lbl.setTextFill(Color.WHITE);
+        lbl.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;");
         StackPane sp = new StackPane(circle, lbl);
         sp.setMaxSize(44, 44);
         sp.setMinSize(44, 44);
@@ -383,8 +319,7 @@ public class HomeView {
 
     private Label placeholderLabel(String testo) {
         Label l = new Label(testo);
-        l.setFont(Font.font("System", 13));
-        l.setTextFill(Color.web(TEXT_MUTED));
+        l.getStyleClass().add("text-muted");
         l.setPadding(new Insets(8, 0, 8, 0));
         return l;
     }

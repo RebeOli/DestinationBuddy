@@ -10,6 +10,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import it.unibo.destinationbuddy.data.Abbonamento;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 import java.util.List;
 
@@ -36,6 +39,7 @@ public class ProfiloView {
 
     private Runnable                  onCreaEscursione        = () -> {};
     private Runnable                  onAggiungiCert          = () -> {};
+    private Runnable onVaiPremium = () -> {};
 
     private final ScrollPane root;
     private final VBox        contentBox;
@@ -45,13 +49,14 @@ public class ProfiloView {
     private final Label subLabel        = new Label();
     private final Label inizialeLabel   = new Label();
     private final VBox  certsContainer  = new VBox(10);
+    private final VBox abbonamentoBox = new VBox(10);
+    private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ProfiloView() {
         contentBox = new VBox(20);
         contentBox.setPadding(new Insets(20, 24, 24, 24));
         contentBox.setStyle("-fx-background-color: " + APP_BG + ";");
-        contentBox.getChildren().addAll(buildProfileHeader(), buildCertSection());
-
+        contentBox.getChildren().addAll(buildProfileHeader(), buildAbbonamentoSection(), buildCertSection());
         root = new ScrollPane(contentBox);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -198,5 +203,82 @@ public class ProfiloView {
 
         card.getChildren().addAll(icon, info, stato);
         return card;
+    }
+    public void setOnVaiPremium(Runnable handler) { this.onVaiPremium = handler; }
+
+    public void setAbbonamento(Optional<Abbonamento> abbonamentoOpt) {
+        abbonamentoBox.getChildren().clear();
+
+        if (abbonamentoOpt == null || abbonamentoOpt.isEmpty()) {
+            HBox row = new HBox(12);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.getStyleClass().add("cert-row");
+            row.setPadding(new Insets(14));
+
+            VBox info = new VBox(3);
+            HBox.setHgrow(info, Priority.ALWAYS);
+            Label titolo = new Label("Nessun abbonamento attivo");
+            titolo.setFont(Font.font("System", FontWeight.BOLD, 13));
+            titolo.setTextFill(Color.web(TEXT_DARK));
+            Label sub = new Label("Passa a Premium per sconti sul noleggio e prenotazioni prioritarie.");
+            sub.setFont(Font.font("System", 11));
+            sub.setTextFill(Color.web(TEXT_MUTED));
+            info.getChildren().addAll(titolo, sub);
+
+            Button upgradeBtn = new Button("Scopri Premium");
+            upgradeBtn.getStyleClass().add("btn-accent");
+            upgradeBtn.setOnAction(e -> onVaiPremium.run());
+
+            row.getChildren().addAll(info, upgradeBtn);
+            abbonamentoBox.getChildren().add(row);
+            return;
+        }
+
+        Abbonamento a = abbonamentoOpt.get();
+        boolean attivo = a.isAttivo();
+        var dataScadenza = a.dataAbbonamento.plusMonths(a.durata);
+
+        HBox row = new HBox(14);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getStyleClass().add("cert-row");
+        row.setPadding(new Insets(14));
+
+        Label icon = new Label("👑");
+        icon.setFont(Font.font(20));
+
+        VBox info = new VBox(3);
+        HBox.setHgrow(info, Priority.ALWAYS);
+        Label titolo = new Label(String.format("Piano %d mes%s — €%.2f/mese",
+                a.durata, a.durata == 1 ? "e" : "i", a.costoMensile));
+        titolo.setFont(Font.font("System", FontWeight.BOLD, 13));
+        titolo.setTextFill(Color.web(TEXT_DARK));
+
+        String details = "Sottoscritto il " + a.dataAbbonamento.format(DATA_FMT)
+                + "  ·  " + (attivo ? "Scade" : "Scaduto") + " il " + dataScadenza.format(DATA_FMT)
+                + "  ·  Pagamento: " + a.dataPagamento.format(DATA_FMT);
+        Label detailsLbl = new Label(details);
+        detailsLbl.setFont(Font.font("System", 11));
+        detailsLbl.setTextFill(Color.web(TEXT_MUTED));
+
+        info.getChildren().addAll(titolo, detailsLbl);
+
+        Label stato = new Label(attivo ? "✓ Attivo" : "Scaduto");
+        stato.getStyleClass().add("badge");
+        stato.getStyleClass().add(attivo ? "badge-green" : "badge-amber");
+
+        row.getChildren().addAll(icon, info, stato);
+        abbonamentoBox.getChildren().add(row);
+    }
+    private VBox buildAbbonamentoSection() {
+        VBox section = new VBox(14);
+        section.setPadding(new Insets(18));
+        section.getStyleClass().add("card");
+
+        Label titolo = new Label("Il mio abbonamento");
+        titolo.setFont(Font.font("System", FontWeight.BOLD, 16));
+        titolo.setTextFill(Color.web(TEXT_DARK));
+
+        section.getChildren().addAll(titolo, abbonamentoBox);
+        return section;
     }
 }

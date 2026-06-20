@@ -298,13 +298,13 @@ public final class Queries {
     public static final String FIND_ESCURSIONE =
         """
         SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo,
-            (E.numero_partecipanti - COUNT(DISTINCT p.CF)) AS posti_disponibili,
+            (E.numero_partecipanti - COUNT(DISTINCT PR.CF)) AS posti_disponibili,
             E.data_apertura_iscrizione, E.data_chiusura_iscrizione,
             P.nome AS guida_nome, P.cognome AS guida_cognome, A.ID_tipologia
         FROM ESCURSIONI E
         JOIN PERSONE P ON E.Guida_CF = P.CF
         JOIN assume A ON E.ID_escursione = A.ID_escursione
-        LEFT JOIN prenota p ON E.ID_escursione = p.ID_escursione
+        LEFT JOIN prenota PR ON E.ID_escursione = PR.ID_escursione
         WHERE E.ID_escursione = ?
         GROUP BY E.ID_escursione, E.titolo, E.difficolta, E.costo, E.numero_partecipanti,
                 E.data_apertura_iscrizione, E.data_chiusura_iscrizione, P.nome, P.cognome, A.ID_tipologia

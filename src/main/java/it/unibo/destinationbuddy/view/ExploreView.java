@@ -7,6 +7,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -137,13 +138,8 @@ public class ExploreView {
         // Sfumatura da un azzurrino chiaro a un beige
         bg.setFill(new javafx.scene.paint.LinearGradient(0, 0, 0, 1, true,
                 javafx.scene.paint.CycleMethod.NO_CYCLE,
-                new javafx.scene.paint.Stop(0, Color.web("#EBF5F8")),
-                new javafx.scene.paint.Stop(1, Color.web("#DCD5C6"))));
-        
-        // Per smussare gli angoli superiori dell'immagine
-        bg.setArcWidth(12);
-        bg.setArcHeight(12);
-
+                new Stop(0, Color.web("#2D4A35")),
+                new Stop(1, Color.web("#0E200E"))));
         Label icon = new Label("⛰");
         icon.setFont(Font.font(40));
         icon.setTextFill(Color.web(TEXT_MUTED));
