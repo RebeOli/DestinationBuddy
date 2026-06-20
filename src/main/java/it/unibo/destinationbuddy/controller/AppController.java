@@ -27,7 +27,7 @@ public class AppController {
     private final BookingView                 bookingView   = new BookingView();
     private final CreaEscursioneView          creaView      = new CreaEscursioneView();
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
-    private final PremiumView premiumView = new PremiumView();
+    private final PremiumView                 premiumView   = new PremiumView();
 
     private Persona utenteCorrente = null;
 
@@ -62,7 +62,7 @@ public class AppController {
         exploreView.setEscursioni(escursioniModel.getAll());
 
         mainView.setAutenticato(false);
-        mainView.setContenuto(homeView.getRoot());
+        mostraHome();
         mostraScenaMain();
     }
 
@@ -94,11 +94,13 @@ public class AppController {
                     .orElse(false);
             homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
         } else {
-            homeView.setHaAbbonamentoAttivo(false); // utente non loggato → mostra comunque l'invito
+            homeView.setHaAbbonamentoAttivo(true); // utente non loggato → nascondi il box upgrade
         }
     }
-    private void mostraExplore() { 
-        mainView.setContenuto(exploreView.getRoot()); mainView.setNavAttiva("explore"); 
+
+    private void mostraExplore() {
+        mainView.setContenuto(exploreView.getRoot());
+        mainView.setNavAttiva("explore");
     }
 
     private void mostraProfilo() {
@@ -106,7 +108,6 @@ public class AppController {
             profiloView.setUtente(utenteCorrente);
             profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
             profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
-
         }
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
@@ -131,11 +132,13 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
-                    mainView.setUtente(persona); // Questo aggiornerà la barra laterale!
+                    mainView.setUtente(persona);
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
                     profiloView.setUtente(persona);
 
+                    // Protegge il flusso login: se le certificazioni falliscono,
+                    // l'app non deve bloccarsi prima di mostrare la Home.
                     try {
                         profiloView.setCertificazioni(
                             certsModel.getCertificazioniUtente(persona.cf));
@@ -143,11 +146,7 @@ public class AppController {
                         System.out.println("⚠️ Errore nel caricare le certificazioni: " + ex.getMessage());
                     }
 
-                    if (persona.isAmministratore()) {
-                        mostraAdmin(); // Se è admin, lo butti dritto nel Pannello Amministratore!
-                    } else {
-                        mostraHome();  // Altrimenti vede le Top 5 escursioni
-                    }
+                    mostraHome();
                 },
                 () -> authView.mostraErroreLogin("Email o password errati.")
             )
@@ -204,6 +203,8 @@ public class AppController {
             homeView.setEscursioniMese(escursioniModel.getEscursioniPerMese(mese))
         );
         homeView.setOnExploreClick(() -> mostraExplore());
+
+        // Upgrade: se non sei loggato ti manda al login; se sei loggato apre i piani Premium
         homeView.setOnUpgradeClick(() -> {
             if (utenteCorrente == null) {
                 mostraLogin();
@@ -316,11 +317,7 @@ public class AppController {
             aggCertView.setTipologie(certsModel.getTipologieDisponibili());
             mainView.setContenuto(aggCertView.getRoot());
         });
-        profiloView.setOnVaiPremium(() -> {
-            if (utenteCorrente != null) {
-                mainView.setContenuto(premiumView.getRoot());
-            }
-        });
+        profiloView.setOnVaiPremium(() -> mainView.setContenuto(premiumView.getRoot()));
     }
 
     // ── CreaEscursione ────────────────────────────────────────────
@@ -355,16 +352,8 @@ public class AppController {
         });
     }
 
-    // ── CSS ───────────────────────────────────────────────────────
+    // ── Premium ───────────────────────────────────────────────────
 
-    private void applicaCSS(Scene scene) {
-        var css = getClass().getResource("/style.css");
-        if (css != null) {
-            scene.getStylesheets().add(css.toExternalForm());
-        } else {
-            System.err.println("⚠️  CSS non trovato, continuo senza stili.");
-        }
-    }
     private void collegaPremiumView() {
         premiumView.setOnIndietro(() -> mostraHome());
         premiumView.setOnScegliPiano(piano -> {
@@ -381,5 +370,16 @@ public class AppController {
             }
             mostraProfilo();
         });
+    }
+
+    // ── CSS ───────────────────────────────────────────────────────
+
+    private void applicaCSS(Scene scene) {
+        var css = getClass().getResource("/style.css");
+        if (css != null) {
+            scene.getStylesheets().add(css.toExternalForm());
+        } else {
+            System.err.println("⚠️  CSS non trovato, continuo senza stili.");
+        }
     }
 }
