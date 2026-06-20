@@ -66,7 +66,7 @@ public class AppController {
         mostraScenaMain();
     }
 
-    // ── Navigazione ───────────────────────────────────────────────
+    // ── Navigazione Sicura ────────────────────────────────────────
 
     private void mostraScenaAuth() {
         Scene scene = new Scene(authView.getRoot(), 1200, 700);
@@ -85,16 +85,23 @@ public class AppController {
     }
 
     private void mostraHome() {
+        // 1. Forza il cambio schermata per evitare freeze
         mainView.setContenuto(homeView.getRoot());
         mainView.setNavAttiva("home");
 
+        // 2. Tenta di caricare i dati
         if (utenteCorrente != null) {
-            boolean haAbbonamentoAttivo = utentiModel.getUltimoAbbonamento(utenteCorrente)
-                    .map(Abbonamento::isAttivo)
-                    .orElse(false);
-            homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
+            try {
+                boolean haAbbonamentoAttivo = utentiModel.getUltimoAbbonamento(utenteCorrente)
+                        .map(Abbonamento::isAttivo)
+                        .orElse(false);
+                homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
+            } catch (Exception e) {
+                System.out.println("⚠️ Errore abbonamento: " + e.getMessage());
+                homeView.setHaAbbonamentoAttivo(false);
+            }
         } else {
-            homeView.setHaAbbonamentoAttivo(true); // utente non loggato → nascondi il box upgrade
+            homeView.setHaAbbonamentoAttivo(false);
         }
     }
 
@@ -104,25 +111,43 @@ public class AppController {
     }
 
     private void mostraProfilo() {
-        if (utenteCorrente != null) {
-            profiloView.setUtente(utenteCorrente);
-            profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
-            profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
-            profiloView.setPrenotazioni(prenotModel.getPrenotazioniUtente(utenteCorrente.cf)); // ← aggiungi questa
-        }
+        // 1. Forza il cambio schermata
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
+
+        // 2. Tenta di caricare i dati
+        if (utenteCorrente != null) {
+            profiloView.setUtente(utenteCorrente);
+            try {
+                profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
+                profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
+                profiloView.setPrenotazioni(prenotModel.getPrenotazioniUtente(utenteCorrente.cf));
+            } catch (Exception e) {
+                System.out.println("⚠️ Errore caricamento profilo: " + e.getMessage());
+            }
+        }
     }
 
     private void mostraAdmin() {
-        adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
-        adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
+        // 1. FORZA IMMEDIATAMENTE IL CAMBIO DI SCHERMATA
         mainView.setContenuto(adminView.getRoot());
+        mainView.setNavAttiva("");
+
+        // 2. PROVA A CARICARE I DATI DAL DB
+        try {
+            adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
+            adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
+        } catch (Exception e) {
+            System.out.println("⚠️ Errore Database in Admin: " + e.getMessage());
+            // Anche se c'è un errore, la schermata dell'admin sarà comunque visibile (vuota)
+        }
     }
 
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
+        mainView.setUtente(null); 
+        homeView.setUtente(null); 
         mostraHome();
     }
 
@@ -133,21 +158,19 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
+                    
+                    // Aggiorniamo la UI laterale
                     mainView.setUtente(persona);
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
                     profiloView.setUtente(persona);
 
-                    // Protegge il flusso login: se le certificazioni falliscono,
-                    // l'app non deve bloccarsi prima di mostrare la Home.
-                    try {
-                        profiloView.setCertificazioni(
-                            certsModel.getCertificazioniUtente(persona.cf));
-                    } catch (Exception ex) {
-                        System.out.println("⚠️ Errore nel caricare le certificazioni: " + ex.getMessage());
+                    // Reindirizzamento
+                    if (persona.tipoAmministratore) {
+                        mostraAdmin();
+                    } else {
+                        mostraHome();
                     }
-
-                    mostraHome();
                 },
                 () -> authView.mostraErroreLogin("Email o password errati.")
             )
@@ -163,7 +186,6 @@ public class AppController {
             utentiModel.registraUtente(nuovoUtente);
             authView.pulisciCampi();
             authView.mostraErroreLogin("");
-            // Dopo registrazione resta sul form (o torna al login)
         });
     }
 
@@ -180,17 +202,14 @@ public class AppController {
         mainView.setOnPrenotaNuova(() -> mostraExplore());
         mainView.setOnImpostazioni(() -> { });
 
-        // Pulsante "Accedi" nella topbar: apre AuthView dentro la stessa scena
         mainView.setOnLogin(() -> mostraLogin());
 
-        // Pulsante "Esci" nella topbar (quando già autenticato)
         mainView.setOnLogout(() -> {
             if (utenteCorrente != null) eseguiLogout();
             else mostraLogin();
         });
     }
 
-    /** Mostra il form di login/registrazione SENZA cambiare Scene (resta dentro MainView). */
     private void mostraLogin() {
         mainView.setContenuto(authView.getRoot());
         mainView.setNavAttiva("");
@@ -205,7 +224,6 @@ public class AppController {
         );
         homeView.setOnExploreClick(() -> mostraExplore());
 
-        // Upgrade: se non sei loggato ti manda al login; se sei loggato apre i piani Premium
         homeView.setOnUpgradeClick(() -> {
             if (utenteCorrente == null) {
                 mostraLogin();

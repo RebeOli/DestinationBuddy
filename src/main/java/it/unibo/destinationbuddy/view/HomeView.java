@@ -22,6 +22,7 @@ public class HomeView {
 
     private Persona utenteCorrente;
     private int meseSelezionato = -1;
+    private boolean haAbbonamentoAttivo = false;
 
     private Consumer<EscursionePreview> onEscursioneClick = e -> {};
     private IntConsumer                 onMeseClick       = m -> {};
@@ -33,13 +34,19 @@ public class HomeView {
     private final GridPane    mesiGrid;
     private final VBox        mesiRisultati;
     private final HBox        welcomeBanner;
-    private VBox               upgradeBox;
+    
+    // Riferimenti diretti alle Label per poterle cambiare all'istante
+    private final Label inizialeAvatar = new Label("?");
+    private final Label benvenutoLabel = new Label("Benvenuto!");
+    private final Label statusLabel    = new Label("Accedi o registrati per pianificare le tue escursioni.");
+    private VBox upgradeBox;
 
     public HomeView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
 
         welcomeBanner = buildWelcomeBanner();
+        refreshBanner(); // Si assicura che all'avvio sia tutto in stato "Sloggato"
 
         // Top 5
         VBox top5Section = new VBox(12);
@@ -81,7 +88,12 @@ public class HomeView {
 
     public void setUtente(Persona p) {
         this.utenteCorrente = p;
-        refreshBanner();
+        refreshBanner(); // Aggiorna i testi e i bottoni
+    }
+
+    public void setHaAbbonamentoAttivo(boolean attivo) {
+        this.haAbbonamentoAttivo = attivo;
+        refreshBanner(); // Aggiorna i testi e i bottoni
     }
 
     public void setTop5(List<EscursionePreview> lista) {
@@ -122,18 +134,6 @@ public class HomeView {
     public void setOnUpgradeClick(Runnable h)                        { this.onUpgradeClick    = h; }
     public ScrollPane getRoot()                                       { return root; }
 
-    /**
-     * Mostra o nasconde il box "Passa a Premium" del banner.
-     * Chiamare con false se l'utente ha già un abbonamento attivo,
-     * true altrimenti (o se l'abbonamento è scaduto).
-     */
-    public void setHaAbbonamentoAttivo(boolean attivo) {
-        if (upgradeBox != null) {
-            upgradeBox.setVisible(!attivo);
-            upgradeBox.setManaged(!attivo);
-        }
-    }
-
     // ── UI ────────────────────────────────────────────────────────
 
     private HBox buildWelcomeBanner() {
@@ -142,24 +142,28 @@ public class HomeView {
         banner.setAlignment(Pos.CENTER_LEFT);
         banner.getStyleClass().add("welcome-banner");
 
-        StackPane avatar = buildAvatar("?");
+        // Avatar
+        Circle circle = new Circle(22);
+        circle.setStyle("-fx-fill: -db-accent;");
+        inizialeAvatar.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;");
+        StackPane avatar = new StackPane(circle, inizialeAvatar);
+        avatar.setMaxSize(44, 44);
+        avatar.setMinSize(44, 44);
+
         banner.getChildren().add(avatar);
 
+        // Testi
         VBox textBox = new VBox(3);
-        Label benvenuto = new Label("Benvenuto!");
-        benvenuto.getStyleClass().add("auth-title");
-        benvenuto.setStyle("-fx-font-size: 15px;");
-        benvenuto.setId("lbl-benvenuto");
+        benvenutoLabel.getStyleClass().add("auth-title");
+        benvenutoLabel.setStyle("-fx-font-size: 15px;");
+        statusLabel.getStyleClass().add("text-muted");
 
-        Label status = new Label("Esplora le nostre escursioni");
-        status.getStyleClass().add("text-muted");
-        status.setId("lbl-status");
-
-        textBox.getChildren().addAll(benvenuto, status);
+        textBox.getChildren().addAll(benvenutoLabel, statusLabel);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        // Box Upgrade
         upgradeBox = new VBox(6);
         upgradeBox.setAlignment(Pos.CENTER_RIGHT);
         Label upgradeMsg = new Label("Passa a Premium: sconto del 20%\nsul noleggio e prenotazione prioritaria.");
@@ -176,27 +180,41 @@ public class HomeView {
         return banner;
     }
 
+    // IL METODO DI AGGIORNAMENTO CORRETTO
     private void refreshBanner() {
-        if (utenteCorrente == null) return;
-        welcomeBanner.getChildren().stream()
-                .filter(n -> n instanceof StackPane).findFirst()
-                .ifPresent(n -> {
-                    StackPane sp = (StackPane) n;
-                    sp.getChildren().stream().filter(c -> c instanceof Label).findFirst()
-                            .ifPresent(c -> ((Label) c).setText(
-                                    utenteCorrente.nome.isEmpty() ? "?"
-                                    : String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase()));
-                });
-        welcomeBanner.getChildren().stream()
-                .filter(n -> n instanceof VBox).findFirst()
-                .ifPresent(n -> ((VBox) n).getChildren().forEach(c -> {
-                    if (c instanceof Label l) {
-                        if ("lbl-benvenuto".equals(l.getId()))
-                            l.setText("Bentornato, " + utenteCorrente.nome + "!");
-                        else if ("lbl-status".equals(l.getId()))
-                            l.setText(utenteCorrente.tipoUtente ? "Account base" : "Account Premium");
-                    }
-                }));
+        if (utenteCorrente == null) {
+            // REGOLE NON LOGGATO: Scritte standard e NASCONDE il box Upgrade
+            inizialeAvatar.setText("?");
+            benvenutoLabel.setText("Benvenuto!");
+            statusLabel.setText("Accedi o registrati per pianificare le tue escursioni.");
+            
+            if (upgradeBox != null) {
+                upgradeBox.setVisible(false);
+                upgradeBox.setManaged(false);
+            }
+        } else {
+            // REGOLE LOGGATO: Nome, Ruolo e MOSTRA l'Upgrade solo se necessario
+            String iniziale = utenteCorrente.nome.isEmpty() ? "?" : String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase();
+            inizialeAvatar.setText(iniziale);
+            benvenutoLabel.setText("Bentornato, " + utenteCorrente.nome + "!");
+
+            if (utenteCorrente.tipoAmministratore) {
+                statusLabel.setText("Sessione Amministratore attiva.");
+            } else if (haAbbonamentoAttivo) {
+                statusLabel.setText("Account Premium attivo — Goditi i tuoi vantaggi!");
+            } else if (!utenteCorrente.tipoUtente) { // Se è una guida
+                statusLabel.setText("Guida certificata Destination Buddy.");
+            } else {
+                statusLabel.setText("Account base");
+            }
+
+            // A destra mostra l'upgrade SOLO se è un utente base e non è già premium
+            if (upgradeBox != null) {
+                boolean mostraUpgrade = !utenteCorrente.tipoAmministratore && !haAbbonamentoAttivo;
+                upgradeBox.setVisible(mostraUpgrade);
+                upgradeBox.setManaged(mostraUpgrade);
+            }
+        }
     }
 
     private void buildMesiGrid() {
@@ -212,10 +230,8 @@ public class HomeView {
             card.setId("mese-" + mese);
             GridPane.setFillWidth(card, true);
 
-
             Label nameLabel = new Label(nomi[i].toUpperCase());
             nameLabel.getStyleClass().add("month-num");
-            nameLabel.setId("month-num-lbl");
 
             card.getChildren().addAll(nameLabel);
 

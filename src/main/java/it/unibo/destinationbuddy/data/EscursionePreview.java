@@ -64,7 +64,7 @@ public final class EscursionePreview {
 
         //lisat con le top 5 escursioni in base alle recensioni
         public static List<EscursionePreview> top5(Connection connection) {
-            return execute(connection, Queries.MIGLIORI_ESCURSIONI, 3);
+            return execute(connection, Queries.MIGLIORI_ESCURSIONI, 2);
         }
 
         //lista con le escursioni in base al mese
