@@ -58,7 +58,7 @@ public class ExploreView {
 
         // Barra ricerca
         TextField searchField = new TextField();
-        searchField.setPromptText("Cerca per titolo o difficoltà...");
+        searchField.setPromptText("Cerca per titolo...");
         searchField.getStyleClass().add("search-field"); // Usa il CSS
         searchField.setPrefWidth(260);
         searchField.textProperty().addListener((obs, old, val) -> onRicerca.accept(val));
