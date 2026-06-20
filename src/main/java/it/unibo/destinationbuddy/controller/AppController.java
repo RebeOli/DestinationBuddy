@@ -66,7 +66,7 @@ public class AppController {
         mostraScenaMain();
     }
 
-    // ── Navigazione ───────────────────────────────────────────────
+    // ── Navigazione Sicura ────────────────────────────────────────
 
     private void mostraScenaAuth() {
         Scene scene = new Scene(authView.getRoot(), 1200, 700);
@@ -85,16 +85,23 @@ public class AppController {
     }
 
     private void mostraHome() {
+        // 1. Forza il cambio schermata per evitare freeze
         mainView.setContenuto(homeView.getRoot());
         mainView.setNavAttiva("home");
 
+        // 2. Tenta di caricare i dati
         if (utenteCorrente != null) {
-            boolean haAbbonamentoAttivo = utentiModel.getUltimoAbbonamento(utenteCorrente)
-                    .map(Abbonamento::isAttivo)
-                    .orElse(false);
-            homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
+            try {
+                boolean haAbbonamentoAttivo = utentiModel.getUltimoAbbonamento(utenteCorrente)
+                        .map(Abbonamento::isAttivo)
+                        .orElse(false);
+                homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
+            } catch (Exception e) {
+                System.out.println("⚠️ Errore abbonamento: " + e.getMessage());
+                homeView.setHaAbbonamentoAttivo(false);
+            }
         } else {
-            homeView.setHaAbbonamentoAttivo(false); // Sloggato -> Box Upgrade nascosto
+            homeView.setHaAbbonamentoAttivo(false);
         }
     }
 
@@ -104,27 +111,42 @@ public class AppController {
     }
 
     private void mostraProfilo() {
-        if (utenteCorrente != null) {
-            profiloView.setUtente(utenteCorrente);
-            profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
-            profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
-        }
+        // 1. Forza il cambio schermata
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
+
+        // 2. Tenta di caricare i dati
+        if (utenteCorrente != null) {
+            profiloView.setUtente(utenteCorrente);
+            try {
+                profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
+                profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
+            } catch (Exception e) {
+                System.out.println("⚠️ Errore caricamento profilo: " + e.getMessage());
+            }
+        }
     }
 
     private void mostraAdmin() {
-        adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
-        adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
+        // 1. FORZA IMMEDIATAMENTE IL CAMBIO DI SCHERMATA
         mainView.setContenuto(adminView.getRoot());
-        mainView.setNavAttiva(""); // Toglie la sottolineatura arancione dai menu disattivati
+        mainView.setNavAttiva("");
+
+        // 2. PROVA A CARICARE I DATI DAL DB
+        try {
+            adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
+            adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
+        } catch (Exception e) {
+            System.out.println("⚠️ Errore Database in Admin: " + e.getMessage());
+            // Anche se c'è un errore, la schermata dell'admin sarà comunque visibile (vuota)
+        }
     }
 
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
-        mainView.setUtente(null); // Svuota sidebar
-        homeView.setUtente(null); // Svuota banner
+        mainView.setUtente(null); 
+        homeView.setUtente(null); 
         mostraHome();
     }
 
@@ -135,19 +157,14 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
+                    
+                    // Aggiorniamo la UI laterale
                     mainView.setUtente(persona);
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
                     profiloView.setUtente(persona);
 
-                    try {
-                        profiloView.setCertificazioni(
-                            certsModel.getCertificazioniUtente(persona.cf));
-                    } catch (Exception ex) {
-                        System.out.println("⚠️ Errore nel caricare le certificazioni: " + ex.getMessage());
-                    }
-
-                    // 🚀 Se chi effettua l'accesso è un Amministratore, va dritto al pannello
+                    // Reindirizzamento
                     if (persona.tipoAmministratore) {
                         mostraAdmin();
                     } else {
