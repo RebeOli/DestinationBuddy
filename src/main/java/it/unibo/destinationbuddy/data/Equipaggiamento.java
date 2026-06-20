@@ -47,8 +47,7 @@ public final class Equipaggiamento {
 
     @Override
     public String toString() {
-        return "Equipaggiamento [idCategoria=" + idCategoria + ", costoTotaleGiornaliero=" + costoTotaleGiornaliero
-                + "]";
+        return idCategoria;
     }
 
 

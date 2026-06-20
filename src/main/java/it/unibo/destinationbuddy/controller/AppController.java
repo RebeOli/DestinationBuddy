@@ -282,6 +282,7 @@ public class AppController {
 
     private void collegaBookingView() {
         bookingView.setOnIndietro(() -> mainView.setContenuto(dettaglioView.getRoot()));
+        bookingView.setOnTornaEsplora(() -> mostraExplore());
         bookingView.setOnConferma((idEscursione, equipSel) -> {
             if (utenteCorrente == null) return;
 

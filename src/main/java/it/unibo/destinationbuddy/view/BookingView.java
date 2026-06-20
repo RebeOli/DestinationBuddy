@@ -27,13 +27,15 @@ public class BookingView {
 
     private BiConsumer<String, Map<String, Boolean>> onConferma = (id, eq) -> {};
     private Runnable onIndietro = () -> {};
+    private Runnable onTornaEsplora = () -> {};
+
 
     private final ScrollPane root;
-    private final VBox       contentBox;
+    private final VBox contentBox;
 
-    private Escursione       escursioneCorrente;
-    private Persona          utenteCorrente;
-    private double           scontoNoleggio = 0.0;
+    private Escursione escursioneCorrente;
+    private Persona utenteCorrente;
+    private double scontoNoleggio = 0.0;
     private final Map<String, CheckBox> equipCheckboxes = new HashMap<>();
 
     private final Label totalLabel = new Label("€ 0.00");
@@ -63,8 +65,16 @@ public class BookingView {
     public void setOnConferma(BiConsumer<String, Map<String, Boolean>> handler) {
         this.onConferma = handler;
     }
-    public void setOnIndietro(Runnable handler) { this.onIndietro = handler; }
-    public ScrollPane getRoot()                 { return root; }
+    public void setOnIndietro(Runnable handler) { 
+        this.onIndietro = handler; 
+    }
+
+    public void setOnTornaEsplora(Runnable handler) { 
+        this.onTornaEsplora = handler;
+    }
+    public ScrollPane getRoot(){ 
+        return root;
+    }
 
     /** Mostra un messaggio di successo dopo la conferma. */
     public void mostraConferma() {
@@ -85,8 +95,7 @@ public class BookingView {
 
         Button tornaBtn = new Button("Torna all'esplora");
         tornaBtn.getStyleClass().add("btn-accent");
-        tornaBtn.setOnAction(e -> onIndietro.run());
-
+        tornaBtn.setOnAction(e -> onTornaEsplora.run());
         success.getChildren().addAll(icon, titolo, sub, tornaBtn);
         contentBox.getChildren().add(success);
     }
@@ -156,6 +165,14 @@ public class BookingView {
 
         // Equipaggiamento noleggio
         VBox equipSection = sectionBox("🎒 Noleggio equipaggiamento");
+
+        double costoTotaleGiornalieroSomma = (exc.equipaggiamento != null)
+                ? exc.equipaggiamento.stream().mapToDouble(e -> e.costoTotaleGiornaliero).sum()
+                : 0.0;
+        Label costoTotaleLbl = new Label(String.format("Costo totale giornaliero: € %.2f", costoTotaleGiornalieroSomma));
+        costoTotaleLbl.getStyleClass().add("text-price");
+        equipSection.getChildren().add(costoTotaleLbl);
+
         if (scontoNoleggio > 0) {
             Label scontoLbl = new Label(String.format("✓ Sconto Premium %.0f%% applicato", scontoNoleggio * 100));
             scontoLbl.getStyleClass().addAll("badge", "badge-green");
