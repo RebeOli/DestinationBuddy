@@ -316,6 +316,11 @@ public class AppController {
             aggCertView.setTipologie(certsModel.getTipologieDisponibili());
             mainView.setContenuto(aggCertView.getRoot());
         });
+        profiloView.setOnVaiPremium(() -> {
+            if (utenteCorrente != null) {
+                mainView.setContenuto(premiumView.getRoot());
+            }
+        });
     }
 
     // ── CreaEscursione ────────────────────────────────────────────
