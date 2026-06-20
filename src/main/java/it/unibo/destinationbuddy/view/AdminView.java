@@ -15,23 +15,26 @@ import java.util.function.Consumer;
 
 /**
  * AdminView — pannello amministratore: certificazioni in attesa, guide, premi.
+ * Aggiornata al Light Theme.
  *
  * UTILIZZO DAL CONTROLLER:
- *   AdminView view = new AdminView();
- *   view.setCertificazioniInAttesa(lista);
- *   view.setGuide(lista);
- *   view.setUtentiDaPremiare(lista);
- *   view.setOnValidaCert(nCert -> controller.valida(nCert));
- *   view.setOnAttivaGuida(p -> controller.attiva(p));
- *   view.setOnDisattivaGuida(p -> controller.disattiva(p));
- *   root.setCenter(view.getRoot());
+ * AdminView view = new AdminView();
+ * view.setCertificazioniInAttesa(lista);
+ * view.setGuide(lista);
+ * view.setUtentiDaPremiare(lista);
+ * view.setOnValidaCert(nCert -> controller.valida(nCert));
+ * view.setOnAttivaGuida(p -> controller.attiva(p));
+ * view.setOnDisattivaGuida(p -> controller.disattiva(p));
+ * root.setCenter(view.getRoot());
  */
 public class AdminView {
 
-    private static final String DARK_BG   = "#0E2A1A";
-    private static final String CARD_BG   = "#152E1C";
-    private static final String ACCENT    = "#D4673A";
-    private static final String TEXT_MUTED = "#A0B8AA";
+    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
+    private static final String APP_BG     = "#F4EFE6"; // Sabbia
+    private static final String ACCENT     = "#B85D38"; // Terracotta
+    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
+    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
+    // ──────────────────────────────────────────────────────────────────────────
 
     private Consumer<String>  onValidaCert    = s -> {};
     private Consumer<Persona> onAttivaGuida   = p -> {};
@@ -45,11 +48,11 @@ public class AdminView {
     public AdminView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
+        page.setStyle("-fx-background-color: " + APP_BG + ";");
 
         Label titolo = new Label("Pannello amministratore");
-        titolo.setFont(Font.font("System", FontWeight.BOLD, 22));
-        titolo.setTextFill(Color.WHITE);
+        titolo.setFont(Font.font("System", FontWeight.BOLD, 24));
+        titolo.setTextFill(Color.web(TEXT_DARK)); // Titolo scuro
 
         // Tab-like: tre sezioni con titolo espandibile
         page.getChildren().addAll(
@@ -62,7 +65,7 @@ public class AdminView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG
                 + "; -fx-border-color: transparent;");
     }
 
@@ -112,7 +115,7 @@ public class AdminView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        row.setStyle(styleRow());
+        row.getStyleClass().add("cert-row"); // Usa il CSS!
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
@@ -120,7 +123,7 @@ public class AdminView {
                 ? c.tipologia.idCertificazione + " — " + c.tipologia.livello : "—";
         Label tipoLbl = new Label(tipo);
         tipoLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        tipoLbl.setTextFill(Color.WHITE);
+        tipoLbl.setTextFill(Color.web(TEXT_DARK));
         Label sub = new Label("Codice: " + c.nCertificazione
                 + "  ·  Ente: " + c.enteRilasciante
                 + "  ·  CF: " + c.cf);
@@ -128,7 +131,8 @@ public class AdminView {
         sub.setTextFill(Color.web(TEXT_MUTED));
         info.getChildren().addAll(tipoLbl, sub);
 
-        Button approvaBtn = smallBtn("✓ Valida", "#4AC582", "rgba(74,197,130,0.2)");
+        // Bottone color verde pastello per validare
+        Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
             onValidaCert.accept(c.nCertificazione);
             approvaBtn.setText("✓ Validata");
@@ -143,13 +147,13 @@ public class AdminView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        row.setStyle(styleRow());
+        row.getStyleClass().add("cert-row"); // Usa il CSS!
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
         Label nomeLbl = new Label(p.nome + " " + p.cognome);
         nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        nomeLbl.setTextFill(Color.WHITE);
+        nomeLbl.setTextFill(Color.web(TEXT_DARK));
         Label sub = new Label("CF: " + p.cf + "  ·  Stato: " +
                 (p.statoAccount == null || p.statoAccount.isEmpty() ? "—" : p.statoAccount));
         sub.setFont(Font.font("System", 11));
@@ -157,10 +161,11 @@ public class AdminView {
         info.getChildren().addAll(nomeLbl, sub);
 
         boolean attiva = "attivo".equalsIgnoreCase(p.statoAccount);
+        // Bottone color terracotta chiaro se disattiva, grigino se attiva
         Button toggleBtn = smallBtn(
                 attiva ? "Disattiva" : "Attiva",
                 ACCENT,
-                "rgba(212,103,58,0.2)");
+                "#F9EAE1");
         toggleBtn.setOnAction(e -> {
             if (attiva) onDisattivaGuida.accept(p);
             else onAttivaGuida.accept(p);
@@ -174,8 +179,9 @@ public class AdminView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        row.setStyle("-fx-background-color: rgba(255,215,0,0.06); -fx-background-radius: 10;"
-                + "-fx-border-color: rgba(255,215,0,0.2); -fx-border-radius: 10; -fx-border-width: 0.5;");
+        // Sfondo giallino tenue per i premiati
+        row.setStyle("-fx-background-color: #FFF9E6; -fx-background-radius: 8;"
+                + "-fx-border-color: #FDE68A; -fx-border-radius: 8; -fx-border-width: 1;");
 
         Label icon = new Label("🏅");
         icon.setFont(Font.font(22));
@@ -184,7 +190,7 @@ public class AdminView {
         HBox.setHgrow(info, Priority.ALWAYS);
         Label nomeLbl = new Label(p.nome + " " + p.cognome);
         nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        nomeLbl.setTextFill(Color.WHITE);
+        nomeLbl.setTextFill(Color.web(TEXT_DARK));
         Label sub = new Label(p.escursioniEffettuate + " escursioni · CF: " + p.cf);
         sub.setFont(Font.font("System", 11));
         sub.setTextFill(Color.web(TEXT_MUTED));
@@ -199,11 +205,12 @@ public class AdminView {
     private VBox buildSection(String titolo, VBox container) {
         VBox section = new VBox(12);
         section.setPadding(new Insets(16));
-        section.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 12;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 12; -fx-border-width: 0.5;");
+        section.getStyleClass().add("card"); // Usa il CSS per le ombre e lo sfondo bianco!
+        
         Label lbl = new Label(titolo);
-        lbl.setFont(Font.font("System", FontWeight.BOLD, 15));
-        lbl.setTextFill(Color.WHITE);
+        lbl.setFont(Font.font("System", FontWeight.BOLD, 16));
+        lbl.setTextFill(Color.web(TEXT_DARK));
+        
         section.getChildren().addAll(lbl, container);
         return section;
     }
@@ -221,10 +228,5 @@ public class AdminView {
         l.setFont(Font.font("System", 13));
         l.setTextFill(Color.web(TEXT_MUTED));
         return l;
-    }
-
-    private String styleRow() {
-        return "-fx-background-color: #0E2A1A; -fx-background-radius: 10;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 10; -fx-border-width: 0.5;";
     }
 }
