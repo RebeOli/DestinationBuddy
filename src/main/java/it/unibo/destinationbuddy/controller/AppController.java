@@ -94,7 +94,7 @@ public class AppController {
                     .orElse(false);
             homeView.setHaAbbonamentoAttivo(haAbbonamentoAttivo);
         } else {
-            homeView.setHaAbbonamentoAttivo(true); // utente non loggato → nascondi il box upgrade
+            homeView.setHaAbbonamentoAttivo(false); // Sloggato -> Box Upgrade nascosto
         }
     }
 
@@ -117,13 +117,14 @@ public class AppController {
         adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
         adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
         mainView.setContenuto(adminView.getRoot());
+        mainView.setNavAttiva(""); // Toglie la sottolineatura arancione dai menu disattivati
     }
 
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
-        mainView.setUtente(null);
-        homeView.setUtente(null);
+        mainView.setUtente(null); // Svuota sidebar
+        homeView.setUtente(null); // Svuota banner
         mostraHome();
     }
 
@@ -139,8 +140,6 @@ public class AppController {
                     homeView.setUtente(persona);
                     profiloView.setUtente(persona);
 
-                    // Protegge il flusso login: se le certificazioni falliscono,
-                    // l'app non deve bloccarsi prima di mostrare la Home.
                     try {
                         profiloView.setCertificazioni(
                             certsModel.getCertificazioniUtente(persona.cf));
@@ -148,7 +147,12 @@ public class AppController {
                         System.out.println("⚠️ Errore nel caricare le certificazioni: " + ex.getMessage());
                     }
 
-                    mostraHome();
+                    // 🚀 Se chi effettua l'accesso è un Amministratore, va dritto al pannello
+                    if (persona.tipoAmministratore) {
+                        mostraAdmin();
+                    } else {
+                        mostraHome();
+                    }
                 },
                 () -> authView.mostraErroreLogin("Email o password errati.")
             )
@@ -164,7 +168,6 @@ public class AppController {
             utentiModel.registraUtente(nuovoUtente);
             authView.pulisciCampi();
             authView.mostraErroreLogin("");
-            // Dopo registrazione resta sul form (o torna al login)
         });
     }
 
@@ -181,17 +184,14 @@ public class AppController {
         mainView.setOnPrenotaNuova(() -> mostraExplore());
         mainView.setOnImpostazioni(() -> { });
 
-        // Pulsante "Accedi" nella topbar: apre AuthView dentro la stessa scena
         mainView.setOnLogin(() -> mostraLogin());
 
-        // Pulsante "Esci" nella topbar (quando già autenticato)
         mainView.setOnLogout(() -> {
             if (utenteCorrente != null) eseguiLogout();
             else mostraLogin();
         });
     }
 
-    /** Mostra il form di login/registrazione SENZA cambiare Scene (resta dentro MainView). */
     private void mostraLogin() {
         mainView.setContenuto(authView.getRoot());
         mainView.setNavAttiva("");
@@ -206,7 +206,6 @@ public class AppController {
         );
         homeView.setOnExploreClick(() -> mostraExplore());
 
-        // Upgrade: se non sei loggato ti manda al login; se sei loggato apre i piani Premium
         homeView.setOnUpgradeClick(() -> {
             if (utenteCorrente == null) {
                 mostraLogin();

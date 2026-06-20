@@ -26,7 +26,6 @@ public class MainView {
     private static final String TEXT_DARK    = "#2C2A26"; // Testo scuro
     private static final String TEXT_MUTED   = "#807B73"; // Testo grigino
     private static final String HOVER_BG     = "#EBF5F8"; // Azzurrino per hover
-    // ────────────────────────────────────────────────────────────────────
 
     private Runnable onHome  = () -> {};
     private Runnable onExplore  = () -> {};
@@ -40,16 +39,16 @@ public class MainView {
     private final BorderPane root;
     private final BorderPane body;
 
-    // Elementi aggiornabili
     private final Label inizialeAvatar = new Label("?");
     private final Label nomeLabel      = new Label("Utente");
     private final Label ruoloLabel     = new Label("");
     
-    // ── BLOCCO 1: VARIABILI DI CLASSE PER GESTIRE I MENU ──
     private VBox menuStandard;
     private VBox prenotaBlock;
     private VBox creaBlock;
     private Button adminButtonSidebar;
+
+    private HBox topNavLinks; // Variabile globale per nascondere i menu in alto
 
     private String activeNav = "home";
 
@@ -63,15 +62,11 @@ public class MainView {
         root.setCenter(body);
     }
 
-    // ── API pubblica ──────────────────────────────────────────────────────────
-
     public void setContenuto(javafx.scene.Node node) {
         body.setCenter(node);
     }
 
-    // ── BLOCCO 2: LOGICA DI SMISTAMENTO IN SET UTENTE ──
     public void setUtente(Persona p) {
-        // 🚀 SE NESSUN UTENTE È LOGGATO (O HA APPENA FATTO LOGOUT)
         if (p == null) {
             inizialeAvatar.setText("?");
             nomeLabel.setText("Utente");
@@ -88,7 +83,12 @@ public class MainView {
                 prenotaBlock.setVisible(true);
                 prenotaBlock.setManaged(true);
             }
-            return; // Usciamo dal metodo qui
+            // Torna a mostrare i menu in alto quando nessuno è loggato
+            if (topNavLinks != null) {
+                topNavLinks.setVisible(true);
+                topNavLinks.setManaged(true);
+            }
+            return; 
         }
 
         // SE UN UTENTE È LOGGATO
@@ -99,6 +99,7 @@ public class MainView {
                 : (!p.tipoUtente ? "Guida certificata" : "Utente base"));
 
         if (p.tipoAmministratore) {
+            // REGOLE ADMIN: Nascondi la sidebar standard, mostra solo Admin
             if (menuStandard != null) {
                 menuStandard.setVisible(false);
                 menuStandard.setManaged(false);
@@ -110,7 +111,14 @@ public class MainView {
                 adminButtonSidebar.setVisible(true);
                 adminButtonSidebar.setManaged(true);
             }
+
+            // 🚀 NASCONDIAMO I BOTTONI IN ALTO (Home, Explore, Profilo)
+            if (topNavLinks != null) {
+                topNavLinks.setVisible(false);
+                topNavLinks.setManaged(false);
+            } 
         } else {
+            // REGOLE UTENTE / GUIDA: Mostra sidebar standard
             if (menuStandard != null) {
                 adminButtonSidebar.setVisible(false);
                 adminButtonSidebar.setManaged(false);
@@ -123,6 +131,12 @@ public class MainView {
                 boolean isGuida = !p.tipoUtente; 
                 creaBlock.setVisible(isGuida);
                 creaBlock.setManaged(isGuida);
+            }
+
+            // 🚀 UTENTE NORMALE: Mostriamo di nuovo i bottoni in alto
+            if (topNavLinks != null) {
+                topNavLinks.setVisible(true);
+                topNavLinks.setManaged(true);
             }
         }
     }
@@ -170,7 +184,8 @@ public class MainView {
         logo.setTextFill(Color.web(ACCENT));
         logo.setPadding(new Insets(0, 32, 0, 0));
 
-        HBox navLinks = new HBox(0,
+        // 🚀 CORREZIONE: Assegniamo i bottoni direttamente alla variabile globale della classe
+        topNavLinks = new HBox(0,
                 navLink("Home",  "home"),
                 navLink("Explore",  "explore"),
                 navLink("Profilo",  "profilo"));
@@ -189,7 +204,8 @@ public class MainView {
         signOutBtn.setOnMouseExited(e -> signOutBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + TEXT_DARK 
                 + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 6 14;"));
 
-        bar.getChildren().addAll(logo, navLinks, spacer, signOutBtn);
+        // Inseriamo topNavLinks nella barra
+        bar.getChildren().addAll(logo, topNavLinks, spacer, signOutBtn);
         return bar;
     }
 
@@ -227,7 +243,6 @@ public class MainView {
         sidebar.setStyle("-fx-background-color: " + SIDEBAR_BG
                 + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 0 1 0 0;");
 
-        // Profilo
         VBox profileBlock = new VBox(4);
         profileBlock.setPadding(new Insets(20, 14, 20, 14));
         profileBlock.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 0 0 1 0;");
@@ -247,7 +262,6 @@ public class MainView {
 
         profileBlock.getChildren().addAll(avatar, nomeLabel, ruoloLabel);
 
-        // Menu Standard
         menuStandard = new VBox(2);
         menuStandard.setPadding(new Insets(12, 8, 12, 8));
         menuStandard.getChildren().addAll(
@@ -256,7 +270,6 @@ public class MainView {
                 sidebarItem("🏅", "Certificazioni",  () -> onProfilo.run())
         );
 
-        // Pulsante prenota (sempre visibile)
         prenotaBlock = new VBox();
         prenotaBlock.setPadding(new Insets(10, 12, 10, 12));
         Button bookBtn = new Button("Prenota nuova escursione");
@@ -267,7 +280,6 @@ public class MainView {
         bookBtn.setOnAction(e -> onPrenotaNuova.run());
         prenotaBlock.getChildren().add(bookBtn);
 
-        // Pulsante crea escursione (solo guide) — nascosto di default
         Button creaEscursBtn = new Button("+ Crea escursione");
         creaEscursBtn.setId("btn-crea-esc");
         creaEscursBtn.setMaxWidth(Double.MAX_VALUE);
@@ -289,12 +301,10 @@ public class MainView {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Bottom
         VBox bottom = new VBox(0);
         bottom.setPadding(new Insets(12, 8, 16, 8));
         bottom.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 1 0 0 0;");
 
-        // Pulsante admin (nascosto di default)
         adminButtonSidebar = new Button("⚙ Admin");
         adminButtonSidebar.setId("btn-admin");
         adminButtonSidebar.setMaxWidth(Double.MAX_VALUE);
