@@ -5,9 +5,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,6 +14,7 @@ import java.util.function.Consumer;
 
 /**
  * CreaEscursioneView — form per le guide per creare una nuova escursione.
+ * Light Theme tramite classi CSS.
  *
  * UTILIZZO DAL CONTROLLER:
  *   CreaEscursioneView view = new CreaEscursioneView();
@@ -26,12 +24,6 @@ import java.util.function.Consumer;
  *   mainView.setContenuto(view.getRoot());
  */
 public class CreaEscursioneView {
-
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
 
     private Consumer<EscursioneFormData> onCrea    = d -> {};
     private Runnable                     onAnnulla = () -> {};
@@ -48,7 +40,6 @@ public class CreaEscursioneView {
     private final Label         errorLabel     = new Label();
 
     private List<TipologiaEscursione> tipologieDisponibili = new ArrayList<>();
-    private final CheckBox[]    tipologieCheck = new CheckBox[20];
     private final VBox          tipologieBox   = new VBox(8);
 
     private final List<GiornataForm> giornataForms = new ArrayList<>();
@@ -59,21 +50,19 @@ public class CreaEscursioneView {
     public CreaEscursioneView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-        page.setStyle("-fx-background-color: " + DARK_BG + ";");
 
         // Breadcrumb
         HBox breadcrumb = new HBox(6);
         breadcrumb.setAlignment(Pos.CENTER_LEFT);
         Label back = new Label("← Profilo");
-        back.setFont(Font.font("System", 12));
-        back.setTextFill(Color.web(ACCENT));
+        back.getStyleClass().add("switch-link");
         back.setCursor(javafx.scene.Cursor.HAND);
         back.setOnMouseClicked(e -> onAnnulla.run());
         breadcrumb.getChildren().add(back);
 
         Label titoloPag = new Label("Crea nuova escursione");
-        titoloPag.setFont(Font.font("System", FontWeight.BOLD, 22));
-        titoloPag.setTextFill(Color.WHITE);
+        titoloPag.getStyleClass().add("auth-title");
+        titoloPag.setStyle("-fx-font-size: 22px;");
 
         // Sezione info base
         VBox infoBase = sectionBox("📋 Informazioni generali");
@@ -97,12 +86,8 @@ public class CreaEscursioneView {
         addLabeledField(grid2, "Costo iscrizione (€)", costo, 1, 0, 1);
         addLabeledField(grid2, "Max partecipanti", maxPartecipanti, 2, 0, 1);
 
-        dataApertura.setPromptText("Data apertura iscrizioni");
-        dataApertura.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8;");
-        dataChiusura.setPromptText("Data chiusura iscrizioni");
-        dataChiusura.setStyle(dataApertura.getStyle());
+        styleDatePicker(dataApertura, "Data apertura iscrizioni");
+        styleDatePicker(dataChiusura, "Data chiusura iscrizioni");
 
         GridPane grid3 = new GridPane();
         grid3.setHgap(16);
@@ -119,11 +104,7 @@ public class CreaEscursioneView {
         // Giornate
         VBox giornateSection = sectionBox("📅 Programma giornaliero");
         Button addGiornataBtn = new Button("+ Aggiungi giornata");
-        addGiornataBtn.setFont(Font.font("System", 12));
-        addGiornataBtn.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-text-fill: white; -fx-border-color: rgba(255,255,255,0.2);"
-                + "-fx-border-radius: 8; -fx-background-radius: 8;"
-                + "-fx-cursor: hand; -fx-padding: 7 14;");
+        addGiornataBtn.getStyleClass().add("btn-ghost");
         addGiornataBtn.setOnAction(e -> aggiungiGiornata());
         giornateSection.getChildren().addAll(giornateBox, addGiornataBtn);
 
@@ -131,19 +112,17 @@ public class CreaEscursioneView {
         aggiungiGiornata();
 
         // Errore
-        errorLabel.setFont(Font.font("System", 12));
-        errorLabel.setTextFill(Color.web("#EF4444"));
+        errorLabel.getStyleClass().add("error-label");
         errorLabel.setVisible(false);
 
         // Pulsanti
         HBox actions = new HBox(12);
         Button creaBtn = new Button("Pubblica escursione");
-        creaBtn.setFont(Font.font("System", FontWeight.BOLD, 14));
-        styleAccentBtn(creaBtn, 12, 24);
+        creaBtn.getStyleClass().add("btn-accent");
         creaBtn.setOnAction(e -> tentaCrea());
 
         Button annullaBtn = new Button("Annulla");
-        styleGhostBtn(annullaBtn);
+        annullaBtn.getStyleClass().add("btn-ghost");
         annullaBtn.setOnAction(e -> onAnnulla.run());
         actions.getChildren().addAll(creaBtn, annullaBtn);
 
@@ -153,8 +132,7 @@ public class CreaEscursioneView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
-                + "; -fx-border-color: transparent;");
+        root.getStyleClass().add("scroll-pane");
     }
 
     // ── API pubblica ──────────────────────────────────────────────
@@ -167,7 +145,7 @@ public class CreaEscursioneView {
 
         for (TipologiaEscursione tipologia : lista) {
             CheckBox cb = new CheckBox(tipologia.idTipologia);
-            cb.setStyle("-fx-text-fill: white; -fx-font-size: 13px;");
+            cb.getStyleClass().add("sidebar-item-text");
             flow.getChildren().add(cb);
         }
 
@@ -197,18 +175,9 @@ public class CreaEscursioneView {
 
     private void aggiungiGiornata() {
         int numero = giornataForms.size() + 1;
-        GiornataForm form = new GiornataForm(numero, () -> {
-            giornataForms.remove(form(numero));
-            giornateBox.getChildren().removeIf(n -> (numero + "-giornata").equals(n.getId()));
-        });
-        // workaround per lambda
         GiornataForm gf = new GiornataForm(numero, null);
         giornataForms.add(gf);
         giornateBox.getChildren().add(gf.build(numero));
-    }
-
-    private GiornataForm form(int n) {
-        return giornataForms.stream().filter(f -> f.numero == n).findFirst().orElse(null);
     }
 
     // ── Validazione e creazione ───────────────────────────────────
@@ -298,29 +267,23 @@ public class CreaEscursioneView {
             VBox box = new VBox(8);
             box.setId(n + "-giornata");
             box.setPadding(new Insets(12));
-            box.setStyle("-fx-background-color: #0E2A1A; -fx-background-radius: 8;"
-                    + "-fx-border-color: #1E4030; -fx-border-radius: 8; -fx-border-width: 0.5;");
+            box.getStyleClass().add("card");
 
             HBox header = new HBox();
             header.setAlignment(Pos.CENTER_LEFT);
             Label lbl = new Label("Giorno " + n);
-            lbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-            lbl.setTextFill(Color.web("#D4673A"));
+            lbl.getStyleClass().add("text-accent");
+            lbl.setStyle("-fx-font-weight: bold; -fx-font-size: 13px;");
             Region sp = new Region();
             HBox.setHgrow(sp, Priority.ALWAYS);
             header.getChildren().addAll(lbl, sp);
 
             dataPicker.setPromptText("Data giornata");
             dataPicker.setMaxWidth(Double.MAX_VALUE);
-            dataPicker.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                    + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                    + "-fx-background-radius: 8;");
+            dataPicker.getStyleClass().add("form-field");
 
             programmaField.setPromptText("Descrivi il programma della giornata...");
-            programmaField.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                    + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                    + "-fx-background-radius: 8; -fx-text-fill: white;"
-                    + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 8 12;");
+            programmaField.getStyleClass().add("form-field");
 
             box.getChildren().addAll(header, dataPicker, programmaField);
             return box;
@@ -332,36 +295,32 @@ public class CreaEscursioneView {
     private VBox sectionBox(String titolo) {
         VBox box = new VBox(12);
         box.setPadding(new Insets(16));
-        box.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 12;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 12; -fx-border-width: 0.5;");
+        box.getStyleClass().add("card");
         Label lbl = new Label(titolo);
-        lbl.setFont(Font.font("System", FontWeight.BOLD, 14));
-        lbl.setTextFill(Color.WHITE);
+        lbl.getStyleClass().add("card-title");
         box.getChildren().add(lbl);
         return box;
     }
 
     private void styleField(TextField f, String prompt) {
         f.setPromptText(prompt);
-        f.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-text-fill: white;"
-                + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 8 12;");
+        f.getStyleClass().add("form-field");
     }
 
     private void styleArea(TextArea a, String prompt) {
         a.setPromptText(prompt);
-        a.setStyle("-fx-background-color: rgba(255,255,255,0.07);"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-text-fill: white;"
-                + "-fx-prompt-text-fill: rgba(255,255,255,0.35); -fx-padding: 8 12;");
+        a.getStyleClass().add("form-field");
+    }
+
+    private void styleDatePicker(DatePicker dp, String prompt) {
+        dp.setPromptText(prompt);
+        dp.getStyleClass().add("form-field");
     }
 
     private void addLabeledField(GridPane g, String lbl, Control field, int col, int row, int span) {
         VBox cell = new VBox(4);
         Label l = new Label(lbl);
-        l.setFont(Font.font("System", 11));
-        l.setTextFill(Color.web(TEXT_MUTED));
+        l.getStyleClass().add("text-muted");
         field.setMaxWidth(Double.MAX_VALUE);
         cell.getChildren().addAll(l, field);
         g.add(cell, col, row, span, 1);
@@ -371,28 +330,9 @@ public class CreaEscursioneView {
     private void addLabeledNode(GridPane g, String lbl, javafx.scene.Node node, int col, int row) {
         VBox cell = new VBox(4);
         Label l = new Label(lbl);
-        l.setFont(Font.font("System", 11));
-        l.setTextFill(Color.web(TEXT_MUTED));
+        l.getStyleClass().add("text-muted");
         cell.getChildren().addAll(l, node);
         g.add(cell, col, row);
         GridPane.setHgrow(cell, Priority.ALWAYS);
-    }
-
-    private void styleAccentBtn(Button btn, int padV, int padH) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8;"
-                + "-fx-padding: " + padV + " " + padH + ";";
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(base.replace(ACCENT, ACCENT_HOVER)));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
-    }
-
-    private void styleGhostBtn(Button btn) {
-        String s = "-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white;"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 18;";
-        btn.setStyle(s);
-        btn.setOnMouseEntered(e -> btn.setStyle(s.replace("0.07","0.14")));
-        btn.setOnMouseExited(e -> btn.setStyle(s));
     }
 }

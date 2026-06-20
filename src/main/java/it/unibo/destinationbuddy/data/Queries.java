@@ -435,7 +435,7 @@ public final class Queries {
         """;
 
     public static final String LIST_TIPOLOGIE_ESCURSIONE =
-        "SELECT ID_tipologia FROM tipologia_escursione";
+        "SELECT ID_tipologia FROM tipologie_escursione";
 }
 
 

@@ -201,6 +201,12 @@ public class AppController {
         mainView.setOnAdmin(()        -> mostraAdmin());
         mainView.setOnPrenotaNuova(() -> mostraExplore());
         mainView.setOnImpostazioni(() -> { });
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            mainView.setContenuto(creaView.getRoot());
+        });
 
         mainView.setOnLogin(() -> mostraLogin());
 

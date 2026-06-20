@@ -71,6 +71,14 @@ public class DettaglioEscursioneView {
         titoloLbl.setStyle("-fx-font-size: 26px;");
         titoloLbl.setWrapText(true);
 
+        // Luogo dell'escursione (paese, zona, luogo), preso dalla prima tappa disponibile
+        String posizione = trovaPosizione(exc);
+        if (posizione != null) {
+            Label posizioneLbl = new Label("📍 " + posizione);
+            posizioneLbl.getStyleClass().add("text-muted");
+            header.getChildren().add(posizioneLbl);
+        }
+
         HBox badges = new HBox(8);
         badges.getChildren().add(pill(exc.difficolta, "badge-accent"));
         for (String tip : exc.tipologie) {
@@ -102,7 +110,7 @@ public class DettaglioEscursioneView {
             FlowPane certBadges = new FlowPane(8, 6);
             certBadges.setPrefWrapLength(700);
             for (TipologiaCertificazione c : exc.certificazioniRichieste) {
-                certBadges.getChildren().add(pill(c.idCertificazione + " – " + c.livello, "badge-purple"));
+                certBadges.getChildren().add(pill(c.idCertificazione, "badge-purple"));
             }
             certBox.getChildren().add(certBadges);
         }
@@ -155,6 +163,18 @@ public class DettaglioEscursioneView {
     public void setOnPrenota(Consumer<Escursione> handler)  { this.onPrenota  = handler; }
     public void setOnIndietro(Runnable handler)              { this.onIndietro = handler; }
     public ScrollPane getRoot()                              { return root; }
+
+    /** Recupera "Luogo, Zona (Paese)" dalla prima tappa disponibile, o null se non c'è nessuna giornata/tappa. */
+    private String trovaPosizione(Escursione exc) {
+        if (exc.giornate == null) return null;
+        for (var g : exc.giornate) {
+            if (g.tappe != null && !g.tappe.isEmpty()) {
+                var t = g.tappe.get(0);
+                return t.nomeLuogo + ", " + t.nomeZona + " (" + t.nomePaese + ")";
+            }
+        }
+        return null;
+    }
 
     // ── Helpers ───────────────────────────────────────────────────
 
