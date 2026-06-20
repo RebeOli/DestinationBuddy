@@ -1,5 +1,8 @@
 package it.unibo.destinationbuddy.model.mocked;
 
+import java.util.List;
+
+import it.unibo.destinationbuddy.data.Prenotazione;
 import it.unibo.destinationbuddy.model.PrenotazioniModel;
 
 public class MockedPrenotazioniModel implements PrenotazioniModel {
@@ -39,5 +42,11 @@ public class MockedPrenotazioniModel implements PrenotazioniModel {
     public boolean noleggiaPezzo(String idPezzo, String idEscursione, String cf, int durataNoleggio) {
         System.out.println("[MOCK] Noleggio pezzo " + idPezzo + " confermato per CF: " + cf + " (Durata: " + durataNoleggio + " gg)");
         return true;
+    }
+
+    @Override
+    public List<Prenotazione> getPrenotazioniUtente(String cf) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPrenotazioniUtente'");
     }
 }

@@ -7,17 +7,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 /**
  * BookingView — prenotazione escursione + noleggio equipaggiamento.
+ * Light Theme tramite classi CSS.
  *
  * UTILIZZO DAL CONTROLLER:
  *   BookingView view = new BookingView();
@@ -28,49 +25,31 @@ import java.util.function.Consumer;
  */
 public class BookingView {
 
-    private static final String DARK_BG      = "#0E2A1A";
-    private static final String CARD_BG      = "#152E1C";
-    private static final String ACCENT       = "#D4673A";
-    private static final String ACCENT_HOVER = "#B85530";
-    private static final String TEXT_MUTED   = "#A0B8AA";
-
-    // Callbacks
     private BiConsumer<String, Map<String, Boolean>> onConferma = (id, eq) -> {};
     private Runnable onIndietro = () -> {};
 
     private final ScrollPane root;
     private final VBox       contentBox;
 
-    // Stato interno
     private Escursione       escursioneCorrente;
     private Persona          utenteCorrente;
     private double           scontoNoleggio = 0.0;
     private final Map<String, CheckBox> equipCheckboxes = new HashMap<>();
 
-    // Label totale dinamico
     private final Label totalLabel = new Label("€ 0.00");
 
     public BookingView() {
         contentBox = new VBox(20);
         contentBox.setPadding(new Insets(20, 24, 24, 24));
-        contentBox.setStyle("-fx-background-color: " + DARK_BG + ";");
 
         root = new ScrollPane(contentBox);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + DARK_BG + "; -fx-background-color: " + DARK_BG
-                + "; -fx-border-color: transparent;");
+        root.getStyleClass().add("scroll-pane");
     }
 
     // ── API pubblica ──────────────────────────────────────────────
 
-    /**
-     * Popola la view con i dati dell'escursione e dell'utente.
-     * @param escursione      escursione da prenotare
-     * @param utente          utente loggato
-     * @param postiRimanenti  posti ancora disponibili
-     * @param scontoNoleggio  percentuale sconto (es. 0.20 = 20%)
-     */
     public void setEscursione(Escursione escursione, Persona utente,
                                int postiRimanenti, double scontoNoleggio) {
         this.escursioneCorrente = escursione;
@@ -95,15 +74,14 @@ public class BookingView {
         success.setPadding(new Insets(60, 0, 0, 0));
 
         Label icon = new Label("✅");
-        icon.setFont(Font.font(48));
+        icon.setStyle("-fx-font-size: 48px;");
 
         Label titolo = new Label("Prenotazione confermata!");
-        titolo.setFont(Font.font("System", FontWeight.BOLD, 22));
-        titolo.setTextFill(Color.WHITE);
+        titolo.getStyleClass().add("auth-title");
+        titolo.setStyle("-fx-font-size: 22px;");
 
         Label sub = new Label("Sei iscritto a: " + (escursioneCorrente != null ? escursioneCorrente.titolo : ""));
-        sub.setFont(Font.font("System", 14));
-        sub.setTextFill(Color.web(TEXT_MUTED));
+        sub.getStyleClass().add("text-muted");
 
         Button tornaBtn = new Button("Torna all'esplora");
         tornaBtn.getStyleClass().add("btn-accent");
@@ -118,9 +96,8 @@ public class BookingView {
         contentBox.getChildren().removeIf(n -> "error-box".equals(n.getId()));
         Label err = new Label("⚠ " + messaggio);
         err.setId("error-box");
-        err.setFont(Font.font("System", 13));
-        err.setTextFill(Color.web("#EF4444"));
-        err.setStyle("-fx-background-color: rgba(239,68,68,0.1); -fx-background-radius: 8; -fx-padding: 10 14;");
+        err.getStyleClass().add("error-label");
+        err.setStyle("-fx-background-color: rgba(176,58,46,0.08); -fx-background-radius: 8; -fx-padding: 10 14;");
         err.setMaxWidth(Double.MAX_VALUE);
         contentBox.getChildren().add(0, err);
     }
@@ -134,26 +111,24 @@ public class BookingView {
         HBox breadcrumb = new HBox(6);
         breadcrumb.setAlignment(Pos.CENTER_LEFT);
         Label back = new Label("← Dettaglio");
-        back.setFont(Font.font("System", 12));
-        back.setTextFill(Color.web(ACCENT));
+        back.getStyleClass().add("switch-link");
         back.setCursor(javafx.scene.Cursor.HAND);
         back.setOnMouseClicked(e -> onIndietro.run());
         Label sep = new Label("›");
-        sep.setTextFill(Color.web(TEXT_MUTED));
+        sep.getStyleClass().add("text-muted");
         Label cur = new Label("Prenotazione");
-        cur.setFont(Font.font("System", 12));
-        cur.setTextFill(Color.web(TEXT_MUTED));
+        cur.getStyleClass().add("text-muted");
         breadcrumb.getChildren().addAll(back, sep, cur);
 
         // Riepilogo escursione
         VBox riepilogo = new VBox(10);
         riepilogo.setPadding(new Insets(16));
-        riepilogo.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 12;"
-                + "-fx-border-color: rgba(212,103,58,0.3); -fx-border-radius: 12; -fx-border-width: 0.5;");
+        riepilogo.getStyleClass().add("card");
+        riepilogo.setStyle("-fx-border-color: -db-accent; -fx-border-width: 1.5;");
 
         Label escTitolo = new Label(exc.titolo);
-        escTitolo.setFont(Font.font("System", FontWeight.BOLD, 18));
-        escTitolo.setTextFill(Color.WHITE);
+        escTitolo.getStyleClass().add("auth-title");
+        escTitolo.setStyle("-fx-font-size: 18px;");
 
         GridPane info = new GridPane();
         info.setHgap(24);
@@ -169,7 +144,7 @@ public class BookingView {
 
         riepilogo.getChildren().addAll(escTitolo, info);
 
-        // Dati partecipante (sola lettura, presi dall'utente loggato)
+        // Dati partecipante
         VBox partecipante = sectionBox("👤 Partecipante");
         GridPane partGrid = new GridPane();
         partGrid.setHgap(16);
@@ -183,17 +158,13 @@ public class BookingView {
         VBox equipSection = sectionBox("🎒 Noleggio equipaggiamento");
         if (scontoNoleggio > 0) {
             Label scontoLbl = new Label(String.format("✓ Sconto Premium %.0f%% applicato", scontoNoleggio * 100));
-            scontoLbl.setFont(Font.font("System", 12));
-            scontoLbl.setTextFill(Color.web("#4AC582"));
-            scontoLbl.setStyle("-fx-background-color: rgba(74,197,130,0.1);"
-                    + "-fx-background-radius: 6; -fx-padding: 4 10;");
+            scontoLbl.getStyleClass().addAll("badge", "badge-green");
             equipSection.getChildren().add(scontoLbl);
         }
 
         if (exc.equipaggiamento == null || exc.equipaggiamento.isEmpty()) {
             Label noEquip = new Label("Nessun equipaggiamento richiesto per questa escursione.");
-            noEquip.setFont(Font.font("System", 13));
-            noEquip.setTextFill(Color.web(TEXT_MUTED));
+            noEquip.getStyleClass().add("text-muted");
             equipSection.getChildren().add(noEquip);
         } else {
             int durata = exc.giornate != null ? exc.giornate.size() : 1;
@@ -205,27 +176,25 @@ public class BookingView {
         // Totale
         VBox totaleBox = new VBox(8);
         totaleBox.setPadding(new Insets(14));
-        totaleBox.setStyle("-fx-background-color: rgba(212,103,58,0.08);"
-                + "-fx-background-radius: 10;"
-                + "-fx-border-color: rgba(212,103,58,0.25);"
-                + "-fx-border-radius: 10; -fx-border-width: 0.5;");
+        totaleBox.getStyleClass().add("card");
+        totaleBox.setStyle("-fx-border-color: -db-accent; -fx-border-width: 1;");
 
         HBox costoEscRow = totaleRow("Costo iscrizione", String.format("€ %.2f", exc.costo));
         HBox equipRow    = totaleRow("Noleggio selezionato", "€ 0.00");
         equipRow.setId("equip-totale-row");
 
-        totalLabel.setFont(Font.font("System", FontWeight.BOLD, 18));
-        totalLabel.setTextFill(Color.web(ACCENT));
+        totalLabel.getStyleClass().add("text-accent");
+        totalLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         totalLabel.setText(String.format("€ %.2f", exc.costo));
 
         HBox totalRow = new HBox();
         totalRow.setAlignment(Pos.CENTER_LEFT);
         Label totaleTxt = new Label("Totale");
-        totaleTxt.setFont(Font.font("System", FontWeight.BOLD, 15));
-        totaleTxt.setTextFill(Color.WHITE);
+        totaleTxt.getStyleClass().add("auth-title");
+        totaleTxt.setStyle("-fx-font-size: 15px;");
         Region sp = new Region();
         HBox.setHgrow(sp, Priority.ALWAYS);
-        totalRow.setStyle("-fx-border-color: rgba(255,255,255,0.1); -fx-border-width: 1 0 0 0;");
+        totalRow.setStyle("-fx-border-color: -db-border; -fx-border-width: 1 0 0 0;");
         totalRow.setPadding(new Insets(8, 0, 0, 0));
         totalRow.getChildren().addAll(totaleTxt, sp, totalLabel);
 
@@ -236,8 +205,7 @@ public class BookingView {
         actions.setAlignment(Pos.CENTER_LEFT);
 
         Button confermaBtn = new Button("Conferma prenotazione");
-        confermaBtn.setFont(Font.font("System", FontWeight.BOLD, 14));
-        styleAccentBtn(confermaBtn, 12, 24);
+        confermaBtn.getStyleClass().add("btn-accent");
         confermaBtn.setOnAction(e -> {
             Map<String, Boolean> selezioni = new HashMap<>();
             equipCheckboxes.forEach((id, cb) -> selezioni.put(id, cb.isSelected()));
@@ -245,7 +213,7 @@ public class BookingView {
         });
 
         Button indietroBtn = new Button("← Annulla");
-        styleGhostBtn(indietroBtn);
+        indietroBtn.getStyleClass().add("btn-ghost");
         indietroBtn.setOnAction(e -> onIndietro.run());
 
         actions.getChildren().addAll(confermaBtn, indietroBtn);
@@ -258,31 +226,26 @@ public class BookingView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(10, 0, 10, 0));
-        row.setStyle("-fx-border-color: rgba(255,255,255,0.07);"
-                + "-fx-border-width: 0 0 0.5 0;");
+        row.setStyle("-fx-border-color: -db-border; -fx-border-width: 0 0 1 0;");
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
         Label catLbl = new Label(eq.idCategoria);
-        catLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        catLbl.setTextFill(Color.WHITE);
+        catLbl.getStyleClass().add("cert-title");
 
-        double costoBase  = eq.costoTotaleGiornaliero * durata;
-        double costoSconт = costoBase * (1 - scontoNoleggio);
+        double costoBase   = eq.costoTotaleGiornaliero * durata;
+        double costoScontato = costoBase * (1 - scontoNoleggio);
         Label costoLbl = new Label(String.format("€ %.2f / giorno × %d giorni", eq.costoTotaleGiornaliero, durata));
-        costoLbl.setFont(Font.font("System", 11));
-        costoLbl.setTextFill(Color.web(TEXT_MUTED));
+        costoLbl.getStyleClass().add("text-muted");
         info.getChildren().addAll(catLbl, costoLbl);
 
         VBox prezziBox = new VBox(2);
         prezziBox.setAlignment(Pos.CENTER_RIGHT);
-        Label prezzoFinal = new Label(String.format("€ %.2f", costoSconт));
-        prezzoFinal.setFont(Font.font("System", FontWeight.BOLD, 14));
-        prezzoFinal.setTextFill(Color.web(ACCENT));
+        Label prezzoFinal = new Label(String.format("€ %.2f", costoScontato));
+        prezzoFinal.getStyleClass().add("text-price");
         if (scontoNoleggio > 0) {
             Label prezzoBase = new Label(String.format("€ %.2f", costoBase));
-            prezzoBase.setFont(Font.font("System", 11));
-            prezzoBase.setTextFill(Color.web(TEXT_MUTED));
+            prezzoBase.getStyleClass().add("text-muted");
             prezzoBase.setStyle("-fx-strikethrough: true;");
             prezziBox.getChildren().addAll(prezzoFinal, prezzoBase);
         } else {
@@ -290,7 +253,6 @@ public class BookingView {
         }
 
         CheckBox cb = new CheckBox();
-        cb.setStyle("-fx-text-fill: white;");
         cb.selectedProperty().addListener((obs, old, selected) -> aggiornaTotale());
         equipCheckboxes.put(eq.idCategoria, cb);
 
@@ -318,11 +280,9 @@ public class BookingView {
     private VBox sectionBox(String titolo) {
         VBox box = new VBox(12);
         box.setPadding(new Insets(14));
-        box.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 12;"
-                + "-fx-border-color: #1E4030; -fx-border-radius: 12; -fx-border-width: 0.5;");
+        box.getStyleClass().add("card");
         Label lbl = new Label(titolo);
-        lbl.setFont(Font.font("System", FontWeight.BOLD, 14));
-        lbl.setTextFill(Color.WHITE);
+        lbl.getStyleClass().add("card-title");
         box.getChildren().add(lbl);
         return box;
     }
@@ -330,11 +290,9 @@ public class BookingView {
     private void addInfoCell(GridPane grid, String label, String value, int col, int row) {
         VBox cell = new VBox(3);
         Label lbl = new Label(label);
-        lbl.setFont(Font.font("System", 11));
-        lbl.setTextFill(Color.web(TEXT_MUTED));
+        lbl.getStyleClass().add("text-muted");
         Label val = new Label(value);
-        val.setFont(Font.font("System", FontWeight.BOLD, 13));
-        val.setTextFill(Color.WHITE);
+        val.getStyleClass().add("cert-title");
         cell.getChildren().addAll(lbl, val);
         grid.add(cell, col, row);
     }
@@ -342,13 +300,10 @@ public class BookingView {
     private void addFormField(GridPane grid, String label, String value, int col) {
         VBox cell = new VBox(4);
         Label lbl = new Label(label);
-        lbl.setFont(Font.font("System", 11));
-        lbl.setTextFill(Color.web(TEXT_MUTED));
+        lbl.getStyleClass().add("text-muted");
         Label val = new Label(value.isEmpty() ? "—" : value);
-        val.setFont(Font.font("System", 13));
-        val.setTextFill(Color.WHITE);
-        val.setStyle("-fx-background-color: rgba(255,255,255,0.05);"
-                + "-fx-background-radius: 6; -fx-padding: 8 12;");
+        val.getStyleClass().add("sidebar-item-text");
+        val.setStyle("-fx-background-color: rgba(0,0,0,0.03); -fx-background-radius: 6; -fx-padding: 8 12;");
         val.setMaxWidth(Double.MAX_VALUE);
         cell.getChildren().addAll(lbl, val);
         grid.add(cell, col, 0);
@@ -359,33 +314,12 @@ public class BookingView {
         HBox row = new HBox();
         row.setAlignment(Pos.CENTER_LEFT);
         Label lbl = new Label(label);
-        lbl.setFont(Font.font("System", 13));
-        lbl.setTextFill(Color.web(TEXT_MUTED));
+        lbl.getStyleClass().add("text-muted");
         Region sp = new Region();
         HBox.setHgrow(sp, Priority.ALWAYS);
         Label val = new Label(valore);
-        val.setFont(Font.font("System", 13));
-        val.setTextFill(Color.WHITE);
+        val.getStyleClass().add("sidebar-item-text");
         row.getChildren().addAll(lbl, sp, val);
         return row;
-    }
-
-    private void styleAccentBtn(Button btn, int padV, int padH) {
-        String base = "-fx-background-color: " + ACCENT + "; -fx-text-fill: white;"
-                + "-fx-cursor: hand; -fx-background-radius: 8;"
-                + "-fx-padding: " + padV + " " + padH + ";";
-        String hover = base.replace(ACCENT, ACCENT_HOVER);
-        btn.setStyle(base);
-        btn.setOnMouseEntered(e -> btn.setStyle(hover));
-        btn.setOnMouseExited(e -> btn.setStyle(base));
-    }
-
-    private void styleGhostBtn(Button btn) {
-        String s = "-fx-background-color: rgba(255,255,255,0.07); -fx-text-fill: white;"
-                + "-fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 8;"
-                + "-fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 18;";
-        btn.setStyle(s);
-        btn.setOnMouseEntered(e -> btn.setStyle(s.replace("0.07","0.14")));
-        btn.setOnMouseExited(e -> btn.setStyle(s));
     }
 }
