@@ -14,17 +14,6 @@ import javafx.scene.text.FontWeight;
 /**
  * MainView — contenitore principale con TopBar e Sidebar.
  * Gestisce la navigazione tra le pagine sostituendo il centro del BorderPane.
- *
- * UTILIZZO DAL CONTROLLER (AppController):
- * MainView main = new MainView();
- * main.setOnHome(()  -> controller.mostraHome());
- * main.setOnExplore(()  -> controller.mostraExplore());
- * main.setOnProfilo(()  -> controller.mostraProfilo());
- * main.setOnAdmin(()    -> controller.mostraAdmin());
- * main.setOnLogout(()   -> controller.logout());
- * main.setUtente(persona);
- * main.setContenuto(homeView.getRoot());
- * primaryStage.setScene(new Scene(main.getRoot(), 1200, 700));
  */
 public class MainView {
 
@@ -55,8 +44,12 @@ public class MainView {
     private final Label inizialeAvatar = new Label("?");
     private final Label nomeLabel      = new Label("Utente");
     private final Label ruoloLabel     = new Label("");
-    private final Button adminBtn;
-    private final Button creaEscBtn;
+    
+    // ── BLOCCO 1: VARIABILI DI CLASSE PER GESTIRE I MENU ──
+    private VBox menuStandard;
+    private VBox prenotaBlock;
+    private VBox creaBlock;
+    private Button adminButtonSidebar;
 
     private String activeNav = "home";
 
@@ -66,12 +59,8 @@ public class MainView {
         root.setTop(buildTopBar());
 
         body = new BorderPane();
-        body.setLeft(buildSidebar());
+        body.setLeft(buildSidebar()); // Questo metodo ora riempie le variabili di classe create qui sopra
         root.setCenter(body);
-        
-        // Pulsanti speciali costruiti con riferimento per poterli mostrare/nascondere
-        adminBtn   = findBtn("btn-admin");
-        creaEscBtn = findBtn("btn-crea-esc");
     }
 
     // ── API pubblica ──────────────────────────────────────────────────────────
@@ -81,6 +70,7 @@ public class MainView {
         body.setCenter(node);
     }
 
+    // ── BLOCCO 2: LOGICA DI SMISTAMENTO IN SET UTENTE ──
     /** Aggiorna le info nella sidebar quando l'utente si autentica. */
     public void setUtente(Persona p) {
         String iniziale = p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase();
@@ -89,16 +79,39 @@ public class MainView {
         ruoloLabel.setText(p.tipoAmministratore ? "Amministratore"
                 : (!p.tipoUtente ? "Guida certificata" : "Utente base"));
 
-        // Mostra pulsante admin solo agli amministratori
-        if (adminBtn != null) {
-            adminBtn.setVisible(p.tipoAmministratore);
-            adminBtn.setManaged(p.tipoAmministratore);
-        }
-        // Mostra "Nuova escursione" solo alle guide
-        boolean isGuida = !p.tipoUtente && !p.tipoAmministratore;
-        if (creaEscBtn != null) {
-            creaEscBtn.setVisible(isGuida);
-            creaEscBtn.setManaged(isGuida);
+        if (p.tipoAmministratore) {
+            // L'ADMIN È LOGGATO
+            if (menuStandard != null) {
+                // 1. Nascondo i menu inutili
+                menuStandard.setVisible(false);
+                menuStandard.setManaged(false);
+                prenotaBlock.setVisible(false);
+                prenotaBlock.setManaged(false);
+                creaBlock.setVisible(false);
+                creaBlock.setManaged(false);
+                
+                // 2. Mostro il bottone Admin
+                adminButtonSidebar.setVisible(true);
+                adminButtonSidebar.setManaged(true);
+            }
+        } else {
+            // È UN UTENTE NORMALE O UNA GUIDA
+            if (menuStandard != null) {
+                // 1. Nascondo il bottone Admin
+                adminButtonSidebar.setVisible(false);
+                adminButtonSidebar.setManaged(false);
+                
+                // 2. Riattivo i menu standard
+                menuStandard.setVisible(true);
+                menuStandard.setManaged(true);
+                prenotaBlock.setVisible(true);
+                prenotaBlock.setManaged(true);
+                
+                // 3. Controllo se è una guida per mostrare il bottone "Crea Escursione"
+                boolean isGuida = !p.tipoUtente; 
+                creaBlock.setVisible(isGuida);
+                creaBlock.setManaged(isGuida);
+            }
         }
     }
 
@@ -197,6 +210,7 @@ public class MainView {
 
     // ── Sidebar ───────────────────────────────────────────────────────────────
 
+    // ── BLOCCO 3: AGGIORNAMENTO VARIABILI IN BUILD SIDEBAR ──
     private VBox buildSidebar() {
         VBox sidebar = new VBox(0);
         sidebar.setPrefWidth(190);
@@ -224,25 +238,25 @@ public class MainView {
 
         profileBlock.getChildren().addAll(avatar, nomeLabel, ruoloLabel);
 
-        // Menu
-        VBox menu = new VBox(2);
-        menu.setPadding(new Insets(12, 8, 12, 8));
-        menu.getChildren().addAll(
+        // Menu Standard
+        menuStandard = new VBox(2);
+        menuStandard.setPadding(new Insets(12, 8, 12, 8));
+        menuStandard.getChildren().addAll(
                 sidebarItem("🏠", "Home",         () -> onHome.run()),
                 sidebarItem("🗓", "Prenotazioni",    () -> onProfilo.run()),
                 sidebarItem("🏅", "Certificazioni",  () -> onProfilo.run())
         );
 
         // Pulsante prenota (sempre visibile)
-        VBox bookBlock = new VBox();
-        bookBlock.setPadding(new Insets(10, 12, 10, 12));
+        prenotaBlock = new VBox();
+        prenotaBlock.setPadding(new Insets(10, 12, 10, 12));
         Button bookBtn = new Button("Prenota nuova escursione");
         bookBtn.setMaxWidth(Double.MAX_VALUE);
         bookBtn.setFont(Font.font("System", FontWeight.BOLD, 12));
         bookBtn.setWrapText(true);
         styleAccentBtn(bookBtn);
         bookBtn.setOnAction(e -> onPrenotaNuova.run());
-        bookBlock.getChildren().add(bookBtn);
+        prenotaBlock.getChildren().add(bookBtn);
 
         // Pulsante crea escursione (solo guide) — nascosto di default
         Button creaEscursBtn = new Button("+ Crea escursione");
@@ -257,7 +271,7 @@ public class MainView {
         creaEscursBtn.setOnMouseExited(e -> creaEscursBtn.setStyle("-fx-background-color: transparent;"
                 + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
 
-        VBox creaBlock = new VBox(creaEscursBtn);
+        creaBlock = new VBox(creaEscursBtn);
         creaBlock.setPadding(new Insets(0, 12, 8, 12));
         creaBlock.setVisible(false);
         creaBlock.setManaged(false);
@@ -273,27 +287,28 @@ public class MainView {
         bottom.setStyle("-fx-border-color: " + BORDER_COLOR + "; -fx-border-width: 1 0 0 0;");
 
         // Pulsante admin (nascosto di default)
-        Button adminButton = new Button("⚙ Admin");
-        adminButton.setId("btn-admin");
-        adminButton.setMaxWidth(Double.MAX_VALUE);
-        adminButton.setFont(Font.font("System", 12));
-        adminButton.setStyle("-fx-background-color: transparent;"
+        adminButtonSidebar = new Button("⚙ Admin");
+        adminButtonSidebar.setId("btn-admin");
+        adminButtonSidebar.setMaxWidth(Double.MAX_VALUE);
+        adminButtonSidebar.setFont(Font.font("System", 12));
+        adminButtonSidebar.setStyle("-fx-background-color: transparent;"
                 + "-fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
-        adminButton.setOnMouseEntered(e -> adminButton.setStyle("-fx-background-color: " + HOVER_BG 
+        adminButtonSidebar.setOnMouseEntered(e -> adminButtonSidebar.setStyle("-fx-background-color: " + HOVER_BG 
                 + "; -fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + ACCENT_HOVER + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
-        adminButton.setOnMouseExited(e -> adminButton.setStyle("-fx-background-color: transparent;"
+        adminButtonSidebar.setOnMouseExited(e -> adminButtonSidebar.setStyle("-fx-background-color: transparent;"
                 + "-fx-text-fill: " + TEXT_DARK + "; -fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
 
-        adminButton.setVisible(false);
-        adminButton.setManaged(false);
-        adminButton.setOnAction(e -> onAdmin.run());
-        VBox adminBlock = new VBox(adminButton);
+        adminButtonSidebar.setVisible(false);
+        adminButtonSidebar.setManaged(false);
+        adminButtonSidebar.setOnAction(e -> onAdmin.run());
+        
+        VBox adminBlock = new VBox(adminButtonSidebar);
         adminBlock.setPadding(new Insets(0, 0, 8, 0));
 
         bottom.getChildren().addAll(adminBlock,
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
-        sidebar.getChildren().addAll(profileBlock, menu, bookBlock, creaBlock, spacer, bottom);
+        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, spacer, bottom);
         return sidebar;
     }
 
@@ -314,11 +329,6 @@ public class MainView {
         textLbl.setTextFill(Color.web(TEXT_DARK));
         item.getChildren().addAll(iconLbl, textLbl);
         return item;
-    }
-
-    private Button findBtn(String id) {
-        // Restituiamo null qui — i pulsanti vengono trovati al momento del set
-        return null;
     }
 
     private void styleAccentBtn(Button btn) {
@@ -351,5 +361,4 @@ public class MainView {
                 });
             });
     }
-
 }

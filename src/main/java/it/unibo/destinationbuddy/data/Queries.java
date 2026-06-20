@@ -240,7 +240,7 @@ public final class Queries {
     public static final String VALIDA_CERTIFICAZIONE =
         """
         UPDATE CERTIFICAZIONI
-        SET stato_validazione = 'valido'
+        SET stato_validazione = 'Validata'
         WHERE n_certificazione = ?
         """;
 
