@@ -109,13 +109,19 @@ public final class Certificazione {
                     rs.getString("ID_certificazione"),
                     rs.getString("livello")
                 );
+
+                java.sql.Date sqlRilascio = rs.getDate("data_rilascio");
+                LocalDate dataRilascio = (sqlRilascio != null) ? sqlRilascio.toLocalDate() : null;
+
+                java.sql.Date sqlScadenza = rs.getDate("data_scadenza");
+                LocalDate dataScadenza = (sqlScadenza != null) ? sqlScadenza.toLocalDate() : null;
     
                 return new Certificazione(
                     tipologia,
                     rs.getString("n_certificazione"),
                     rs.getString("ente_rilasciante"),
-                    rs.getDate("data_rilascio").toLocalDate(),
-                    rs.getDate("data_scadenza").toLocalDate(),
+                    dataRilascio,
+                    dataScadenza,
                     rs.getString("stato_validazione"),
                     rs.getString("CF"),
                     rs.getString("Guida_CF")
