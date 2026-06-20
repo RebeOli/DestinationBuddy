@@ -122,6 +122,8 @@ public class AppController {
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
+        mainView.setUtente(null);
+        homeView.setUtente(null);
         mostraHome();
     }
 

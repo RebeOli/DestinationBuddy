@@ -59,20 +59,39 @@ public class MainView {
         root.setTop(buildTopBar());
 
         body = new BorderPane();
-        body.setLeft(buildSidebar()); // Questo metodo ora riempie le variabili di classe create qui sopra
+        body.setLeft(buildSidebar()); 
         root.setCenter(body);
     }
 
     // ── API pubblica ──────────────────────────────────────────────────────────
 
-    /** Imposta il nodo centrale (la pagina attiva). */
     public void setContenuto(javafx.scene.Node node) {
         body.setCenter(node);
     }
 
     // ── BLOCCO 2: LOGICA DI SMISTAMENTO IN SET UTENTE ──
-    /** Aggiorna le info nella sidebar quando l'utente si autentica. */
     public void setUtente(Persona p) {
+        // 🚀 SE NESSUN UTENTE È LOGGATO (O HA APPENA FATTO LOGOUT)
+        if (p == null) {
+            inizialeAvatar.setText("?");
+            nomeLabel.setText("Utente");
+            ruoloLabel.setText("");
+            
+            if (menuStandard != null) {
+                adminButtonSidebar.setVisible(false);
+                adminButtonSidebar.setManaged(false);
+                creaBlock.setVisible(false);
+                creaBlock.setManaged(false);
+                
+                menuStandard.setVisible(true);
+                menuStandard.setManaged(true);
+                prenotaBlock.setVisible(true);
+                prenotaBlock.setManaged(true);
+            }
+            return; // Usciamo dal metodo qui
+        }
+
+        // SE UN UTENTE È LOGGATO
         String iniziale = p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase();
         inizialeAvatar.setText(iniziale);
         nomeLabel.setText(p.nome + " " + p.cognome);
@@ -80,9 +99,7 @@ public class MainView {
                 : (!p.tipoUtente ? "Guida certificata" : "Utente base"));
 
         if (p.tipoAmministratore) {
-            // L'ADMIN È LOGGATO
             if (menuStandard != null) {
-                // 1. Nascondo i menu inutili
                 menuStandard.setVisible(false);
                 menuStandard.setManaged(false);
                 prenotaBlock.setVisible(false);
@@ -90,24 +107,19 @@ public class MainView {
                 creaBlock.setVisible(false);
                 creaBlock.setManaged(false);
                 
-                // 2. Mostro il bottone Admin
                 adminButtonSidebar.setVisible(true);
                 adminButtonSidebar.setManaged(true);
             }
         } else {
-            // È UN UTENTE NORMALE O UNA GUIDA
             if (menuStandard != null) {
-                // 1. Nascondo il bottone Admin
                 adminButtonSidebar.setVisible(false);
                 adminButtonSidebar.setManaged(false);
                 
-                // 2. Riattivo i menu standard
                 menuStandard.setVisible(true);
                 menuStandard.setManaged(true);
                 prenotaBlock.setVisible(true);
                 prenotaBlock.setManaged(true);
                 
-                // 3. Controllo se è una guida per mostrare il bottone "Crea Escursione"
                 boolean isGuida = !p.tipoUtente; 
                 creaBlock.setVisible(isGuida);
                 creaBlock.setManaged(isGuida);
@@ -115,7 +127,6 @@ public class MainView {
         }
     }
 
-    /** Evidenzia la voce di navigazione attiva. */
     public void setNavAttiva(String nav) {
         this.activeNav = nav;
         if (root.getTop() != null) {
@@ -124,7 +135,6 @@ public class MainView {
                 javafx.scene.Node node = root.getTop().lookup("#nav-" + id);
                 if (node instanceof Label lbl) {
                     boolean active = activeNav.equals(id);
-                    // Usa colore testo scuro
                     lbl.setTextFill(active ? Color.web(TEXT_DARK) : Color.web(TEXT_MUTED));
                     lbl.setStyle(active
                             ? "-fx-border-color: transparent transparent " + ACCENT + " transparent; -fx-border-width: 0 0 2 0;"
@@ -210,7 +220,6 @@ public class MainView {
 
     // ── Sidebar ───────────────────────────────────────────────────────────────
 
-    // ── BLOCCO 3: AGGIORNAMENTO VARIABILI IN BUILD SIDEBAR ──
     private VBox buildSidebar() {
         VBox sidebar = new VBox(0);
         sidebar.setPrefWidth(190);
@@ -277,7 +286,6 @@ public class MainView {
         creaBlock.setManaged(false);
         creaBlock.setId("btn-crea-esc");
 
-        // 1. Ripristiniamo lo spacer (spinge tutto il resto verso il basso)
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
@@ -342,16 +350,12 @@ public class MainView {
     }
 
     public void setAutenticato(boolean autenticato) {
-        // Trova il pulsante in alto a destra
         root.getTop().lookupAll(".button").stream()
             .filter(n -> "btn-auth".equals(n.getId()))
             .findFirst()
             .ifPresent(n -> {
                 Button btn = (Button) n;
-                // Cambia il testo
                 btn.setText(autenticato ? "Esci" : "Accedi");
-                
-                // Cambia l'azione: se è autenticato fa Logout, altrimenti fa Login
                 btn.setOnAction(e -> {
                     if (autenticato) {
                         onLogout.run();
