@@ -124,17 +124,24 @@ public class AppController {
     }
 
     private void mostraAdmin() {
-        // 1. FORZA IMMEDIATAMENTE IL CAMBIO DI SCHERMATA
         mainView.setContenuto(adminView.getRoot());
         mainView.setNavAttiva("");
-
-        // 2. PROVA A CARICARE I DATI DAL DB
         try {
             adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa());
+        } catch (Exception e) {
+            System.out.println("⚠️ Errore Certificazioni: " + e.getMessage());
+            adminView.setCertificazioniInAttesa(null);
+        }
+        try {
+            adminView.setGuide(null);
+        } catch (Exception e) {
+            adminView.setGuide(null);
+        }
+        try {
             adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare());
         } catch (Exception e) {
-            System.out.println("⚠️ Errore Database in Admin: " + e.getMessage());
-            // Anche se c'è un errore, la schermata dell'admin sarà comunque visibile (vuota)
+            System.out.println("⚠️ Errore Premi: " + e.getMessage());
+            adminView.setUtentiDaPremiare(null);
         }
     }
 

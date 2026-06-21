@@ -215,31 +215,48 @@ public final class Persona {
                 var resultSet = statement.executeQuery();
             ) {
                 while (resultSet.next()) {
-                    var cf = resultSet.getString("CF");
-                    var nome = resultSet.getString("nome");
-                    var cognome = resultSet.getString("cognome");
-                    var tipoUtente = resultSet.getBoolean("tipo_utente");
-                    var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
-                    var idAccount = resultSet.getString("ID_account");
-                    var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
-                    var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
-                    LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
-                    var sqlDataAssunzione = resultSet.getDate("data_assunzione");
-                    LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
-                    var email = resultSet.getString("email");
-                    var password = resultSet.getString("password");
-                    var statoAccount = resultSet.getString("stato_account");
+                    String cf = "", nome = "", cognome = "";
+                    
+                    // Prende i dati di base che la query dei premi restituisce sempre
+                    try { cf = resultSet.getString("CF"); } catch(Exception ignored) {}
+                    try { nome = resultSet.getString("nome"); } catch(Exception ignored) {}
+                    try { cognome = resultSet.getString("cognome"); } catch(Exception ignored) {}
+
+                    boolean tipoUtente = true, tipoAmministratore = false;
+                    String email = "", password = "", idAccount = "", statoAccount = null;
+                    int escursioniEffettuate = 0;
+                    LocalDate dataIscrizione = LocalDate.now(), dataAssunzione = null;
+
+                    // Usiamo il CF appena trovato per ripescare il profilo esatto e prendere num escursioni
+                    if (cf != null && !cf.isEmpty()) {
+                        try (var stDettagli = DAOUtils.prepare(connection, "SELECT * FROM PERSONE WHERE CF = ?", cf);
+                             var rsDettagli = stDettagli.executeQuery()) {
+                            if (rsDettagli.next()) {
+                                tipoUtente = rsDettagli.getBoolean("tipo_utente");
+                                tipoAmministratore = rsDettagli.getBoolean("tipo_amministratore");
+                                idAccount = rsDettagli.getString("ID_account");
+                                escursioniEffettuate = rsDettagli.getInt("escursioni_effettuate");
+                                email = rsDettagli.getString("email");
+                                password = rsDettagli.getString("password");
+                                
+                                var sqlDataIscrizione = rsDettagli.getDate("data_iscrizione");
+                                if(sqlDataIscrizione != null) dataIscrizione = sqlDataIscrizione.toLocalDate();
+                                
+                                var sqlDataAssunzione = rsDettagli.getDate("data_assunzione");
+                                if(sqlDataAssunzione != null) dataAssunzione = sqlDataAssunzione.toLocalDate();
+                                
+                                try { statoAccount = rsDettagli.getString("stato_account"); } catch(Exception ignored) {}
+                            }
+                        } catch(Exception ignored) {}
+                    }
+
                     Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
-
                     utenti.add(utente);
-
                 }
             } catch (Exception e) {
                 throw new DAOException(e);
             }
-
             return utenti;
-
         }
 
         public static void disattivaGuida(Connection connection, Persona guida) {
