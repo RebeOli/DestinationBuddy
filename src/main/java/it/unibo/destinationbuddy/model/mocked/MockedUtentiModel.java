@@ -11,10 +11,7 @@ public class MockedUtentiModel implements UtentiModel {
 
     @Override
     public Optional<Persona> getPersonaAutenticata(String email, String password) {
-        
         System.out.println("[MOCK] Tentativo di login con email: " + email);
-
-        // Se l'email contiene "admin", facciamo finta che sia l'Amministratore
         if (email.contains("admin")) {
             System.out.println("[MOCK] Login effettuato come AMMINISTRATORE.");
             return Optional.of(new Persona(
@@ -24,7 +21,6 @@ public class MockedUtentiModel implements UtentiModel {
             ));
         }
         
-        // Se l'email contiene "guida", facciamo finta che sia una Guida
         if (email.contains("guida")) {
             System.out.println("[MOCK] Login effettuato come GUIDA.");
             return Optional.of(new Persona(
@@ -34,7 +30,6 @@ public class MockedUtentiModel implements UtentiModel {
             ));
         }
 
-        // Qualsiasi altra email, è un normale Utente
         System.out.println("[MOCK] Login effettuato come UTENTE NORMALE.");
         return Optional.of(new Persona(
             "RSSMRA80A01H501U", "Mario", "Rossi", true, false, 
@@ -45,25 +40,22 @@ public class MockedUtentiModel implements UtentiModel {
 
     @Override
     public void registraUtente(Persona utente) {
-        // Mock: Simula il salvataggio del nuovo utente nel database
         System.out.println("[MOCK] Registrazione completata con successo per: " + utente.nome + " " + utente.cognome);
     }
 
     @Override
     public int numeroEscursioniEffettuate(Persona utente) {
-        // Restituisce direttamente il valore salvato nell'oggetto Persona
         return utente.escursioniEffettuate;
     }
 
     @Override
     public boolean sottoscriviAbbonamento(double costoMensile, int durata, String cf) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'sottoscriviAbbonamento'");
+        System.out.println("[MOCK] Sottoscritto abbonamento per CF: " + cf);
+        return true;
     }
 
     @Override
     public Optional<Abbonamento> getUltimoAbbonamento(Persona utente) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUltimoAbbonamento'");
+        return Optional.empty();
     }
 }

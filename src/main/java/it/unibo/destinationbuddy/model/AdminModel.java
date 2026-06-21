@@ -8,4 +8,5 @@ public interface AdminModel {
     List<Persona> getUtentiDaPremiare();
     void disattivaGuida(Persona guida);
     void attivaGuida(Persona guida);
+    List<Persona> getTutteLeGuide();
 }

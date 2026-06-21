@@ -66,10 +66,17 @@ public class MockedEscursioniModel implements EscursioniModel {
 
     @Override
     public List<TipologiaEscursione> getTipologie() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getTipologieDisponibili'");
+        List<TipologiaEscursione> lista = new ArrayList<>();
+
+        lista.add(new TipologiaEscursione("Trekking", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Snorkeling", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Hiking", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Alpinismo", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Trekking notturno", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Speleologia", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Mountain bike", new ArrayList<>()));
+        lista.add(new TipologiaEscursione("Ferrata", new ArrayList<>()));
+        
+        return lista;
     }
-
-
-
 }

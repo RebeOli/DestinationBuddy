@@ -147,25 +147,26 @@ public class AdminView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        row.getStyleClass().add("cert-row"); // Usa il CSS!
+        row.getStyleClass().add("cert-row"); 
+        String statoDb = (p.statoAccount == null) ? "" : p.statoAccount.trim().toLowerCase();
+        boolean attiva = statoDb.equals("attivo") || statoDb.equals("1") || statoDb.equals("true");
+        
+        String statoVisivo = attiva ? "Attivo" : "Sospeso";
 
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
         Label nomeLbl = new Label(p.nome + " " + p.cognome);
         nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
         nomeLbl.setTextFill(Color.web(TEXT_DARK));
-        Label sub = new Label("CF: " + p.cf + "  ·  Stato: " +
-                (p.statoAccount == null || p.statoAccount.isEmpty() ? "—" : p.statoAccount));
+        Label sub = new Label("CF: " + p.cf + "  ·  Stato: " + statoVisivo);
         sub.setFont(Font.font("System", 11));
         sub.setTextFill(Color.web(TEXT_MUTED));
         info.getChildren().addAll(nomeLbl, sub);
-
-        boolean attiva = "attivo".equalsIgnoreCase(p.statoAccount);
-        // Bottone color terracotta chiaro se disattiva, grigino se attiva
         Button toggleBtn = smallBtn(
                 attiva ? "Disattiva" : "Attiva",
                 ACCENT,
                 "#F9EAE1");
+                
         toggleBtn.setOnAction(e -> {
             if (attiva) onDisattivaGuida.accept(p);
             else onAttivaGuida.accept(p);
