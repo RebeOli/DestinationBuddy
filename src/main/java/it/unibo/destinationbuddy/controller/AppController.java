@@ -116,7 +116,7 @@ public class AppController {
         mainView.setNavAttiva("");
 
         try { adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa()); } catch (Exception e) { adminView.setCertificazioniInAttesa(null); }
-        try { adminView.setGuide(adminModel.getTutteLeGuide()); } catch (Exception e) { adminView.setGuide(null); }
+        try { adminView.setGuide(adminModel.getTutteLeGuide(), adminModel.getGuideSospendibili());} catch (Exception e) { adminView.setGuide(null, null); }
         try { adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare()); } catch (Exception e) { adminView.setUtentiDaPremiare(null); }
     }
 

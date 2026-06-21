@@ -155,7 +155,7 @@ public final class Queries {
         JOIN ESCURSIONI E ON E.Guida_CF = G.CF
         JOIN RECENSIONI R ON R.ID_escursione = E.ID_escursione
         WHERE R.voto <= 2
-          AND G.stato_account = 'attivo'
+          AND G.stato_account = 1
         GROUP BY G.CF
         HAVING COUNT(R.ID_escursione) > 5
         """;
@@ -455,7 +455,7 @@ public final class Queries {
         """
         SELECT CF FROM GUIDE
         WHERE CF = ?
-        AND stato_account = 1
+        AND stato_account = '1'
         """;
 
     public static final String INSERISCI_GUIDA =
