@@ -163,14 +163,14 @@ public final class Queries {
     public static final String SOSPENDI_GUIDA =
         """
         UPDATE GUIDE
-        SET stato_account = 'disattivo'
+        SET stato_account = 0
         WHERE CF = ?
         """;
 
     public static final String RIATTIVA_GUIDA =
         """
         UPDATE GUIDE
-        SET stato_account = 'attivo'
+        SET stato_account = 1
         WHERE CF = ?
         """;
 

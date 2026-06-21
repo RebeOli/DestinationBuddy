@@ -18,10 +18,7 @@ public final class Persona {
     public LocalDate dataAssunzione;
     public String email;
     public String password;
-    public String statoAccount; // Sarà null per gli utenti normali, "attivo" o "disattivo" per le guide
-
-    //public List<Certificazione> certificazioni = new ArrayList<>();
-    //public String ruolo;
+    public String statoAccount; 
 
     public Persona(String cf, String nome, String cognome, boolean tipoUtente, boolean tipoAmministratore,
             String idAccount, int escursioniEffettuate, LocalDate dataIscrizione, LocalDate dataAssunzione,
@@ -61,64 +58,40 @@ public final class Persona {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
         Persona other = (Persona) obj;
         if (cf == null) {
-            if (other.cf != null)
-                return false;
-        } else if (!cf.equals(other.cf))
-            return false;
+            if (other.cf != null) return false;
+        } else if (!cf.equals(other.cf)) return false;
         if (nome == null) {
-            if (other.nome != null)
-                return false;
-        } else if (!nome.equals(other.nome))
-            return false;
+            if (other.nome != null) return false;
+        } else if (!nome.equals(other.nome)) return false;
         if (cognome == null) {
-            if (other.cognome != null)
-                return false;
-        } else if (!cognome.equals(other.cognome))
-            return false;
-        if (tipoUtente != other.tipoUtente)
-            return false;
-        if (tipoAmministratore != other.tipoAmministratore)
-            return false;
+            if (other.cognome != null) return false;
+        } else if (!cognome.equals(other.cognome)) return false;
+        if (tipoUtente != other.tipoUtente) return false;
+        if (tipoAmministratore != other.tipoAmministratore) return false;
         if (idAccount == null) {
-            if (other.idAccount != null)
-                return false;
-        } else if (!idAccount.equals(other.idAccount))
-            return false;
-        if (escursioniEffettuate != other.escursioniEffettuate)
-            return false;
+            if (other.idAccount != null) return false;
+        } else if (!idAccount.equals(other.idAccount)) return false;
+        if (escursioniEffettuate != other.escursioniEffettuate) return false;
         if (dataIscrizione == null) {
-            if (other.dataIscrizione != null)
-                return false;
-        } else if (!dataIscrizione.equals(other.dataIscrizione))
-            return false;
+            if (other.dataIscrizione != null) return false;
+        } else if (!dataIscrizione.equals(other.dataIscrizione)) return false;
         if (dataAssunzione == null) {
-            if (other.dataAssunzione != null)
-                return false;
-        } else if (!dataAssunzione.equals(other.dataAssunzione))
-            return false;
+            if (other.dataAssunzione != null) return false;
+        } else if (!dataAssunzione.equals(other.dataAssunzione)) return false;
         if (email == null) {
-            if (other.email != null)
-                return false;
-        } else if (!email.equals(other.email))
-            return false;
+            if (other.email != null) return false;
+        } else if (!email.equals(other.email)) return false;
         if (password == null) {
-            if (other.password != null)
-                return false;
-        } else if (!password.equals(other.password))
-            return false;
+            if (other.password != null) return false;
+        } else if (!password.equals(other.password)) return false;
         if (statoAccount == null) {
-            if (other.statoAccount != null)
-                return false;
-        } else if (!statoAccount.equals(other.statoAccount))
-            return false;
+            if (other.statoAccount != null) return false;
+        } else if (!statoAccount.equals(other.statoAccount)) return false;
         return true;
     }
 
@@ -127,21 +100,8 @@ public final class Persona {
         return "Persona [cf=" + cf + ", nome=" + nome + ", cognome=" + cognome + ", tipoUtente=" + tipoUtente
                 + ", tipoAmministratore=" + tipoAmministratore + ", idAccount=" + idAccount + ", escursioniEffettuate="
                 + escursioniEffettuate + ", dataIscrizione=" + dataIscrizione + ", dataAssunzione=" + dataAssunzione
-                + ", email=" + email + ", password=" + password + ", stato_account=" + statoAccount
-                + "]";
+                + ", email=" + email + ", password=" + password + ", stato_account=" + statoAccount + "]";
     }
-
-    // public boolean puoPrenotare(Escursione escursione) {
-    //     var tipo_certificazioni = new HashSet<>();
-    //     for (var c : Certificazioni.) {
-    //         tipo_certificazioni.add(c.tipologia);
-    //     }
-    //     return tipo_certificazioni.containsAll(escursione.certificazioniRichieste);
-    // }
-
-    // public void aggiungiCertificazione(Certificazione c) {
-    //     this.certificazioni.add(c);
-    // }
 
     public boolean isAmministratore() {
         return this.tipoAmministratore;
@@ -149,59 +109,41 @@ public final class Persona {
 
     public static final class DAO {
         public static Optional<Persona> autentica (Connection connection, String email, String password) {
-        try (
-            var statement = DAOUtils.prepare(connection, Queries.AUTENTICA_PERSONA, email, password);
-            var resultSet = statement.executeQuery();
-        ) {
-            if (resultSet.next()) {
-                var cf = resultSet.getString("CF");
-                var nome = resultSet.getString("nome");
-                var cognome = resultSet.getString("cognome");
-                var tipoUtente = resultSet.getBoolean("tipo_utente");
-                var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
-                var idAccount = resultSet.getString("ID_account");
-                var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
-                var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
-                LocalDate dataIscrizione = sqlDataIscrizione.toLocalDate();
-                var sqlDataAssunzione = resultSet.getDate("data_assunzione");
-                LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
-                //var statoAccount = resultSet.getString("stato_account");
+            try (var statement = DAOUtils.prepare(connection, Queries.AUTENTICA_PERSONA, email, password);
+                 var resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    var cf = resultSet.getString("CF");
+                    var nome = resultSet.getString("nome");
+                    var cognome = resultSet.getString("cognome");
+                    var tipoUtente = resultSet.getBoolean("tipo_utente");
+                    var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
+                    var idAccount = resultSet.getString("ID_account");
+                    var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
+                    var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
+                    LocalDate dataIscrizione = (sqlDataIscrizione != null) ? sqlDataIscrizione.toLocalDate() : null;
+                    var sqlDataAssunzione = resultSet.getDate("data_assunzione");
+                    LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
 
-                var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, null);
-
-                //caricaCertificazioni(connection, utente);
-
-                return Optional.of(utente);
-            } else {
-                return Optional.empty();
+                    var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, null);
+                    return Optional.of(utente);
+                } else {
+                    return Optional.empty();
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
             }
-        } catch (Exception e) {
-            throw new DAOException(e);
-        }
-
         }
 
         public static void incrementaEscursioniEffettuate(Connection connection, Escursione esc) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.AGGIORNA_ESCURSIONI_EFFETTUATE, esc.idEscursione);
-            ) {
+            try (var statement = DAOUtils.prepare(connection, Queries.AGGIORNA_ESCURSIONI_EFFETTUATE, esc.idEscursione)) {
                 statement.executeUpdate();
             } catch (Exception e) {
                 throw new DAOException(e);
             }
         }
 
-        // public static void caricaCertificazioni(Connection connection, Persona utente) {
-        //     var listaCert = Certificazione.DAO.listForUtente(connection, utente.cf);
-        //     for (var cert : listaCert) {
-        //         utente.aggiungiCertificazione(cert);
-        //     }
-        // }
-
         public static void registraUtente(Connection connection, Persona u) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.REGISTRA_PERSONA, u.cf, u.nome, u.cognome, u.idAccount, u.email, u.password);
-            ) {
+            try (var statement = DAOUtils.prepare(connection, Queries.REGISTRA_PERSONA, u.cf, u.nome, u.cognome, u.idAccount, u.email, u.password)) {
                 statement.executeUpdate();
             } catch (Exception e) {
                 throw new DAOException(e);
@@ -210,48 +152,27 @@ public final class Persona {
 
         public static List<Persona> getUtentiDaPremiare(Connection connection) {
             final List<Persona> utenti = new ArrayList<>();
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.UTENTI_TUTTI_PAESI);
-                var resultSet = statement.executeQuery();
-            ) {
+            try (var statement = DAOUtils.prepare(connection, Queries.UTENTI_TUTTI_PAESI);
+                 var resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    String cf = "", nome = "", cognome = "";
-                    
-                    // Prende i dati di base che la query dei premi restituisce sempre
+                    String cf = "";
                     try { cf = resultSet.getString("CF"); } catch(Exception ignored) {}
-                    try { nome = resultSet.getString("nome"); } catch(Exception ignored) {}
-                    try { cognome = resultSet.getString("cognome"); } catch(Exception ignored) {}
-
-                    boolean tipoUtente = true, tipoAmministratore = false;
-                    String email = "", password = "", idAccount = "", statoAccount = null;
-                    int escursioniEffettuate = 0;
-                    LocalDate dataIscrizione = LocalDate.now(), dataAssunzione = null;
-
-                    // Usiamo il CF appena trovato per ripescare il profilo esatto e prendere num escursioni
                     if (cf != null && !cf.isEmpty()) {
                         try (var stDettagli = DAOUtils.prepare(connection, "SELECT * FROM PERSONE WHERE CF = ?", cf);
                              var rsDettagli = stDettagli.executeQuery()) {
                             if (rsDettagli.next()) {
-                                tipoUtente = rsDettagli.getBoolean("tipo_utente");
-                                tipoAmministratore = rsDettagli.getBoolean("tipo_amministratore");
-                                idAccount = rsDettagli.getString("ID_account");
-                                escursioniEffettuate = rsDettagli.getInt("escursioni_effettuate");
-                                email = rsDettagli.getString("email");
-                                password = rsDettagli.getString("password");
-                                
-                                var sqlDataIscrizione = rsDettagli.getDate("data_iscrizione");
-                                if(sqlDataIscrizione != null) dataIscrizione = sqlDataIscrizione.toLocalDate();
-                                
-                                var sqlDataAssunzione = rsDettagli.getDate("data_assunzione");
-                                if(sqlDataAssunzione != null) dataAssunzione = sqlDataAssunzione.toLocalDate();
-                                
-                                try { statoAccount = rsDettagli.getString("stato_account"); } catch(Exception ignored) {}
+                                Persona utente = new Persona(
+                                    cf, rsDettagli.getString("nome"), rsDettagli.getString("cognome"),
+                                    rsDettagli.getBoolean("tipo_utente"), rsDettagli.getBoolean("tipo_amministratore"),
+                                    rsDettagli.getString("ID_account"), rsDettagli.getInt("escursioni_effettuate"),
+                                    rsDettagli.getDate("data_iscrizione") != null ? rsDettagli.getDate("data_iscrizione").toLocalDate() : null,
+                                    rsDettagli.getDate("data_assunzione") != null ? rsDettagli.getDate("data_assunzione").toLocalDate() : null,
+                                    rsDettagli.getString("email"), rsDettagli.getString("password"), null
+                                );
+                                utenti.add(utente);
                             }
                         } catch(Exception ignored) {}
                     }
-
-                    Persona utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, statoAccount);
-                    utenti.add(utente);
                 }
             } catch (Exception e) {
                 throw new DAOException(e);
@@ -259,22 +180,44 @@ public final class Persona {
             return utenti;
         }
 
+        public static List<Persona> getTutteLeGuide(Connection connection) {
+            final List<Persona> guide = new ArrayList<>();
+            String query = "SELECT p.*, g.stato_account AS stato_guida FROM PERSONE p JOIN GUIDE g ON p.CF = g.CF";
+            try (var statement = DAOUtils.prepare(connection, query);
+                 var resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Persona guida = new Persona(
+                        resultSet.getString("CF"), resultSet.getString("nome"), resultSet.getString("cognome"),
+                        resultSet.getBoolean("tipo_utente"), resultSet.getBoolean("tipo_amministratore"),
+                        resultSet.getString("ID_account"), resultSet.getInt("escursioni_effettuate"),
+                        resultSet.getDate("data_iscrizione") != null ? resultSet.getDate("data_iscrizione").toLocalDate() : null,
+                        resultSet.getDate("data_assunzione") != null ? resultSet.getDate("data_assunzione").toLocalDate() : null,
+                        resultSet.getString("email"), resultSet.getString("password"), 
+                        resultSet.getString("stato_guida") 
+                    );
+                    guide.add(guida);
+                }
+            } catch (Exception e) {
+                System.out.println("⚠️ Errore caricamento guide: " + e.getMessage());
+            }
+            return guide;
+        }
+
+        // 🚀 ORA I METODI URLANO L'ERRORE NEL TERMINALE
         public static void disattivaGuida(Connection connection, Persona guida) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.SOSPENDI_GUIDA, guida.cf);
-            ) {
+            try (var statement = DAOUtils.prepare(connection, Queries.SOSPENDI_GUIDA, guida.cf)) {
                 statement.executeUpdate();
             } catch (Exception e) {
+                System.err.println("❌ ERRORE DATABASE (Sospendi): " + e.getMessage());
                 throw new DAOException(e);
             }
         }
 
         public static void attivaGuida(Connection connection, Persona guida) {
-            try (
-                var statement = DAOUtils.prepare(connection, Queries.RIATTIVA_GUIDA, guida.cf);
-            ) {
+            try (var statement = DAOUtils.prepare(connection, Queries.RIATTIVA_GUIDA, guida.cf)) {
                 statement.executeUpdate();
             } catch (Exception e) {
+                System.err.println("❌ ERRORE DATABASE (Attiva): " + e.getMessage());
                 throw new DAOException(e);
             }
         }

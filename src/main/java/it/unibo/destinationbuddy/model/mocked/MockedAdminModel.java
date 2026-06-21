@@ -4,6 +4,7 @@ import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.model.AdminModel;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MockedAdminModel implements AdminModel {
@@ -50,5 +51,10 @@ public class MockedAdminModel implements AdminModel {
     @Override
     public void attivaGuida(Persona guida) {
         System.out.println("[MOCK] Amministratore: La guida " + guida.nome + " " + guida.cognome + " è stata ATTIVATA.");
+    }
+
+    @Override
+    public List<Persona> getTutteLeGuide() {
+        return new ArrayList<>();
     }
 }
