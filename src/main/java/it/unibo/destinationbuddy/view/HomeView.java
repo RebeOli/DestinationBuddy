@@ -322,17 +322,6 @@ public class HomeView {
         return header;
     }
 
-    private StackPane buildAvatar(String iniziale) {
-        Circle circle = new Circle(22);
-        circle.setStyle("-fx-fill: -db-accent;");
-        Label lbl = new Label(iniziale);
-        lbl.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;");
-        StackPane sp = new StackPane(circle, lbl);
-        sp.setMaxSize(44, 44);
-        sp.setMinSize(44, 44);
-        return sp;
-    }
-
     private Label placeholderLabel(String testo) {
         Label l = new Label(testo);
         l.getStyleClass().add("text-muted");

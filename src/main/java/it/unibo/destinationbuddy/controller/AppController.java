@@ -68,12 +68,6 @@ public class AppController {
 
     // ── Navigazione Sicura ────────────────────────────────────────
 
-    private void mostraScenaAuth() {
-        Scene scene = new Scene(authView.getRoot(), 1200, 700);
-        applicaCSS(scene);
-        primaryStage.setScene(scene);
-    }
-
     private void mostraScenaMain() {
         Scene scene = new Scene(mainView.getRoot(), 1200, 700);
         applicaCSS(scene);
