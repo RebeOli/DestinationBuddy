@@ -60,6 +60,7 @@ public class AppController {
 
         homeView.setTop5(escursioniModel.getTop5());
         exploreView.setEscursioni(escursioniModel.getAll());
+        exploreView.setTipologie(escursioniModel.getTipologie());
 
         mainView.setAutenticato(false);
         mostraHome();

@@ -36,14 +36,14 @@ public class ExploreView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Consumer<EscursionePreview>  onEscursioneClick   = e -> {};
-    private Consumer<TipologiaEscursione> onFiltraTipologia  = t -> {};
-    private Consumer<String>             onRicerca           = q -> {};
-    private Runnable                     onFiltraReset       = () -> {};
+    private Consumer<EscursionePreview> onEscursioneClick = e -> {};
+    private Consumer<TipologiaEscursione> onFiltraTipologia = t -> {};
+    private Consumer<String> onRicerca = q -> {};
+    private Runnable onFiltraReset = () -> {};
 
     private final ScrollPane root;
-    private final FlowPane   cardsPane;
-    private final HBox       filtriBar;
+    private final FlowPane cardsPane;
+    private final FlowPane filtriBar;
     private TipologiaEscursione tipologiaAttiva = null;
 
     public ExploreView() {
@@ -64,15 +64,14 @@ public class ExploreView {
         searchField.textProperty().addListener((obs, old, val) -> onRicerca.accept(val));
 
         // Filtri tipologia
-        filtriBar = new HBox(8);
+        filtriBar = new FlowPane(8, 8);
         filtriBar.setAlignment(Pos.CENTER_LEFT);
 
         Button btnTutte = filterBtn("Tutte", null);
-        btnTutte.getStyleClass().add("filter-btn-active"); // Selezionato di default
+        btnTutte.getStyleClass().add("filter-btn-active");
         filtriBar.getChildren().add(btnTutte);
 
-        HBox topBar = new HBox(12, searchField, filtriBar);
-        topBar.setAlignment(Pos.CENTER_LEFT);
+        VBox topBar = new VBox(10, searchField, filtriBar);
 
         // Griglia cards
         cardsPane = new FlowPane();
@@ -186,7 +185,9 @@ public class ExploreView {
     private Button filterBtn(String label, TipologiaEscursione tipologia) {
         Button btn = new Button(label);
         btn.setFont(Font.font("System", 12));
-        btn.getStyleClass().add("filter-btn"); // Usa il CSS
+        btn.getStyleClass().add("filter-btn");
+        btn.setMinWidth(Region.USE_PREF_SIZE);
+        btn.setMaxWidth(Region.USE_PREF_SIZE);
         
         btn.setOnAction(e -> {
             // Reset stile tutti i filtri rimuovendo la classe active
