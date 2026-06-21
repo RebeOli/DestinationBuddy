@@ -2,6 +2,7 @@ package it.unibo.destinationbuddy.view;
 
 import it.unibo.destinationbuddy.data.Certificazione;
 import it.unibo.destinationbuddy.data.Persona;
+import it.unibo.destinationbuddy.data.TipologiaCertificazione;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -11,6 +12,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -22,7 +24,8 @@ import java.util.function.Consumer;
  * view.setCertificazioniInAttesa(lista);
  * view.setGuide(lista);
  * view.setUtentiDaPremiare(lista);
- * view.setOnValidaCert(nCert -> controller.valida(nCert));
+ * // ⚡ MODIFICATO: Ora accetta e passa due parametri (idCert, nCert)
+ * view.setOnValidaCert((idCert, nCert) -> controller.valida(idCert, nCert));
  * view.setOnAttivaGuida(p -> controller.attiva(p));
  * view.setOnDisattivaGuida(p -> controller.disattiva(p));
  * root.setCenter(view.getRoot());
@@ -36,7 +39,7 @@ public class AdminView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Consumer<String>  onValidaCert    = s -> {};
+    private BiConsumer<String, String>  onValidaCert = (id, n) -> {};
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
 
@@ -104,9 +107,9 @@ public class AdminView {
         }
     }
 
-    public void setOnValidaCert(Consumer<String> handler)     { this.onValidaCert     = handler; }
-    public void setOnAttivaGuida(Consumer<Persona> handler)   { this.onAttivaGuida    = handler; }
-    public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
+    public void setOnValidaCert(BiConsumer<String, String> handler) { this.onValidaCert = handler; }
+    public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida    = handler; }
+    public void setOnDisattivaGuida(Consumer<Persona> handler) { this.onDisattivaGuida = handler; }
     public ScrollPane getRoot()                                { return root; }
 
     // ── Righe ─────────────────────────────────────────────────────────────────
@@ -134,7 +137,11 @@ public class AdminView {
         // Bottone color verde pastello per validare
         Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
-            onValidaCert.accept(c.nCertificazione);
+            
+            // ⚡ MODIFICA QUI: Estraiamo l'ID e passiamo ENTRAMBI i valori alla lambda function!
+            String idCert = (c.tipologia != null) ? c.tipologia.idCertificazione : "";
+            onValidaCert.accept(idCert, c.nCertificazione);
+            
             approvaBtn.setText("✓ Validata");
             approvaBtn.setDisable(true);
         });

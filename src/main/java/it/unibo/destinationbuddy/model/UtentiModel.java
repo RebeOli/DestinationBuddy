@@ -12,4 +12,5 @@ public interface UtentiModel {
     int numeroEscursioniEffettuate(Persona utente);
     boolean sottoscriviAbbonamento(double costoMensile, int durata, String cf);
     Optional<Abbonamento> getUltimoAbbonamento(Persona utente);
+    boolean verificaSeGuida(String cf);
 }

@@ -59,8 +59,8 @@ public class DBCertificazioniModel implements CertificazioniModel {
     }
 
     @Override
-    public void validaCertificazione(String nCertificazione) {
-        Certificazione.DAO.valida(connection, nCertificazione);
+    public void validaCertificazione(String idCertificazione, String nCertificazione) {
+        Certificazione.DAO.valida(connection, idCertificazione, nCertificazione );
         cacheInAttesa = Optional.empty();  // la certificazione validata non è più in attesa
 
     }

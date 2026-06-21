@@ -101,7 +101,9 @@ public class AppController {
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
         if (utenteCorrente != null) {
-            profiloView.setUtente(utenteCorrente);
+            boolean isGuida = utentiModel.verificaSeGuida(utenteCorrente.cf);
+            profiloView.setUtente(utenteCorrente, isGuida);
+            
             try {
                 profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
                 profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
@@ -121,7 +123,7 @@ public class AppController {
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
-        mainView.setUtente(null); 
+        mainView.setUtente(null, false); 
         homeView.setUtente(null); 
         mostraHome();
     }
@@ -131,10 +133,11 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
-                    mainView.setUtente(persona);
+                    boolean isGuida = utentiModel.verificaSeGuida(persona.cf);
+                    mainView.setUtente(persona, isGuida);
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
-                    profiloView.setUtente(persona);
+                    profiloView.setUtente(persona, isGuida);
 
                     if (persona.tipoAmministratore) {
                         mostraAdmin();
@@ -253,8 +256,8 @@ public class AppController {
     }
 
     private void collegaAdminView() {
-        adminView.setOnValidaCert(nCert -> {
-            try { certsModel.validaCertificazione(nCert); } catch (Exception ignored) {}
+        adminView.setOnValidaCert((idCert, nCert) -> {
+            try { certsModel.validaCertificazione(idCert, nCert); } catch (Exception ignored) {}
             mostraAdmin(); 
         });
         

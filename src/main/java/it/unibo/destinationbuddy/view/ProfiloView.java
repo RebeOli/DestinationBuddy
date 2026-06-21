@@ -74,17 +74,19 @@ public class ProfiloView {
 
     // ── API pubblica ──────────────────────────────────────────────────────────
 
-    public void setUtente(Persona p) {
+    public void setUtente(Persona p, boolean isGuida) {
         nomeLabel.setText(p.nome + " " + p.cognome);
         subLabel.setText("Membro dal " + (p.dataIscrizione != null ? p.dataIscrizione.toString() : "—")
                 + "  ·  " + p.escursioniEffettuate + " escursioni effettuate");
         inizialeLabel.setText(p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase());
 
-        // Mostra pulsante "Crea escursione" solo se è una guida
-        boolean isGuida = !p.tipoUtente || (p.statoAccount != null && !p.statoAccount.isEmpty());
+        // ⚡ ORA USA DIRETTAMENTE IL PARAMETRO ESTERNO
         contentBox.getChildren().stream()
                 .filter(n -> "btn-crea".equals(n.getId()))
-                .forEach(n -> n.setVisible(isGuida));
+                .forEach(n -> {
+                    n.setVisible(isGuida);
+                    n.setManaged(isGuida); // Evita che il bottone invisibile occupi spazio
+                });
     }
 
     public void setCertificazioni(List<Certificazione> lista) {
