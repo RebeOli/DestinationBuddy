@@ -1,5 +1,6 @@
 package it.unibo.destinationbuddy.model.mocked;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.unibo.destinationbuddy.data.Prenotazione;
@@ -46,7 +47,6 @@ public class MockedPrenotazioniModel implements PrenotazioniModel {
 
     @Override
     public List<Prenotazione> getPrenotazioniUtente(String cf) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPrenotazioniUtente'");
+        return new ArrayList<>();
     }
 }
