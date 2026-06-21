@@ -184,6 +184,12 @@ public class AppController {
             if (utenteCorrente == null) mostraLogin();
             else mainView.setContenuto(premiumView.getRoot());
         });
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            mainView.setContenuto(creaView.getRoot());
+        });
     }
 
     private void collegaExploreView() {
