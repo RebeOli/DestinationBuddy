@@ -35,6 +35,7 @@ public class MainView {
     private Runnable onPrenotaNuova = () -> {};
     private Runnable onLogin    = () -> {};
     private Runnable onImpostazioni = () -> {};
+    private Runnable onCreaEscursione = () -> {};
 
     private final BorderPane root;
     private final BorderPane body;
@@ -166,6 +167,7 @@ public class MainView {
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
     public void setOnLogin(Runnable h)        { this.onLogin        = h; }
     public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
+    public void setOnCreaEscursione(Runnable h) { this.onCreaEscursione = h; }
 
     public BorderPane getRoot() { return root; }
 
@@ -281,6 +283,7 @@ public class MainView {
         prenotaBlock.getChildren().add(bookBtn);
 
         Button creaEscursBtn = new Button("+ Crea escursione");
+        creaEscursBtn.setOnAction(e -> onCreaEscursione.run());
         creaEscursBtn.setId("btn-crea-esc");
         creaEscursBtn.setMaxWidth(Double.MAX_VALUE);
         creaEscursBtn.setFont(Font.font("System", 12));

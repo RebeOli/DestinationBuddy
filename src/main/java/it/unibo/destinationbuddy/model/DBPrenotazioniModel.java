@@ -1,6 +1,7 @@
 package it.unibo.destinationbuddy.model;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Objects;
 
 import it.unibo.destinationbuddy.data.Pezzo;
@@ -48,5 +49,10 @@ public class DBPrenotazioniModel implements PrenotazioniModel {
     @Override
     public boolean noleggiaPezzo(String idPezzo, String idEscursione, String cf, int durataNoleggio) {
         return Pezzo.DAO.noleggiaPezzo(connection, idPezzo, idEscursione, cf, durataNoleggio);
+    }
+
+    @Override
+    public List<Prenotazione> getPrenotazioniUtente(String cf) {
+        return Prenotazione.DAO.getPrenotazioniUtente(connection, cf);
     }
 }

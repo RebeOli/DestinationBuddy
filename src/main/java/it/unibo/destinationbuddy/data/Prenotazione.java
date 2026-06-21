@@ -134,8 +134,10 @@ public final class Prenotazione {
             try (
                 var stmt = DAOUtils.prepare(connection, Queries.CONFERMA_PRENOTAZIONE, cf, idEscursione)
             ) {
-                // executeUpdate restituisce il numero di righe modificate
                 return stmt.executeUpdate() > 0;
+            } catch (java.sql.SQLIntegrityConstraintViolationException e) {
+                // Utente ha già una prenotazione per questa escursione
+                return false;
             } catch (Exception e) {
                 throw new DAOException(e);
             }
@@ -161,5 +163,5 @@ public final class Prenotazione {
             }
             return prenotazioni;
         }
-            }
+    }
 }

@@ -121,6 +121,7 @@ public class AppController {
             try {
                 profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
                 profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
+                profiloView.setPrenotazioni(prenotModel.getPrenotazioniUtente(utenteCorrente.cf));
             } catch (Exception e) {
                 System.out.println("⚠️ Errore caricamento profilo: " + e.getMessage());
             }
@@ -200,6 +201,12 @@ public class AppController {
         mainView.setOnAdmin(()        -> mostraAdmin());
         mainView.setOnPrenotaNuova(() -> mostraExplore());
         mainView.setOnImpostazioni(() -> { });
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            mainView.setContenuto(creaView.getRoot());
+        });
 
         mainView.setOnLogin(() -> mostraLogin());
 
@@ -251,7 +258,11 @@ public class AppController {
     }
 
     private void apriDettaglio(it.unibo.destinationbuddy.data.EscursionePreview preview) {
-        escursioniModel.getDettaglio(preview).ifPresent(exc -> {
+        System.out.println("DEBUG: click su escursione id=" + preview.idEscursione);
+        var dettaglioOpt = escursioniModel.getDettaglio(preview);
+        System.out.println("DEBUG: dettaglio presente? " + dettaglioOpt.isPresent());
+        dettaglioOpt.ifPresent(exc -> {
+            System.out.println("DEBUG: apro dettaglio per " + exc.titolo);
             dettaglioView.setEscursione(exc);
             mainView.setContenuto(dettaglioView.getRoot());
         });
@@ -277,6 +288,7 @@ public class AppController {
 
     private void collegaBookingView() {
         bookingView.setOnIndietro(() -> mainView.setContenuto(dettaglioView.getRoot()));
+        bookingView.setOnTornaEsplora(() -> mostraExplore());
         bookingView.setOnConferma((idEscursione, equipSel) -> {
             if (utenteCorrente == null) return;
 
@@ -294,7 +306,7 @@ public class AppController {
 
             boolean ok = prenotModel.confermaPrenotazione(utenteCorrente.cf, idEscursione);
             if (!ok) {
-                bookingView.mostraErrore("Errore durante la prenotazione. Riprova.");
+                bookingView.mostraErrore("Hai già una prenotazione per questa escursione.");
                 return;
             }
 
