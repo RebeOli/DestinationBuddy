@@ -113,6 +113,9 @@ public class AppController {
                 profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
                 profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
                 profiloView.setPrenotazioni(prenotModel.getPrenotazioniUtente(utenteCorrente.cf));
+                if (isGuida) {
+                    profiloView.setResoconti(postEscursioneModel.getResocontiGuida(utenteCorrente.cf));
+                }
             } catch (Exception ignored) {}
         }
     }

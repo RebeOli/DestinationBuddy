@@ -1,6 +1,7 @@
 package it.unibo.destinationbuddy.model;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Objects;
 
 import it.unibo.destinationbuddy.data.Recensione;
@@ -22,5 +23,9 @@ public class DBPostEscursioneModel implements PostEscursioneModel {
     @Override
     public boolean inserisciResoconto(Resoconto r) {
         return Resoconto.DAO.inserisci(connection, r);
+    }
+    @Override
+    public List<Resoconto> getResocontiGuida(String cfGuida) {
+        return Resoconto.DAO.listForGuida(connection, cfGuida);
     }
 }

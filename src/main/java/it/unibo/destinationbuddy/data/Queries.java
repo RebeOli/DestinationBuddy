@@ -490,7 +490,13 @@ public final class Queries {
         FROM ESCURSIONI
         WHERE Guida_CF = ?
         """;
-    
+    public static final String RESOCONTI_GUIDA =
+        """
+        SELECT ID_escursione, data_inizio, data_fine, temperatura_rilevata, precipitazioni
+        FROM riepiloga
+        WHERE CF = ?
+        ORDER BY data_inizio DESC
+        """;
 }
 
 
