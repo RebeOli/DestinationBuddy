@@ -172,10 +172,9 @@ public final class Certificazione {
                 throw new DAOException(e);
             }
         }
-        //per cambiare lo stato della certificazione, sempre operazione 9
-        public static void valida(Connection connection, String nCertificazione) {
+        public static void valida(Connection connection, String idCertificazione, String nCertificazione) {
             try (
-                var statement = DAOUtils.prepare(connection, Queries.VALIDA_CERTIFICAZIONE, nCertificazione);
+                var statement = DAOUtils.prepare(connection, Queries.VALIDA_CERTIFICAZIONE, idCertificazione, nCertificazione);
             ) {
                 statement.executeUpdate();
             } catch (Exception e) {

@@ -11,6 +11,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -36,7 +37,7 @@ public class AdminView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Consumer<String>  onValidaCert    = s -> {};
+    private BiConsumer<String, String> onValidaCert = (id, n) -> {};    
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
 
@@ -104,10 +105,10 @@ public class AdminView {
         }
     }
 
-    public void setOnValidaCert(Consumer<String> handler)     { this.onValidaCert     = handler; }
-    public void setOnAttivaGuida(Consumer<Persona> handler)   { this.onAttivaGuida    = handler; }
+    public void setOnValidaCert(BiConsumer<String, String> handler) { this.onValidaCert = handler; }
+    public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida = handler; }
     public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
-    public ScrollPane getRoot()                                { return root; }
+    public ScrollPane getRoot() { return root; }
 
     // ── Righe ─────────────────────────────────────────────────────────────────
 
@@ -134,7 +135,7 @@ public class AdminView {
         // Bottone color verde pastello per validare
         Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
-            onValidaCert.accept(c.nCertificazione);
+            onValidaCert.accept(c.tipologia.idCertificazione, c.nCertificazione);
             approvaBtn.setText("✓ Validata");
             approvaBtn.setDisable(true);
         });
@@ -148,8 +149,7 @@ public class AdminView {
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
         row.getStyleClass().add("cert-row"); 
-        String statoDb = (p.statoAccount == null) ? "" : p.statoAccount.trim().toLowerCase();
-        boolean attiva = statoDb.equals("attivo") || statoDb.equals("1") || statoDb.equals("true");
+        boolean attiva = p.statoAccount;
         
         String statoVisivo = attiva ? "Attivo" : "Sospeso";
 

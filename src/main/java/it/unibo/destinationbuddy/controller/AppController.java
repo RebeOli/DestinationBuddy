@@ -148,7 +148,7 @@ public class AppController {
         );
 
         authView.setOnRegistra(campi -> {
-            var nuovoUtente = new Persona(campi[2], campi[0], campi[1], true, false, campi[2], 0, LocalDate.now(), null, campi[3], campi[4], "");
+            var nuovoUtente = new Persona(campi[2], campi[0], campi[1], true, false, campi[2], 0, LocalDate.now(), null, campi[3], campi[4], false);
             utentiModel.registraUtente(nuovoUtente);
             authView.pulisciCampi();
             authView.mostraErroreLogin("");
@@ -255,9 +255,9 @@ public class AppController {
     }
 
     private void collegaAdminView() {
-        adminView.setOnValidaCert(nCert -> {
-            try { certsModel.validaCertificazione(nCert); } catch (Exception ignored) {}
-            mostraAdmin(); 
+        adminView.setOnValidaCert((idCert, nCert) -> {
+            try { certsModel.validaCertificazione(idCert, nCert); } catch (Exception ignored) {}
+            mostraAdmin();
         });
         
         adminView.setOnAttivaGuida(p -> {

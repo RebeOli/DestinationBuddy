@@ -24,7 +24,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "mario.rossi@email.com",
                 "password123",
-                null
+                false
             ),
             new Persona(
                 "BNCGCM90B02A001Z",
@@ -38,7 +38,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "giacomo.bianchi@email.com",
                 "pass456",
-                null
+                false
             )
         );
     }

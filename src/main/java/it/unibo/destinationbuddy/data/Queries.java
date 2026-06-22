@@ -401,12 +401,12 @@ public final class Queries {
         """;
 
     //==================== QUERY PER PERSONA ====================
-    public static final String AUTENTICA_PERSONA = 
+    public static final String AUTENTICA_PERSONA =
         """
-        SELECT *
-        FROM PERSONE
-        WHERE EMAIL = ?
-        AND PASSWORD = ?
+        SELECT p.*, g.stato_account
+        FROM PERSONE p
+        LEFT JOIN GUIDE g ON p.CF = g.CF
+        WHERE p.email = ? AND p.password = ?
         """;
 
     public static final String ULTIMO_ABBONAMENTO_UTENTE =

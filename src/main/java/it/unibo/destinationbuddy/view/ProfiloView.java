@@ -81,7 +81,7 @@ public class ProfiloView {
         inizialeLabel.setText(p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase());
 
         // Mostra pulsante "Crea escursione" solo se è una guida
-        boolean isGuida = !p.tipoUtente || (p.statoAccount != null && !p.statoAccount.isEmpty());
+        boolean isGuida = !p.tipoUtente || (p.statoAccount !=false);
         contentBox.getChildren().stream()
                 .filter(n -> "btn-crea".equals(n.getId()))
                 .forEach(n -> n.setVisible(isGuida));

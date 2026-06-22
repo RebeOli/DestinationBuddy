@@ -14,5 +14,5 @@ public interface CertificazioniModel {
 
     void aggiungiCertificazione(Certificazione c);
 
-    void validaCertificazione(String nCertificazione); //per amministratore
+    void validaCertificazione(String idCertificazione, String nCertificazione); //per amministratore
 }

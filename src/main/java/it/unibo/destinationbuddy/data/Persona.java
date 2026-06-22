@@ -5,7 +5,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+/**
+ * Questa classe rappresenta l'utente, la guida, e l'amministratore. 
+ */
 public final class Persona {
     public String cf;
     public String nome;
@@ -18,11 +20,11 @@ public final class Persona {
     public LocalDate dataAssunzione;
     public String email;
     public String password;
-    public String statoAccount; 
+    public boolean statoAccount; 
 
     public Persona(String cf, String nome, String cognome, boolean tipoUtente, boolean tipoAmministratore,
             String idAccount, int escursioniEffettuate, LocalDate dataIscrizione, LocalDate dataAssunzione,
-            String email, String password, String statoAccount) {
+            String email, String password, boolean statoAccount) {
         this.cf = cf;
         this.nome = nome == null ? "" : nome;
         this.cognome = cognome == null ? "" : cognome;
@@ -34,7 +36,7 @@ public final class Persona {
         this.dataAssunzione = dataAssunzione;
         this.email = email == null ? "" : email;
         this.password = password == null ? "" : password;
-        this.statoAccount = statoAccount == null ? "" : statoAccount;
+        this.statoAccount = statoAccount;
     }
 
     @Override
@@ -52,46 +54,67 @@ public final class Persona {
         result = prime * result + ((dataAssunzione == null) ? 0 : dataAssunzione.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
         result = prime * result + ((password == null) ? 0 : password.hashCode());
-        result = prime * result + ((statoAccount == null) ? 0 : statoAccount.hashCode());
+        result = prime * result + (statoAccount ? 1231 : 1237);
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         Persona other = (Persona) obj;
         if (cf == null) {
-            if (other.cf != null) return false;
-        } else if (!cf.equals(other.cf)) return false;
+            if (other.cf != null)
+                return false;
+        } else if (!cf.equals(other.cf))
+            return false;
         if (nome == null) {
-            if (other.nome != null) return false;
-        } else if (!nome.equals(other.nome)) return false;
+            if (other.nome != null)
+                return false;
+        } else if (!nome.equals(other.nome))
+            return false;
         if (cognome == null) {
-            if (other.cognome != null) return false;
-        } else if (!cognome.equals(other.cognome)) return false;
-        if (tipoUtente != other.tipoUtente) return false;
-        if (tipoAmministratore != other.tipoAmministratore) return false;
+            if (other.cognome != null)
+                return false;
+        } else if (!cognome.equals(other.cognome))
+            return false;
+        if (tipoUtente != other.tipoUtente)
+            return false;
+        if (tipoAmministratore != other.tipoAmministratore)
+            return false;
         if (idAccount == null) {
-            if (other.idAccount != null) return false;
-        } else if (!idAccount.equals(other.idAccount)) return false;
-        if (escursioniEffettuate != other.escursioniEffettuate) return false;
+            if (other.idAccount != null)
+                return false;
+        } else if (!idAccount.equals(other.idAccount))
+            return false;
+        if (escursioniEffettuate != other.escursioniEffettuate)
+            return false;
         if (dataIscrizione == null) {
-            if (other.dataIscrizione != null) return false;
-        } else if (!dataIscrizione.equals(other.dataIscrizione)) return false;
+            if (other.dataIscrizione != null)
+                return false;
+        } else if (!dataIscrizione.equals(other.dataIscrizione))
+            return false;
         if (dataAssunzione == null) {
-            if (other.dataAssunzione != null) return false;
-        } else if (!dataAssunzione.equals(other.dataAssunzione)) return false;
+            if (other.dataAssunzione != null)
+                return false;
+        } else if (!dataAssunzione.equals(other.dataAssunzione))
+            return false;
         if (email == null) {
-            if (other.email != null) return false;
-        } else if (!email.equals(other.email)) return false;
+            if (other.email != null)
+                return false;
+        } else if (!email.equals(other.email))
+            return false;
         if (password == null) {
-            if (other.password != null) return false;
-        } else if (!password.equals(other.password)) return false;
-        if (statoAccount == null) {
-            if (other.statoAccount != null) return false;
-        } else if (!statoAccount.equals(other.statoAccount)) return false;
+            if (other.password != null)
+                return false;
+        } else if (!password.equals(other.password))
+            return false;
+        if (statoAccount != other.statoAccount)
+            return false;
         return true;
     }
 
@@ -124,7 +147,8 @@ public final class Persona {
                     var sqlDataAssunzione = resultSet.getDate("data_assunzione");
                     LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
 
-                    var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email, password, null);
+                    var statoAccount = resultSet.getBoolean("stato_account");
+                    var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email,password, statoAccount);
                     return Optional.of(utente);
                 } else {
                     return Optional.empty();
@@ -167,7 +191,7 @@ public final class Persona {
                                     rsDettagli.getString("ID_account"), rsDettagli.getInt("escursioni_effettuate"),
                                     rsDettagli.getDate("data_iscrizione") != null ? rsDettagli.getDate("data_iscrizione").toLocalDate() : null,
                                     rsDettagli.getDate("data_assunzione") != null ? rsDettagli.getDate("data_assunzione").toLocalDate() : null,
-                                    rsDettagli.getString("email"), rsDettagli.getString("password"), null
+                                    rsDettagli.getString("email"), rsDettagli.getString("password"), false
                                 );
                                 utenti.add(utente);
                             }
@@ -193,7 +217,7 @@ public final class Persona {
                         resultSet.getDate("data_iscrizione") != null ? resultSet.getDate("data_iscrizione").toLocalDate() : null,
                         resultSet.getDate("data_assunzione") != null ? resultSet.getDate("data_assunzione").toLocalDate() : null,
                         resultSet.getString("email"), resultSet.getString("password"), 
-                        resultSet.getString("stato_guida") 
+                        resultSet.getBoolean("stato_guida") 
                     );
                     guide.add(guida);
                 }
