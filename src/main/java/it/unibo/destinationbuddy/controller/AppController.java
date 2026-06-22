@@ -105,6 +105,7 @@ public class AppController {
             try {
                 profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
                 profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
+                profiloView.setPrenotazioni(prenotModel.getPrenotazioniUtente(utenteCorrente.cf));
             } catch (Exception ignored) {}
         }
     }
@@ -225,6 +226,7 @@ public class AppController {
 
     private void collegaBookingView() {
         bookingView.setOnIndietro(() -> mainView.setContenuto(dettaglioView.getRoot()));
+        bookingView.setOnTornaEsplora(() -> mostraExplore());
         bookingView.setOnConferma((idEscursione, equipSel) -> {
             if (utenteCorrente == null) return;
             boolean certOk = prenotModel.verificaCertificazioni(idEscursione, utenteCorrente.cf);
@@ -286,12 +288,17 @@ public class AppController {
     }
 
     private void collegaCreaView() {
-        creaView.setOnAnnulla(() -> mostraProfilo());
-        creaView.setOnCrea(formData -> {
-            escursioniModel.creaEscursione(formData.escursione, formData.descrizione, formData.numeroPartecipanti, formData.guidaCF, formData.tipologie);
+        creaView.setOnAnnulla(() -> {
             creaView.pulisciForm();
-            exploreView.setEscursioni(escursioniModel.getAll());
             mostraProfilo();
+        });
+        creaView.setOnCrea(formData -> {
+            escursioniModel.creaEscursione(
+                formData.escursione, formData.descrizione,
+                formData.numeroPartecipanti, formData.guidaCF, formData.tipologie
+            );
+            exploreView.setEscursioni(escursioniModel.getAll());
+            creaView.mostraConferma(formData.escursione.titolo);
         });
     }
 
