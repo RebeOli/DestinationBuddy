@@ -436,6 +436,14 @@ public final class Queries {
 
     public static final String LIST_TIPOLOGIE_ESCURSIONE =
         "SELECT ID_tipologia FROM tipologie_escursione";
+
+    public static final String RECENSIONI_ESCURSIONE = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        WHERE R.ID_escursione = ?
+        """;
 }
 
 

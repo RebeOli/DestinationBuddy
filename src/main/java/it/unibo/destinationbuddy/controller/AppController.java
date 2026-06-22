@@ -205,6 +205,25 @@ public class AppController {
     private void apriDettaglio(it.unibo.destinationbuddy.data.EscursionePreview preview) {
         escursioniModel.getDettaglio(preview).ifPresent(exc -> {
             dettaglioView.setEscursione(exc);
+            java.util.List<it.unibo.destinationbuddy.data.Recensione> listaRecensioni = 
+                prenotModel.getRecensioniPerEscursione(exc.idEscursione);
+            boolean puoRecensire = false;
+            String cfUtenteLoggato = "";
+
+            if (utenteCorrente != null && !utenteCorrente.tipoAmministratore) { 
+                cfUtenteLoggato = utenteCorrente.cf;
+                boolean haPrenotato = prenotModel.getPrenotazioniUtente(utenteCorrente.cf).stream()
+                        .anyMatch(p -> p.idEscursione.equals(exc.idEscursione) && 
+                                ("Confermata".equalsIgnoreCase(p.stato) || "Completata".equalsIgnoreCase(p.stato)));
+                boolean escursioneTerminata = false;
+                if (exc.giornate != null && !exc.giornate.isEmpty()) {
+                    LocalDate dataUltimoGiorno = exc.giornate.get(exc.giornate.size() - 1).data;
+                    escursioneTerminata = LocalDate.now().isAfter(dataUltimoGiorno);
+                }
+
+                puoRecensire = haPrenotato && escursioneTerminata;
+            }
+            dettaglioView.setRecensioni(listaRecensioni, puoRecensire, exc.idEscursione, cfUtenteLoggato);
             mainView.setContenuto(dettaglioView.getRoot());
         });
     }
@@ -220,6 +239,16 @@ public class AppController {
             double sconto = prenotModel.getScontoNoleggio(utenteCorrente.cf);
             bookingView.setEscursione(exc, utenteCorrente, posti, sconto);
             mainView.setContenuto(bookingView.getRoot());
+        });
+
+        dettaglioView.setOnInviaRecensione(nuovaRecensione -> {
+            boolean salvata = prenotModel.inserisciRecensione(nuovaRecensione);
+            if (salvata) {
+                var previewFinta = new it.unibo.destinationbuddy.data.EscursionePreview(
+                    nuovaRecensione.idEscursione, "", "", 0.0
+                );
+                apriDettaglio(previewFinta);
+            }
         });
     }
 
