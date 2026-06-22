@@ -444,6 +444,18 @@ public final class Queries {
         JOIN PERSONE P ON R.CF = P.CF
         WHERE R.ID_escursione = ?
         """;
+
+    // ==================== OPERAZIONE: Moderazione Recensioni ====================
+    public static final String GET_TUTTE_RECENSIONI = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        ORDER BY R.voto ASC
+        """;
+
+    public static final String ELIMINA_RECENSIONE = 
+        "DELETE FROM RECENSIONI WHERE CF = ? AND ID_escursione = ?";
 }
 
 

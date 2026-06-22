@@ -116,6 +116,7 @@ public class AppController {
         try { adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa()); } catch (Exception e) { adminView.setCertificazioniInAttesa(null); }
         try { adminView.setGuide(adminModel.getTutteLeGuide()); } catch (Exception e) { adminView.setGuide(null); }
         try { adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare()); } catch (Exception e) { adminView.setUtentiDaPremiare(null); }
+        try { adminView.setRecensioniDaModerare(adminModel.getTutteLeRecensioni()); } catch (Exception e) { adminView.setRecensioniDaModerare(null); }
     }
 
     private void eseguiLogout() {
@@ -295,6 +296,11 @@ public class AppController {
         adminView.setOnDisattivaGuida(p -> {
             try { adminModel.disattivaGuida(p); } catch (Exception ignored) {}
             mostraAdmin(); 
+        });
+
+        adminView.setOnEliminaRecensione(recensione -> {
+            try { adminModel.eliminaRecensione(recensione.cf, recensione.idEscursione); } catch (Exception ignored) {}
+            mostraAdmin();
         });
     }
 

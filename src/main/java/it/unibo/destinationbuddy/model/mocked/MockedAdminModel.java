@@ -1,6 +1,7 @@
 package it.unibo.destinationbuddy.model.mocked;
 
 import it.unibo.destinationbuddy.data.Persona;
+import it.unibo.destinationbuddy.data.Recensione;
 import it.unibo.destinationbuddy.model.AdminModel;
 
 import java.time.LocalDate;
@@ -56,5 +57,15 @@ public class MockedAdminModel implements AdminModel {
     @Override
     public List<Persona> getTutteLeGuide() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<Recensione> getTutteLeRecensioni() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void eliminaRecensione(String cf, String idEscursione) {
+        return;
     }
 }
