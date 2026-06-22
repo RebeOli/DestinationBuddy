@@ -59,7 +59,7 @@ public class AdminView {
                 titolo,
                 buildSection("📋 Certificazioni in attesa di verifica", certsContainer),
                 buildSection("👤 Gestione guide", guideContainer),
-                buildSection("🏆 Utenti da premiare (tutti i paesi)", premiContainer)
+                buildSection("🏆 Utenti che hanno effettuato escursioni in tutti i paesi", premiContainer)
         );
 
         root = new ScrollPane(page);
