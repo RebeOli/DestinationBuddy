@@ -155,7 +155,7 @@ public final class Queries {
         JOIN ESCURSIONI E ON E.Guida_CF = G.CF
         JOIN RECENSIONI R ON R.ID_escursione = E.ID_escursione
         WHERE R.voto <= 2
-          AND G.stato_account = 'attivo'
+          AND G.stato_account = 1
         GROUP BY G.CF
         HAVING COUNT(R.ID_escursione) > 5
         """;
@@ -237,11 +237,11 @@ public final class Queries {
         WHERE C.stato_validazione = 'In attesa di validazione'
         """;
 
-    public static final String VALIDA_CERTIFICAZIONE =
+        public static final String VALIDA_CERTIFICAZIONE =
         """
         UPDATE CERTIFICAZIONI
         SET stato_validazione = 'Validata'
-        WHERE n_certificazione = ?
+        WHERE ID_certificazione = ? AND n_certificazione = ?
         """;
 
     // ==================== OPERAZIONE 10: Escursioni effettuate da utente ====================
@@ -436,6 +436,54 @@ public final class Queries {
 
     public static final String LIST_TIPOLOGIE_ESCURSIONE =
         "SELECT ID_tipologia FROM tipologie_escursione";
+
+    public static final String TROVA_CF_CERTIFICAZIONE =
+        """
+        SELECT CF
+        FROM CERTIFICAZIONI
+        WHERE ID_certificazione = ? AND n_certificazione = ?
+        """;
+
+    public static final String TROVA_LIVELLO_TIPOLOGIA =
+        """
+        SELECT livello
+        FROM TIPOLOGIE_CERTIFICAZIONE
+        WHERE ID_certificazione = ?
+        """;
+
+    public static final String VERIFICA_GUIDA_ESISTENTE =
+        """
+        SELECT CF FROM GUIDE
+        WHERE CF = ?
+        AND stato_account = '1'
+        """;
+
+    public static final String INSERISCI_GUIDA =
+        """
+        INSERT INTO GUIDE (CF, stato_account) VALUES (?, 1)
+        """;
+
+    public static final String INSERISCI_TIPOLOGIA_CERT =
+        """
+        INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) 
+        VALUES (?, ?)
+        """;
+
+    public static final String INSERISCI_LUOGO_ESPLORABILE =
+        """
+        INSERT INTO LUOGHI_ESPLORABILI (nome, nome_zona, nome_paese, nome_categoria)
+        VALUES (?, ?, ?, ?)
+        """;
+
+    public static final String LIST_PAESI = 
+        """
+        SELECT Nome FROM PAESI ORDER BY Nome
+        """;
+
+    public static final String LIST_ZONE_PER_PAESE = 
+        """
+        SELECT nome FROM ZONE WHERE nome_paese = ? ORDER BY nome
+        """;
 }
 
 

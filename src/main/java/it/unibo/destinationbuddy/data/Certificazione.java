@@ -173,11 +173,49 @@ public final class Certificazione {
             }
         }
         //per cambiare lo stato della certificazione, sempre operazione 9
-        public static void valida(Connection connection, String nCertificazione) {
+        public static void valida(Connection connection, String idCertificazione, String nCertificazione) {
             try (
-                var statement = DAOUtils.prepare(connection, Queries.VALIDA_CERTIFICAZIONE, nCertificazione);
+                var statement = DAOUtils.prepare(connection, Queries.VALIDA_CERTIFICAZIONE, idCertificazione, nCertificazione);
             ) {
                 statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+
+            promuoviAGuidaSeNecessario(connection, idCertificazione, nCertificazione);
+        }
+
+        private static void promuoviAGuidaSeNecessario(Connection connection, String idCertificazione, String nCertificazione) {
+            try {
+                String cf = null;
+
+                try (var stmt = DAOUtils.prepare(connection, Queries.TROVA_CF_CERTIFICAZIONE, idCertificazione, nCertificazione);
+                    var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        cf = rs.getString("CF");
+                    }
+                }
+                if (cf == null) return;
+
+                String livello = null;
+                try (var stmt = DAOUtils.prepare(connection, Queries.TROVA_LIVELLO_TIPOLOGIA, idCertificazione);
+                    var rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        livello = rs.getString("livello");
+                    }
+                }
+                if (!"Guida".equalsIgnoreCase(livello)) return;
+
+                boolean giaGuida;
+                try (var stmt = DAOUtils.prepare(connection, Queries.VERIFICA_GUIDA_ESISTENTE, cf);
+                    var rs = stmt.executeQuery()) {
+                    giaGuida = rs.next();
+                }
+                if (giaGuida) return;
+
+                try (var stmt = DAOUtils.prepare(connection, Queries.INSERISCI_GUIDA, cf)) {
+                    stmt.executeUpdate();
+                }
             } catch (Exception e) {
                 throw new DAOException(e);
             }

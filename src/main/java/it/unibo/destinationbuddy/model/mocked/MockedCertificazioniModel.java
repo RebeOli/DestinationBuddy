@@ -66,7 +66,7 @@ public class MockedCertificazioniModel implements CertificazioniModel {
     }
 
     @Override
-    public void validaCertificazione(String nCertificazione) {
-        System.out.println("[MOCK] L'amministratore ha validato con successo la certificazione: " + nCertificazione);
+    public void validaCertificazione(String idCertificazione, String nCertificazione) {
+        System.out.println("[MOCK] L'amministratore ha validato con successo la certificazione " + idCertificazione + " - " + nCertificazione);
     }
 }
