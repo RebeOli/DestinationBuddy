@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
+import it.unibo.destinationbuddy.data.LuogoEsplorabile;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
 // IMPORTANTE: Aggiunto l'import per TipologiaCertificazione
 import it.unibo.destinationbuddy.data.TipologiaCertificazione; 
@@ -67,24 +68,40 @@ public class DBEscursioniModel implements EscursioniModel {
     public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF,
             List<String> tipologie, List<String> certificazioniSelezionate, TipologiaCertificazione nuovaCertificazione) {
         
-        // 1. Se la guida ha inventato un brevetto, lo salviamo nel DB e lo aggiungiamo a quelli selezionati
         if (nuovaCertificazione != null) {
             TipologiaCertificazione.DAO.create(connection, nuovaCertificazione);
             certificazioniSelezionate.add(nuovaCertificazione.idCertificazione);
         }
 
-        // 2. Creiamo l'escursione base (questo metodo del DAO lega già l'escursione alle Tipologie in 'assume')
         Escursione.DAO.create(connection, e, descrizione, numeroPartecipanti, guidaCF, tipologie);
 
-        // 3. Leghiamo le certificazioni alle Tipologie di Escursione (nella tabella 'richiede')
         for (String idTipologia : tipologie) {
             for (String idCert : certificazioniSelezionate) {
                 TipologiaEscursione.DAO.associaCertificazione(connection, idTipologia, idCert);
             }
         }
 
-        // 4. Resettiamo la cache per far apparire la nuova escursione
         cacheAll = Optional.empty();
         cacheTop5 = Optional.empty(); 
+    }
+
+    @Override
+    public void aggiungiLuogoEsplorabile(LuogoEsplorabile l) {
+        LuogoEsplorabile.DAO.create(connection, l);
+    }
+
+    @Override
+    public List<String> getPaesi() {
+        return LuogoEsplorabile.DAO.listPaesi(connection);
+    }
+
+    @Override
+    public List<String> getZonePerPaese(String paese) {
+        return LuogoEsplorabile.DAO.listZonePerPaese(connection, paese);
+    }
+
+    @Override
+    public List<String> getCategorieLuoghi() {
+        return LuogoEsplorabile.DAO.listCategorie(connection);
     }
 }

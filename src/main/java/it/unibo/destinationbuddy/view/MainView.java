@@ -36,6 +36,7 @@ public class MainView {
     private Runnable onLogin    = () -> {};
     private Runnable onImpostazioni = () -> {};
     private Runnable onCreaEscursione = () -> {};
+    private Runnable onAggiungiLuogo = () -> {};
 
     private final BorderPane root;
     private final BorderPane body;
@@ -48,6 +49,7 @@ public class MainView {
     private VBox prenotaBlock;
     private VBox creaBlock;
     private Button adminButtonSidebar;
+    private VBox luogoBlock;
 
     private HBox topNavLinks; // Variabile globale per nascondere i menu in alto
 
@@ -67,9 +69,6 @@ public class MainView {
         body.setCenter(node);
     }
 
-    /**
-     // ⚡ MODIFICATO: Accetta due parametri separati per rispettare l'architettura
-     */
     public void setUtente(Persona p, boolean isGuida) {
         if (p == null) {
             inizialeAvatar.setText("?");
@@ -79,14 +78,21 @@ public class MainView {
             if (menuStandard != null) {
                 adminButtonSidebar.setVisible(false);
                 adminButtonSidebar.setManaged(false);
-                creaBlock.setVisible(false);
-                creaBlock.setManaged(false);
                 
                 menuStandard.setVisible(true);
                 menuStandard.setManaged(true);
                 prenotaBlock.setVisible(true);
                 prenotaBlock.setManaged(true);
-            }
+                
+                creaBlock.setVisible(false);
+                creaBlock.setManaged(false);
+                
+                if (luogoBlock != null) {
+                    luogoBlock.setVisible(false);
+                    luogoBlock.setManaged(false);
+                }
+            } // ⚡ ECCO LA PARENTESI CHE MANCAVA! Chiude l'if(menuStandard != null)
+
             // Torna a mostrare i menu in alto quando nessuno è loggato
             if (topNavLinks != null) {
                 topNavLinks.setVisible(true);
@@ -119,6 +125,11 @@ public class MainView {
                 creaBlock.setVisible(false);
                 creaBlock.setManaged(false);
                 
+                if (luogoBlock != null) {
+                    luogoBlock.setVisible(false);
+                    luogoBlock.setManaged(false);
+                }
+                
                 adminButtonSidebar.setVisible(true);
                 adminButtonSidebar.setManaged(true);
             }
@@ -139,9 +150,13 @@ public class MainView {
                 prenotaBlock.setVisible(true);
                 prenotaBlock.setManaged(true);
                 
-                // ⚡ VISIBILITÀ DEL BLOCCO CREA: Dipende esclusivamente dal parametro esterno
                 creaBlock.setVisible(isGuida);
                 creaBlock.setManaged(isGuida);
+
+                if (luogoBlock != null) {
+                    luogoBlock.setVisible(isGuida);
+                    luogoBlock.setManaged(isGuida);
+                }
             }
 
             // UTENTE NORMALE / GUIDA: Mostriamo di nuovo i bottoni in alto
@@ -150,7 +165,7 @@ public class MainView {
                 topNavLinks.setManaged(true);
             }
         }
-    }
+    } // ⚡ E qui ho tolto le parentesi di troppo!
 
     public void setNavAttiva(String nav) {
         this.activeNav = nav;
@@ -178,6 +193,7 @@ public class MainView {
     public void setOnLogin(Runnable h)         { this.onLogin        = h; }
     public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
     public void setOnCreaEscursione(Runnable h) { this.onCreaEscursione = h; }
+    public void setOnAggiungiLuogo(Runnable h) { this.onAggiungiLuogo = h; }
 
     public BorderPane getRoot() { return root; }
 
@@ -309,6 +325,20 @@ public class MainView {
         creaBlock.setManaged(false);
         creaBlock.setId("btn-crea-esc");
 
+        Button aggiungiLuogoBtn = new Button("+ Aggiungi Luogo");
+        aggiungiLuogoBtn.setOnAction(e -> onAggiungiLuogo.run()); // Assicurati di avere questo Runnable
+        aggiungiLuogoBtn.setId("btn-luogo");
+        aggiungiLuogoBtn.setMaxWidth(Double.MAX_VALUE);
+        aggiungiLuogoBtn.setFont(Font.font("System", 12));
+        aggiungiLuogoBtn.setStyle("-fx-background-color: transparent;"
+                + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
+                + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+
+        luogoBlock = new VBox(aggiungiLuogoBtn);
+        luogoBlock.setPadding(new Insets(0, 12, 8, 12));
+        luogoBlock.setVisible(false);
+        luogoBlock.setManaged(false);
+
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
@@ -337,7 +367,7 @@ public class MainView {
         bottom.getChildren().addAll(adminBlock,
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
-        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, spacer, bottom);
+        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, luogoBlock, spacer, bottom);
         return sidebar;
     }
 

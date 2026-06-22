@@ -469,6 +469,21 @@ public final class Queries {
         VALUES (?, ?)
         """;
 
+    public static final String INSERISCI_LUOGO_ESPLORABILE =
+        """
+        INSERT INTO LUOGHI_ESPLORABILI (nome, nome_zona, nome_paese, nome_categoria)
+        VALUES (?, ?, ?, ?)
+        """;
+
+    public static final String LIST_PAESI = 
+        """
+        SELECT Nome FROM PAESI ORDER BY Nome
+        """;
+
+    public static final String LIST_ZONE_PER_PAESE = 
+        """
+        SELECT nome FROM ZONE WHERE nome_paese = ? ORDER BY nome
+        """;
 }
 
 

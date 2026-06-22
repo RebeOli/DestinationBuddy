@@ -28,6 +28,7 @@ public class AppController {
     private final CreaEscursioneView          creaView      = new CreaEscursioneView();
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
     private final PremiumView                 premiumView   = new PremiumView();
+    private final AggiungiLuogoView           aggiungiLuogoView = new AggiungiLuogoView();
 
     private Persona utenteCorrente = null;
 
@@ -52,6 +53,7 @@ public class AppController {
         collegaCreaView();
         collegaAggCertView();
         collegaPremiumView();
+        collegaAggiungiLuogoView();
 
         homeView.setTop5(escursioniModel.getTop5());
         exploreView.setEscursioni(escursioniModel.getAll());
@@ -172,6 +174,23 @@ public class AppController {
             if (utenteCorrente != null) eseguiLogout();
             else mostraLogin();
         });
+        
+        // GESTIONE DEL BOTTONE "CREA ESCURSIONE" DELLA SIDEBAR
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
+            mainView.setContenuto(creaView.getRoot());
+        });
+
+        // GESTIONE DEL BOTTONE "AGGIUNGI LUOGO" DELLA SIDEBAR
+        mainView.setOnAggiungiLuogo(() -> {
+            aggiungiLuogoView.pulisciForm();
+            aggiungiLuogoView.setPaesi(escursioniModel.getPaesi());
+            aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
+            mainView.setContenuto(aggiungiLuogoView.getRoot());
+        });
     }
 
     private void mostraLogin() {
@@ -186,12 +205,6 @@ public class AppController {
         homeView.setOnUpgradeClick(() -> {
             if (utenteCorrente == null) mostraLogin();
             else mainView.setContenuto(premiumView.getRoot());
-        });
-        mainView.setOnCreaEscursione(() -> {
-            if (utenteCorrente == null) return;
-            creaView.setGuidaCF(utenteCorrente.cf);
-            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
-            mainView.setContenuto(creaView.getRoot());
         });
     }
 
@@ -273,18 +286,8 @@ public class AppController {
     }
 
     private void collegaProfiloView() {
-
-        profiloView.setOnCreaEscursione(() -> {
-            if (utenteCorrente == null) return;
-            creaView.setGuidaCF(utenteCorrente.cf);
-            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
-            var certificazioniDalDB = certsModel.getTipologieDisponibili();
-            System.out.println("======= [DEBUG CONTROLLER] =======");
-            System.out.println("Numero certificazioni caricate dal Model: " + certificazioniDalDB.size());
-            System.out.println("==================================");
-            creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
-            mainView.setContenuto(creaView.getRoot());
-        });
+        // "Crea Escursione" non serve più qui perché è in MainView
+        // "Aggiungi Luogo" non serve più qui perché è in MainView
 
         profiloView.setOnAggiungiCert(() -> {
             if (utenteCorrente == null) return;
@@ -338,6 +341,25 @@ public class AppController {
                 return;
             }
             mostraProfilo();
+        });
+    }
+
+    private void collegaAggiungiLuogoView() {
+        aggiungiLuogoView.setOnAnnulla(() -> mostraProfilo());
+        
+        // Quando la guida seleziona un Paese, carichiamo le sue zone dal DB dinamicamente!
+        aggiungiLuogoView.setOnPaeseSelezionato(paese -> {
+            aggiungiLuogoView.setZone(escursioniModel.getZonePerPaese(paese));
+        });
+
+        aggiungiLuogoView.setOnSalva(luogo -> {
+            try {
+                escursioniModel.aggiungiLuogoEsplorabile(luogo);
+                aggiungiLuogoView.pulisciForm();
+                mostraProfilo(); 
+            } catch (Exception e) {
+                System.err.println("Errore salvataggio luogo: " + e.getMessage());
+            }
         });
     }
 

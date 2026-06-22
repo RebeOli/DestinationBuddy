@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
+import it.unibo.destinationbuddy.data.LuogoEsplorabile;
 import it.unibo.destinationbuddy.data.TipologiaCertificazione;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
 
@@ -24,4 +25,13 @@ public interface EscursioniModel {
 
     void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF,
             List<String> tipologie, List<String> certificazioniSelezionate, TipologiaCertificazione nuovaCertificazione);
+    
+    void aggiungiLuogoEsplorabile(LuogoEsplorabile l);
+
+    List<String> getPaesi();
+
+    List<String> getZonePerPaese(String paese);
+
+    List<String> getCategorieLuoghi();
+
 }
