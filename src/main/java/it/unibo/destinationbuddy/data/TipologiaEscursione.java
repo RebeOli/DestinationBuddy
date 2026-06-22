@@ -98,5 +98,16 @@ public final class TipologiaEscursione {
 
             return tipologie;
         }
+
+        public static void associaCertificazione(Connection connection, String idTipologia, String idCertificazione) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.ASSOCIA_CERTIFICAZIONE_TIPOLOGIA,
+                    idTipologia, idCertificazione)
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+        }
     }
 }

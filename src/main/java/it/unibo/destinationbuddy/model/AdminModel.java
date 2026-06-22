@@ -9,4 +9,5 @@ public interface AdminModel {
     void disattivaGuida(Persona guida);
     void attivaGuida(Persona guida);
     List<Persona> getTutteLeGuide();
+    List<String> getGuideSospendibili();
 }

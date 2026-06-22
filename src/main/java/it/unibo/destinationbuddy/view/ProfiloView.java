@@ -28,7 +28,6 @@ import java.util.List;
  * view.setAbbonamento(abbonamentoOptional);
  * view.setPrenotazioni(lista);
  * view.setOnAggiungiCertificazione(c -> controller.aggiungi(c));
- * view.setOnCreaEscursione(() -> controller.apriCreaEscursione()); // solo se guida
  * root.setCenter(view.getRoot());
  */
 public class ProfiloView {
@@ -40,7 +39,6 @@ public class ProfiloView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Runnable onCreaEscursione = () -> {};
     private Runnable onAggiungiCert   = () -> {};
     private Runnable onVaiPremium     = () -> {};
 
@@ -54,6 +52,7 @@ public class ProfiloView {
     private final VBox  certsContainer  = new VBox(10);
     private final VBox  abbonamentoBox  = new VBox(10);
     private final VBox  prenotazioniContainer = new VBox(10);
+    
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ProfiloView() {
@@ -74,17 +73,14 @@ public class ProfiloView {
 
     // ── API pubblica ──────────────────────────────────────────────────────────
 
-    public void setUtente(Persona p) {
+    public void setUtente(Persona p, boolean isGuida) {
         nomeLabel.setText(p.nome + " " + p.cognome);
         subLabel.setText("Membro dal " + (p.dataIscrizione != null ? p.dataIscrizione.toString() : "—")
                 + "  ·  " + p.escursioniEffettuate + " escursioni effettuate");
         inizialeLabel.setText(p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase());
 
-        // Mostra pulsante "Crea escursione" solo se è una guida
-        boolean isGuida = !p.tipoUtente || (p.statoAccount != null && !p.statoAccount.isEmpty());
-        contentBox.getChildren().stream()
-                .filter(n -> "btn-crea".equals(n.getId()))
-                .forEach(n -> n.setVisible(isGuida));
+        // Rimosso il codice che cercava i pulsanti "Crea Escursione" e "Aggiungi Luogo"
+        // in quanto ora sono gestiti direttamente nella barra laterale di MainView
     }
 
     public void setCertificazioni(List<Certificazione> lista) {
@@ -116,7 +112,6 @@ public class ProfiloView {
         }
     }
 
-    public void setOnCreaEscursione(Runnable handler)   { this.onCreaEscursione = handler; }
     public void setOnAggiungiCert(Runnable handler)     { this.onAggiungiCert   = handler; }
     public void setOnVaiPremium(Runnable handler)       { this.onVaiPremium     = handler; }
     public ScrollPane getRoot()                          { return root; }
@@ -147,15 +142,10 @@ public class ProfiloView {
         subLabel.setTextFill(Color.web(TEXT_MUTED));
         textBox.getChildren().addAll(nomeLabel, subLabel);
 
-        // Pulsante crea escursione (visibile solo per guide)
-        Button creaBtn = new Button("+ Nuova escursione");
-        creaBtn.setId("btn-crea");
-        creaBtn.setFont(Font.font("System", FontWeight.BOLD, 13));
-        creaBtn.getStyleClass().add("btn-accent"); // Usa il CSS
-        creaBtn.setOnAction(e -> onCreaEscursione.run());
-        creaBtn.setVisible(false);
-
-        header.getChildren().addAll(avatar, textBox, creaBtn);
+        // Rimosso il ButtonBox e i pulsanti Crea Escursione / Aggiungi Luogo
+        
+        header.getChildren().addAll(avatar, textBox);
+        
         return header;
     }
 
