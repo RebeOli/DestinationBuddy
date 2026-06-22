@@ -37,6 +37,7 @@ public class MainView {
     private Runnable onImpostazioni = () -> {};
     private Runnable onCreaEscursione = () -> {};
     private Runnable onAggiungiLuogo = () -> {};
+    private Runnable onInserisciResoconto = () -> {};
 
     private final BorderPane root;
     private final BorderPane body;
@@ -48,6 +49,7 @@ public class MainView {
     private VBox menuStandard;
     private VBox prenotaBlock;
     private VBox creaBlock;
+    private VBox resocontoBlock;
     private Button adminButtonSidebar;
     private VBox luogoBlock;
 
@@ -86,6 +88,8 @@ public class MainView {
                 
                 creaBlock.setVisible(false);
                 creaBlock.setManaged(false);
+                resocontoBlock.setVisible(false);
+                resocontoBlock.setManaged(false);
                 
                 if (luogoBlock != null) {
                     luogoBlock.setVisible(false);
@@ -124,6 +128,8 @@ public class MainView {
                 prenotaBlock.setManaged(false);
                 creaBlock.setVisible(false);
                 creaBlock.setManaged(false);
+                resocontoBlock.setVisible(false);
+                resocontoBlock.setManaged(false);
                 
                 if (luogoBlock != null) {
                     luogoBlock.setVisible(false);
@@ -152,7 +158,8 @@ public class MainView {
                 
                 creaBlock.setVisible(isGuida);
                 creaBlock.setManaged(isGuida);
-
+                resocontoBlock.setVisible(isGuida);
+                resocontoBlock.setManaged(isGuida);
                 if (luogoBlock != null) {
                     luogoBlock.setVisible(isGuida);
                     luogoBlock.setManaged(isGuida);
@@ -194,6 +201,7 @@ public class MainView {
     public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
     public void setOnCreaEscursione(Runnable h) { this.onCreaEscursione = h; }
     public void setOnAggiungiLuogo(Runnable h) { this.onAggiungiLuogo = h; }
+    public void setOnInserisciResoconto(Runnable h) { this.onInserisciResoconto = h; }
 
     public BorderPane getRoot() { return root; }
 
@@ -325,6 +333,25 @@ public class MainView {
         creaBlock.setManaged(false);
         creaBlock.setId("btn-crea-esc");
 
+        Button resocontoBtn = new Button("+ Inserisci resoconto");
+        resocontoBtn.setOnAction(e -> onInserisciResoconto.run());
+        resocontoBtn.setMaxWidth(Double.MAX_VALUE);
+        resocontoBtn.setFont(Font.font("System", 12));
+        resocontoBtn.setStyle("-fx-background-color: transparent;"
+            + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
+            + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+        resocontoBtn.setOnMouseEntered(e -> resocontoBtn.setStyle("-fx-background-color: " + HOVER_BG
+            + "; -fx-text-fill: " + ACCENT_HOVER + "; -fx-border-color: " + ACCENT_HOVER
+            + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+        resocontoBtn.setOnMouseExited(e -> resocontoBtn.setStyle("-fx-background-color: transparent;"
+            + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT
+            + "; -fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;"));
+
+        resocontoBlock = new VBox(resocontoBtn);
+        resocontoBlock.setPadding(new Insets(0, 12, 8, 12));
+        resocontoBlock.setVisible(false);
+        resocontoBlock.setManaged(false);
+
         Button aggiungiLuogoBtn = new Button("+ Aggiungi Luogo");
         aggiungiLuogoBtn.setOnAction(e -> onAggiungiLuogo.run()); // Assicurati di avere questo Runnable
         aggiungiLuogoBtn.setId("btn-luogo");
@@ -367,7 +394,7 @@ public class MainView {
         bottom.getChildren().addAll(adminBlock,
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
-        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, luogoBlock, spacer, bottom);
+        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, luogoBlock, resocontoBlock, spacer, bottom);
         return sidebar;
     }
 

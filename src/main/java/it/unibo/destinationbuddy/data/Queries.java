@@ -484,6 +484,13 @@ public final class Queries {
         """
         SELECT nome FROM ZONE WHERE nome_paese = ? ORDER BY nome
         """;
+    public static final String ESCURSIONI_PER_GUIDA =
+        """
+        SELECT ID_escursione, titolo, difficolta, costo
+        FROM ESCURSIONI
+        WHERE Guida_CF = ?
+        """;
+    
 }
 
 

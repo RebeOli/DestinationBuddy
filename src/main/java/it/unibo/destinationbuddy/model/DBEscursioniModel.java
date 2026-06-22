@@ -104,4 +104,9 @@ public class DBEscursioniModel implements EscursioniModel {
     public List<String> getCategorieLuoghi() {
         return LuogoEsplorabile.DAO.listCategorie(connection);
     }
+
+    @Override
+        public List<EscursionePreview> getEscursioniGuida(String guidaCF) {
+        return EscursionePreview.DAO.listByGuida(connection, guidaCF);
+    }
 }

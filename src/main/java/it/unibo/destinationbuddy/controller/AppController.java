@@ -16,6 +16,7 @@ public class AppController {
     private final CertificazioniModel certsModel;
     private final AdminModel          adminModel;
     private final PrenotazioniModel   prenotModel;
+    private final PostEscursioneModel postEscursioneModel;
 
     private final MainView                    mainView      = new MainView();
     private final AuthView                    authView      = new AuthView();
@@ -29,16 +30,18 @@ public class AppController {
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
     private final PremiumView                 premiumView   = new PremiumView();
     private final AggiungiLuogoView           aggiungiLuogoView = new AggiungiLuogoView();
+    private final InserisciResocontoView resocontoView = new InserisciResocontoView();
 
     private Persona utenteCorrente = null;
 
-    public AppController(Stage stage, EscursioniModel e, UtentiModel u, CertificazioniModel c, AdminModel a, PrenotazioniModel p) {
+    public AppController(Stage stage, EscursioniModel e, UtentiModel u, CertificazioniModel c, AdminModel a, PrenotazioniModel p, PostEscursioneModel post) {
         this.primaryStage    = stage;
         this.escursioniModel = e;
         this.utentiModel     = u;
         this.certsModel      = c;
         this.adminModel      = a;
         this.prenotModel     = p;
+        this.postEscursioneModel  = post;
     }
 
     public void avvia() {
@@ -54,6 +57,7 @@ public class AppController {
         collegaAggCertView();
         collegaPremiumView();
         collegaAggiungiLuogoView();
+        collegaResocontoView();
 
         homeView.setTop5(escursioniModel.getTop5());
         exploreView.setEscursioni(escursioniModel.getAll());
@@ -191,6 +195,13 @@ public class AppController {
             aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
             mainView.setContenuto(aggiungiLuogoView.getRoot());
         });
+        mainView.setOnInserisciResoconto(() -> {
+            if (utenteCorrente == null) return;
+            resocontoView.setCfGuida(utenteCorrente.cf);
+            resocontoView.setEscursioni(escursioniModel.getEscursioniGuida(utenteCorrente.cf));
+            resocontoView.pulisciForm();
+            mainView.setContenuto(resocontoView.getRoot());
+        });
     }
 
     private void mostraLogin() {
@@ -300,7 +311,10 @@ public class AppController {
     }
 
     private void collegaCreaView() {
-        creaView.setOnAnnulla(() -> mostraProfilo());
+        creaView.setOnAnnulla(() -> {
+            creaView.pulisciForm();
+            mostraProfilo();
+        });
         creaView.setOnCrea(formData -> {
             escursioniModel.creaEscursione(
                 formData.escursione, 
@@ -311,8 +325,6 @@ public class AppController {
                 formData.certificazioniSelezionate,
                 formData.nuovaCertificazione
             );
-            creaView.pulisciForm();
-            mostraProfilo();
             exploreView.setEscursioni(escursioniModel.getAll());
             creaView.mostraConferma(formData.escursione.titolo);
         });
@@ -361,6 +373,17 @@ public class AppController {
                 mostraProfilo(); 
             } catch (Exception e) {
                 System.err.println("Errore salvataggio luogo: " + e.getMessage());
+            }
+        });
+    }
+    private void collegaResocontoView() {
+        resocontoView.setOnAnnulla(() -> mostraProfilo());
+        resocontoView.setOnSalva(r -> {
+            boolean ok = postEscursioneModel.inserisciResoconto(r);
+            if (ok) {
+                resocontoView.mostraConferma();
+            } else {
+                resocontoView.mostraErrore("Errore durante il salvataggio. Riprova.");
             }
         });
     }
