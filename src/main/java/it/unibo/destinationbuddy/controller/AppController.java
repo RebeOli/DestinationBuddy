@@ -273,12 +273,19 @@ public class AppController {
     }
 
     private void collegaProfiloView() {
+
         profiloView.setOnCreaEscursione(() -> {
             if (utenteCorrente == null) return;
             creaView.setGuidaCF(utenteCorrente.cf);
             creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            var certificazioniDalDB = certsModel.getTipologieDisponibili();
+            System.out.println("======= [DEBUG CONTROLLER] =======");
+            System.out.println("Numero certificazioni caricate dal Model: " + certificazioniDalDB.size());
+            System.out.println("==================================");
+            creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
             mainView.setContenuto(creaView.getRoot());
         });
+
         profiloView.setOnAggiungiCert(() -> {
             if (utenteCorrente == null) return;
             aggCertView.setCfUtente(utenteCorrente.cf);
@@ -291,7 +298,15 @@ public class AppController {
     private void collegaCreaView() {
         creaView.setOnAnnulla(() -> mostraProfilo());
         creaView.setOnCrea(formData -> {
-            escursioniModel.creaEscursione(formData.escursione, formData.descrizione, formData.numeroPartecipanti, formData.guidaCF, formData.tipologie);
+            escursioniModel.creaEscursione(
+                formData.escursione, 
+                formData.descrizione, 
+                formData.numeroPartecipanti, 
+                formData.guidaCF, 
+                formData.tipologie,
+                formData.certificazioniSelezionate,
+                formData.nuovaCertificazione
+            );
             creaView.pulisciForm();
             exploreView.setEscursioni(escursioniModel.getAll());
             mostraProfilo();

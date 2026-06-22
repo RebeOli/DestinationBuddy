@@ -462,6 +462,13 @@ public final class Queries {
         """
         INSERT INTO GUIDE (CF, stato_account) VALUES (?, 1)
         """;
+
+    public static final String INSERISCI_TIPOLOGIA_CERT =
+        """
+        INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) 
+        VALUES (?, ?)
+        """;
+
 }
 
 

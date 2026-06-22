@@ -3,6 +3,7 @@ package it.unibo.destinationbuddy.model.mocked;
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
+import it.unibo.destinationbuddy.data.TipologiaCertificazione; // <-- Aggiunto import
 import it.unibo.destinationbuddy.model.EscursioniModel;
 
 import java.time.LocalDate;
@@ -59,9 +60,18 @@ public class MockedEscursioniModel implements EscursioniModel {
         return fintePreview;
     }
 
+    // =========================================================
+    // MODIFICATO: Firma aggiornata con i parametri dei brevetti
+    // =========================================================
     @Override
-    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, List<String> tipologie) {
+    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, 
+                               List<String> tipologie, List<String> certificazioniSelezionate, 
+                               TipologiaCertificazione nuovaCertificazione) {
         System.out.println("[MOCK] Creata nuova escursione: " + e.titolo + " (Guida CF: " + guidaCF + ")");
+        System.out.println("[MOCK] Certificazioni richieste selezionate: " + certificazioniSelezionate.size());
+        if (nuovaCertificazione != null) {
+            System.out.println("[MOCK] È stata inventata e creata anche la nuova certificazione: " + nuovaCertificazione.idCertificazione);
+        }
     }
 
     @Override
