@@ -71,7 +71,7 @@ public final class TipologiaCertificazione {
             }
             return tipologie;
         }
-        //elenco tutte le tipologie di certificaizoni disponibili, es: Alpinismo-Livello1, tra cui l'utente può scegliere. 
+
         public static List<TipologiaCertificazione> listAll(Connection connection) {
             var tipologie = new ArrayList<TipologiaCertificazione>();
             try (
@@ -88,6 +88,17 @@ public final class TipologiaCertificazione {
                 throw new DAOException(e);
             }
             return tipologie;
+        }
+
+        public static void create(Connection connection, TipologiaCertificazione tipologia) {
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.INSERISCI_TIPOLOGIA_CERT,
+                    tipologia.idCertificazione, tipologia.livello)
+            ) {
+                statement.executeUpdate();
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
         }
     }
 }

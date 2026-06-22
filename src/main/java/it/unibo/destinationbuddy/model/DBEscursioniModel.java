@@ -7,7 +7,10 @@ import java.util.Optional;
 
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
+import it.unibo.destinationbuddy.data.LuogoEsplorabile;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
+// IMPORTANTE: Aggiunto l'import per TipologiaCertificazione
+import it.unibo.destinationbuddy.data.TipologiaCertificazione; 
 
 public class DBEscursioniModel implements EscursioniModel {
     private final Connection connection;
@@ -26,11 +29,9 @@ public class DBEscursioniModel implements EscursioniModel {
     @Override
     public List<EscursionePreview> getTop5() {
         if (cacheTop5.isEmpty()) {
-            // Prima volta: chiama il DAO e salva in cache
             var risultato = EscursionePreview.DAO.top5(connection);
             cacheTop5 = Optional.of(risultato);
         }
-        // Successive: restituisci direttamente la cache
         return cacheTop5.get();
     }
 
@@ -42,11 +43,9 @@ public class DBEscursioniModel implements EscursioniModel {
     @Override
     public List<EscursionePreview> getAll() {
         if (cacheAll.isEmpty()) {
-            // Prima volta: chiama il DAO e salva in cache
             var risultato = EscursionePreview.DAO.list(connection);
             cacheAll = Optional.of(risultato);
         }
-        // Successive: restituisci direttamente la cache
         return cacheAll.get();
     }
 
@@ -61,16 +60,48 @@ public class DBEscursioniModel implements EscursioniModel {
     }
 
     @Override
-    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF,
-            List<String> tipologie) {
-        Escursione.DAO.create(connection, e, descrizione, numeroPartecipanti, guidaCF, tipologie);
-        cacheAll = Optional.empty();
-        cacheTop5 = Optional.empty(); //resetto la cache in modo da vedere poi la nuova escursione creata. 
-    }
-
-    @Override
     public List<TipologiaEscursione> getTipologie() {
         return TipologiaEscursione.DAO.list(connection);
     }
-    
+
+    @Override
+    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF,
+            List<String> tipologie, List<String> certificazioniSelezionate, TipologiaCertificazione nuovaCertificazione) {
+        
+        if (nuovaCertificazione != null) {
+            TipologiaCertificazione.DAO.create(connection, nuovaCertificazione);
+            certificazioniSelezionate.add(nuovaCertificazione.idCertificazione);
+        }
+
+        Escursione.DAO.create(connection, e, descrizione, numeroPartecipanti, guidaCF, tipologie);
+
+        for (String idTipologia : tipologie) {
+            for (String idCert : certificazioniSelezionate) {
+                TipologiaEscursione.DAO.associaCertificazione(connection, idTipologia, idCert);
+            }
+        }
+
+        cacheAll = Optional.empty();
+        cacheTop5 = Optional.empty(); 
+    }
+
+    @Override
+    public void aggiungiLuogoEsplorabile(LuogoEsplorabile l) {
+        LuogoEsplorabile.DAO.create(connection, l);
+    }
+
+    @Override
+    public List<String> getPaesi() {
+        return LuogoEsplorabile.DAO.listPaesi(connection);
+    }
+
+    @Override
+    public List<String> getZonePerPaese(String paese) {
+        return LuogoEsplorabile.DAO.listZonePerPaese(connection, paese);
+    }
+
+    @Override
+    public List<String> getCategorieLuoghi() {
+        return LuogoEsplorabile.DAO.listCategorie(connection);
+    }
 }

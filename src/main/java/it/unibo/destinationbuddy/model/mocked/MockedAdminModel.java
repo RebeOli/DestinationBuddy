@@ -57,4 +57,10 @@ public class MockedAdminModel implements AdminModel {
     public List<Persona> getTutteLeGuide() {
         return new ArrayList<>();
     }
+
+    @Override
+    public List<String> getGuideSospendibili() {
+        System.out.println("[MOCK] Amministratore: Recupero lista guide con troppe recensioni negative...");
+        return List.of("GDA88Y88Y888Y");
+    }
 }

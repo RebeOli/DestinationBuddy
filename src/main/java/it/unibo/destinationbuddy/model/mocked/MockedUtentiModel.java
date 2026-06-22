@@ -58,4 +58,15 @@ public class MockedUtentiModel implements UtentiModel {
     public Optional<Abbonamento> getUltimoAbbonamento(Persona utente) {
         return Optional.empty();
     }
+
+    @Override
+    public boolean verificaSeGuida(String cf) {
+        if ("GDA88Y88Y888Y".equals(cf)) {
+            System.out.println("[MOCK] verificaSeGuida: l'utente " + cf + " è una GUIDA.");
+            return true;
+        }
+        
+        System.out.println("[MOCK] verificaSeGuida: l'utente " + cf + " NON è una guida.");
+        return false;
+    }
 }

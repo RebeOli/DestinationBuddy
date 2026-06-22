@@ -28,6 +28,7 @@ public class AppController {
     private final CreaEscursioneView          creaView      = new CreaEscursioneView();
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
     private final PremiumView                 premiumView   = new PremiumView();
+    private final AggiungiLuogoView           aggiungiLuogoView = new AggiungiLuogoView();
 
     private Persona utenteCorrente = null;
 
@@ -52,6 +53,7 @@ public class AppController {
         collegaCreaView();
         collegaAggCertView();
         collegaPremiumView();
+        collegaAggiungiLuogoView();
 
         homeView.setTop5(escursioniModel.getTop5());
         exploreView.setEscursioni(escursioniModel.getAll());
@@ -101,7 +103,8 @@ public class AppController {
         mainView.setContenuto(profiloView.getRoot());
         mainView.setNavAttiva("profilo");
         if (utenteCorrente != null) {
-            profiloView.setUtente(utenteCorrente);
+            boolean isGuida = utentiModel.verificaSeGuida(utenteCorrente.cf);
+            profiloView.setUtente(utenteCorrente, isGuida);
             try {
                 profiloView.setCertificazioni(certsModel.getCertificazioniUtente(utenteCorrente.cf));
                 profiloView.setAbbonamento(utentiModel.getUltimoAbbonamento(utenteCorrente));
@@ -115,14 +118,14 @@ public class AppController {
         mainView.setNavAttiva("");
 
         try { adminView.setCertificazioniInAttesa(certsModel.getCertificazioniInAttesa()); } catch (Exception e) { adminView.setCertificazioniInAttesa(null); }
-        try { adminView.setGuide(adminModel.getTutteLeGuide()); } catch (Exception e) { adminView.setGuide(null); }
+        try { adminView.setGuide(adminModel.getTutteLeGuide(), adminModel.getGuideSospendibili());} catch (Exception e) { adminView.setGuide(null, null); }
         try { adminView.setUtentiDaPremiare(adminModel.getUtentiDaPremiare()); } catch (Exception e) { adminView.setUtentiDaPremiare(null); }
     }
 
     private void eseguiLogout() {
         utenteCorrente = null;
         mainView.setAutenticato(false);
-        mainView.setUtente(null); 
+        mainView.setUtente(null, false); 
         homeView.setUtente(null); 
         mostraHome();
     }
@@ -132,10 +135,11 @@ public class AppController {
             utentiModel.getPersonaAutenticata(email, password).ifPresentOrElse(
                 persona -> {
                     utenteCorrente = persona;
-                    mainView.setUtente(persona);
+                    boolean isGuida = utentiModel.verificaSeGuida(persona.cf);
+                    mainView.setUtente(persona, isGuida);
                     mainView.setAutenticato(true);
                     homeView.setUtente(persona);
-                    profiloView.setUtente(persona);
+                    profiloView.setUtente(persona, isGuida);
 
                     if (persona.tipoAmministratore) {
                         mostraAdmin();
@@ -170,6 +174,23 @@ public class AppController {
             if (utenteCorrente != null) eseguiLogout();
             else mostraLogin();
         });
+        
+        // GESTIONE DEL BOTTONE "CREA ESCURSIONE" DELLA SIDEBAR
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
+            mainView.setContenuto(creaView.getRoot());
+        });
+
+        // GESTIONE DEL BOTTONE "AGGIUNGI LUOGO" DELLA SIDEBAR
+        mainView.setOnAggiungiLuogo(() -> {
+            aggiungiLuogoView.pulisciForm();
+            aggiungiLuogoView.setPaesi(escursioniModel.getPaesi());
+            aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
+            mainView.setContenuto(aggiungiLuogoView.getRoot());
+        });
     }
 
     private void mostraLogin() {
@@ -184,12 +205,6 @@ public class AppController {
         homeView.setOnUpgradeClick(() -> {
             if (utenteCorrente == null) mostraLogin();
             else mainView.setContenuto(premiumView.getRoot());
-        });
-        mainView.setOnCreaEscursione(() -> {
-            if (utenteCorrente == null) return;
-            creaView.setGuidaCF(utenteCorrente.cf);
-            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
-            mainView.setContenuto(creaView.getRoot());
         });
     }
 
@@ -272,12 +287,9 @@ public class AppController {
     }
 
     private void collegaProfiloView() {
-        profiloView.setOnCreaEscursione(() -> {
-            if (utenteCorrente == null) return;
-            creaView.setGuidaCF(utenteCorrente.cf);
-            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
-            mainView.setContenuto(creaView.getRoot());
-        });
+        // "Crea Escursione" non serve più qui perché è in MainView
+        // "Aggiungi Luogo" non serve più qui perché è in MainView
+
         profiloView.setOnAggiungiCert(() -> {
             if (utenteCorrente == null) return;
             aggCertView.setCfUtente(utenteCorrente.cf);
@@ -288,15 +300,19 @@ public class AppController {
     }
 
     private void collegaCreaView() {
-        creaView.setOnAnnulla(() -> {
-            creaView.pulisciForm();
-            mostraProfilo();
-        });
+        creaView.setOnAnnulla(() -> mostraProfilo());
         creaView.setOnCrea(formData -> {
             escursioniModel.creaEscursione(
-                formData.escursione, formData.descrizione,
-                formData.numeroPartecipanti, formData.guidaCF, formData.tipologie
+                formData.escursione, 
+                formData.descrizione, 
+                formData.numeroPartecipanti, 
+                formData.guidaCF, 
+                formData.tipologie,
+                formData.certificazioniSelezionate,
+                formData.nuovaCertificazione
             );
+            creaView.pulisciForm();
+            mostraProfilo();
             exploreView.setEscursioni(escursioniModel.getAll());
             creaView.mostraConferma(formData.escursione.titolo);
         });
@@ -327,6 +343,25 @@ public class AppController {
                 return;
             }
             mostraProfilo();
+        });
+    }
+
+    private void collegaAggiungiLuogoView() {
+        aggiungiLuogoView.setOnAnnulla(() -> mostraProfilo());
+        
+        // Quando la guida seleziona un Paese, carichiamo le sue zone dal DB dinamicamente!
+        aggiungiLuogoView.setOnPaeseSelezionato(paese -> {
+            aggiungiLuogoView.setZone(escursioniModel.getZonePerPaese(paese));
+        });
+
+        aggiungiLuogoView.setOnSalva(luogo -> {
+            try {
+                escursioniModel.aggiungiLuogoEsplorabile(luogo);
+                aggiungiLuogoView.pulisciForm();
+                mostraProfilo(); 
+            } catch (Exception e) {
+                System.err.println("Errore salvataggio luogo: " + e.getMessage());
+            }
         });
     }
 

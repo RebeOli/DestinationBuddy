@@ -43,4 +43,10 @@ public class DBAdminModel implements AdminModel{
     public List<Persona> getTutteLeGuide() {
         return Persona.DAO.getTutteLeGuide(connection);
     }
+
+    @Override
+    public List<String> getGuideSospendibili() {
+        return Persona.DAO.getGuideSospendibili(connection);
+    }
+
 }

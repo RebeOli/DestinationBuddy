@@ -5,7 +5,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import it.unibo.destinationbuddy.data.Abbonamento;
+import it.unibo.destinationbuddy.data.DAOUtils;
 import it.unibo.destinationbuddy.data.Persona;
+import it.unibo.destinationbuddy.data.Queries;
 
 public class DBUtentiModel implements UtentiModel{
 
@@ -41,4 +43,20 @@ public class DBUtentiModel implements UtentiModel{
         return Abbonamento.DAO.trovaUltimoAbbonamento(connection, utente);
     }
 
+    @Override
+    public boolean verificaSeGuida(String cf) {
+        if (cf == null || cf.isEmpty()) {
+            return false;
+        }
+
+        try (
+            var statement = DAOUtils.prepare(connection, Queries.VERIFICA_GUIDA_ESISTENTE, cf);
+            var resultSet = statement.executeQuery()
+        ) {
+            return resultSet.next();
+        } catch (Exception e) {
+            System.err.println("Errore durante la verifica del ruolo Guida: " + e.getMessage());
+            return false;
+        }
+    }
 }

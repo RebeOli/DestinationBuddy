@@ -222,17 +222,29 @@ public final class Persona {
                     guide.add(guida);
                 }
             } catch (Exception e) {
-                System.out.println("⚠️ Errore caricamento guide: " + e.getMessage());
+                System.out.println("Errore caricamento guide: " + e.getMessage());
             }
             return guide;
         }
 
-        // 🚀 ORA I METODI URLANO L'ERRORE NEL TERMINALE
+        public static List<String> getGuideSospendibili(Connection connection) {
+            List<String> cfSospendibili = new ArrayList<>();
+            try (var statement = DAOUtils.prepare(connection, Queries.GUIDE_DA_SOSPENDERE);
+                var resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    cfSospendibili.add(resultSet.getString("CF"));
+                }
+            } catch (Exception e) {
+                System.err.println("Errore caricamento guide da sospendere: " + e.getMessage());
+            }
+            return cfSospendibili;
+        }
+
         public static void disattivaGuida(Connection connection, Persona guida) {
             try (var statement = DAOUtils.prepare(connection, Queries.SOSPENDI_GUIDA, guida.cf)) {
                 statement.executeUpdate();
             } catch (Exception e) {
-                System.err.println("❌ ERRORE DATABASE (Sospendi): " + e.getMessage());
+                System.err.println("ERRORE DATABASE (Sospendi): " + e.getMessage());
                 throw new DAOException(e);
             }
         }
@@ -241,7 +253,7 @@ public final class Persona {
             try (var statement = DAOUtils.prepare(connection, Queries.RIATTIVA_GUIDA, guida.cf)) {
                 statement.executeUpdate();
             } catch (Exception e) {
-                System.err.println("❌ ERRORE DATABASE (Attiva): " + e.getMessage());
+                System.err.println("ERRORE DATABASE (Attiva): " + e.getMessage());
                 throw new DAOException(e);
             }
         }
