@@ -66,6 +66,5 @@ public class MockedAdminModel implements AdminModel {
 
     @Override
     public void eliminaRecensione(String cf, String idEscursione) {
-        return;
     }
 }
