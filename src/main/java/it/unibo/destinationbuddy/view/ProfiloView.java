@@ -18,43 +18,23 @@ import java.util.Optional;
 
 import java.util.List;
 
-/**
- * ProfiloView — pagina profilo utente con certificazioni, abbonamento e prenotazioni.
- * Totalmente basata su classi CSS per la UI (Light Theme).
- *
- * UTILIZZO DAL CONTROLLER:
- * ProfiloView view = new ProfiloView();
- * view.setUtente(persona);
- * view.setCertificazioni(lista);
- * view.setAbbonamento(abbonamentoOptional);
- * view.setPrenotazioni(lista);
- * view.setOnAggiungiCertificazione(c -> controller.aggiungi(c));
- * root.setCenter(view.getRoot());
- */
 public class ProfiloView {
 
-    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
-    private static final String APP_BG     = "#F4EFE6"; // Sabbia
-    private static final String ACCENT     = "#B85D38"; // Terracotta
-    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
-    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
-    // ──────────────────────────────────────────────────────────────────────────
-
+    private static final String APP_BG     = "#F4EFE6";
+    private static final String ACCENT     = "#B85D38";
+    private static final String TEXT_DARK  = "#2C2A26";
+    private static final String TEXT_MUTED = "#807B73";
     private Runnable onAggiungiCert   = () -> {};
     private Runnable onVaiPremium     = () -> {};
-
     private final ScrollPane root;
-    private final VBox        contentBox;
-
-    // Label aggiornabili dinamicamente
-    private final Label nomeLabel       = new Label();
-    private final Label subLabel        = new Label();
-    private final Label inizialeLabel   = new Label();
-    private final VBox  certsContainer  = new VBox(10);
-    private final VBox  abbonamentoBox  = new VBox(10);
+    private final VBox contentBox;
+    private final Label nomeLabel = new Label();
+    private final Label subLabel = new Label();
+    private final Label inizialeLabel = new Label();
+    private final VBox  certsContainer = new VBox(10);
+    private final VBox  abbonamentoBox = new VBox(10);
     private final VBox  prenotazioniContainer = new VBox(10);
     private final VBox resocontiContainer = new VBox(10);
-    
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ProfiloView() {
@@ -73,8 +53,6 @@ public class ProfiloView {
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG + "; -fx-border-color: transparent;");
     }
-
-    // ── API pubblica ──────────────────────────────────────────────────────────
 
     public void setUtente(Persona p, boolean isGuida) {
         nomeLabel.setText(p.nome + " " + p.cognome);
@@ -101,7 +79,6 @@ public class ProfiloView {
         }
     }
 
-    /** Popola la lista delle prenotazioni effettuate dall'utente. */
     public void setPrenotazioni(List<Prenotazione> lista) {
         prenotazioniContainer.getChildren().clear();
         if (lista == null || lista.isEmpty()) {
@@ -120,15 +97,11 @@ public class ProfiloView {
     public void setOnVaiPremium(Runnable handler)       { this.onVaiPremium     = handler; }
     public ScrollPane getRoot()                          { return root; }
 
-    // ── Costruzione UI ────────────────────────────────────────────────────────
-
     private HBox buildProfileHeader() {
         HBox header = new HBox(18);
         header.setAlignment(Pos.CENTER_LEFT);
         header.setPadding(new Insets(20));
-        header.getStyleClass().add("profile-header"); // Usa il CSS
-
-        // Avatar
+        header.getStyleClass().add("profile-header");
         StackPane avatar = new StackPane();
         Circle circle = new Circle(32, Color.web(ACCENT));
         inizialeLabel.setFont(Font.font("System", FontWeight.BOLD, 22));
@@ -137,7 +110,6 @@ public class ProfiloView {
         avatar.setMinSize(64, 64);
         avatar.setMaxSize(64, 64);
 
-        // Testo
         VBox textBox = new VBox(4);
         HBox.setHgrow(textBox, Priority.ALWAYS);
         nomeLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
@@ -145,18 +117,14 @@ public class ProfiloView {
         subLabel.setFont(Font.font("System", 13));
         subLabel.setTextFill(Color.web(TEXT_MUTED));
         textBox.getChildren().addAll(nomeLabel, subLabel);
-
-        // Rimosso il ButtonBox e i pulsanti Crea Escursione / Aggiungi Luogo
-        
         header.getChildren().addAll(avatar, textBox);
-        
         return header;
     }
 
     private VBox buildCertSection() {
         VBox section = new VBox(14);
         section.setPadding(new Insets(18));
-        section.getStyleClass().add("card"); // Usa il CSS
+        section.getStyleClass().add("card");
 
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
@@ -169,7 +137,7 @@ public class ProfiloView {
 
         Button addBtn = new Button("+ Aggiungi");
         addBtn.setFont(Font.font("System", 12));
-        addBtn.getStyleClass().add("btn-accent"); // Usa il CSS
+        addBtn.getStyleClass().add("btn-accent");
         addBtn.setOnAction(e -> onAggiungiCert.run());
 
         header.getChildren().addAll(titolo, spacer, addBtn);
@@ -208,11 +176,9 @@ public class ProfiloView {
 
         info.getChildren().addAll(tipoLbl, detailsLbl);
 
-        // Badge stato validazione con classi CSS Native
         boolean valida = "validata".equalsIgnoreCase(c.statoValidazione);
         Label stato = new Label(valida ? "✓ Validata" : "⏳ In attesa");
 
-        // Aggiungiamo le classi ".badge" e il colore corretto
         stato.getStyleClass().add("badge");
         if (valida) {
             stato.getStyleClass().add("badge-green");
@@ -223,8 +189,6 @@ public class ProfiloView {
         card.getChildren().addAll(icon, info, stato);
         return card;
     }
-
-    // ── Prenotazioni ─────────────────────────────────────────────────────────
 
     private VBox buildPrenotazioniSection() {
         VBox section = new VBox(14);
@@ -262,7 +226,6 @@ public class ProfiloView {
 
         info.getChildren().addAll(titoloLbl, detailsLbl);
 
-        // Badge stato prenotazione
         Label stato = new Label(p.stato == null || p.stato.isEmpty() ? "—" : p.stato);
         stato.getStyleClass().add("badge");
         String statoLower = p.stato != null ? p.stato.toLowerCase() : "";
@@ -277,8 +240,6 @@ public class ProfiloView {
         card.getChildren().addAll(icon, info, stato);
         return card;
     }
-
-    // ── Abbonamento ──────────────────────────────────────────────────────────
 
     public void setAbbonamento(Optional<Abbonamento> abbonamentoOpt) {
         abbonamentoBox.getChildren().clear();

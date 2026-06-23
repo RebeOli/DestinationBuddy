@@ -48,7 +48,7 @@ public final class Pezzo {
                 if (rs.next()) {
                     return rs.getDouble("sconto_noleggio");
                 }
-                return 0.0; // Se non ha un abbonamento, lo sconto è dello 0%
+                return 0.0;
             } catch (Exception e) {
                 throw new DAOException(e);
             }

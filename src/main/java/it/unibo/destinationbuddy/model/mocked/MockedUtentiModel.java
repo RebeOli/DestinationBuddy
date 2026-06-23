@@ -15,7 +15,7 @@ public class MockedUtentiModel implements UtentiModel {
         if (email.contains("admin")) {
             System.out.println("[MOCK] Login effettuato come AMMINISTRATORE.");
             return Optional.of(new Persona(
-                "ADMN99Z99Z999Z", "Admin", "Superiore", true, true, // tipoAmministratore = true
+                "ADMN99Z99Z999Z", "Admin", "Superiore", true, true,
                 "ACC-ADMIN", 0, LocalDate.of(2020, 1, 1), null, 
                 email, password, false
             ));
@@ -25,8 +25,8 @@ public class MockedUtentiModel implements UtentiModel {
             System.out.println("[MOCK] Login effettuato come GUIDA.");
             return Optional.of(new Persona(
                 "GDA88Y88Y888Y", "Guida", "Alpina", true, false, 
-                "ACC-GUIDA", 50, LocalDate.of(2018, 5, 10), LocalDate.of(2019, 1, 1), // ha la data di assunzione!
-                email, password, true // ha lo stato dell'account
+                "ACC-GUIDA", 50, LocalDate.of(2018, 5, 10), LocalDate.of(2019, 1, 1),
+                email, password, true
             ));
         }
 

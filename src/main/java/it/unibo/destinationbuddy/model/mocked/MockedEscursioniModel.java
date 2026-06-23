@@ -110,7 +110,6 @@ public class MockedEscursioniModel implements EscursioniModel {
         return List.of("Zona Alpina Generica", "Zona di Confine");
     }
 
-    // ⚡ IL METODO CHE MANCAVA PER COMPILARE!
     @Override
     public List<String> getLuoghiPerZona(String paese, String zona) {
         if ("Abruzzo".equalsIgnoreCase(zona)) {

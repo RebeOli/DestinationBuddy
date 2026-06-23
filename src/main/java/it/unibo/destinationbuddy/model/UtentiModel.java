@@ -7,7 +7,6 @@ import it.unibo.destinationbuddy.data.Persona;
 
 public interface UtentiModel {
     Optional<Persona> getPersonaAutenticata(String email, String password);
-    // void getCertificazioni(Persona utente);
     void registraUtente(Persona utente);
     int numeroEscursioniEffettuate(Persona utente);
     boolean sottoscriviAbbonamento(double costoMensile, int durata, String cf);

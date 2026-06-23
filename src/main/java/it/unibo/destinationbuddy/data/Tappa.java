@@ -103,8 +103,6 @@ public final class Tappa {
 
 
     public static final class DAO {
-
-        // Lista delle tappe di una specifica giornata di una specifica escursione
         public static List<Tappa> listForGiornata(Connection connection, String idEscursione, LocalDate data) {
             var tappe = new ArrayList<Tappa>();
             try (
@@ -132,7 +130,7 @@ public final class Tappa {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.INSERISCI_TAPPA,
                     t.idTappa, t.durata, t.idEscursione,
-                    java.sql.Date.valueOf(t.data), //da formato LocalDate a formato SQL
+                    java.sql.Date.valueOf(t.data),
                     t.nomePaese, t.nomeZona, t.nomeLuogo);
             ) {
                 statement.executeUpdate();

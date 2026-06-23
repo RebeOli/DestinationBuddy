@@ -11,21 +11,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-/**
- * MainView — contenitore principale con TopBar e Sidebar.
- * Gestisce la navigazione tra le pagine sostituendo il centro del BorderPane.
- */
 public class MainView {
 
-    // ── VARIABILI AGGIORNATE AL LIGHT THEME ─────────────────────────────
-    private static final String APP_BG       = "#F4EFE6"; // Sabbia
-    private static final String SIDEBAR_BG   = "#E8EFE8"; // Bianco per barre
-    private static final String BORDER_COLOR = "#DCD5C6"; // Bordo chiaro
-    private static final String ACCENT       = "#B85D38"; // Terracotta
-    private static final String ACCENT_HOVER = "#4A7C59"; // Verde foresta
-    private static final String TEXT_DARK    = "#2C2A26"; // Testo scuro
-    private static final String TEXT_MUTED   = "#807B73"; // Testo grigino
-    private static final String HOVER_BG     = "#EBF5F8"; // Azzurrino per hover
+    private static final String APP_BG       = "#F4EFE6"; 
+    private static final String SIDEBAR_BG   = "#E8EFE8";
+    private static final String BORDER_COLOR = "#DCD5C6";
+    private static final String ACCENT       = "#B85D38";
+    private static final String ACCENT_HOVER = "#4A7C59";
+    private static final String TEXT_DARK    = "#2C2A26";
+    private static final String TEXT_MUTED   = "#807B73";
+    private static final String HOVER_BG     = "#EBF5F8";
 
     private Runnable onHome  = () -> {};
     private Runnable onExplore  = () -> {};
@@ -43,8 +38,8 @@ public class MainView {
     private final BorderPane body;
 
     private final Label inizialeAvatar = new Label("?");
-    private final Label nomeLabel      = new Label("Utente");
-    private final Label ruoloLabel     = new Label("");
+    private final Label nomeLabel = new Label("Utente");
+    private final Label ruoloLabel = new Label("");
     
     private VBox menuStandard;
     private VBox prenotaBlock;
@@ -52,9 +47,7 @@ public class MainView {
     private VBox resocontoBlock;
     private Button adminButtonSidebar;
     private VBox luogoBlock;
-
-    private HBox topNavLinks; // Variabile globale per nascondere i menu in alto
-
+    private HBox topNavLinks;
     private String activeNav = "home";
 
     public MainView() {
@@ -76,28 +69,25 @@ public class MainView {
             inizialeAvatar.setText("?");
             nomeLabel.setText("Utente");
             ruoloLabel.setText("");
-            
+
             if (menuStandard != null) {
                 adminButtonSidebar.setVisible(false);
                 adminButtonSidebar.setManaged(false);
-                
                 menuStandard.setVisible(true);
                 menuStandard.setManaged(true);
                 prenotaBlock.setVisible(true);
                 prenotaBlock.setManaged(true);
-                
                 creaBlock.setVisible(false);
                 creaBlock.setManaged(false);
                 resocontoBlock.setVisible(false);
                 resocontoBlock.setManaged(false);
-                
+
                 if (luogoBlock != null) {
                     luogoBlock.setVisible(false);
                     luogoBlock.setManaged(false);
                 }
-            } // ⚡ ECCO LA PARENTESI CHE MANCAVA! Chiude l'if(menuStandard != null)
+            }
 
-            // Torna a mostrare i menu in alto quando nessuno è loggato
             if (topNavLinks != null) {
                 topNavLinks.setVisible(true);
                 topNavLinks.setManaged(true);
@@ -105,12 +95,10 @@ public class MainView {
             return; 
         }
 
-        // SE UN UTENTE È LOGGATO
         String iniziale = p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase();
         inizialeAvatar.setText(iniziale);
         nomeLabel.setText(p.nome + " " + p.cognome);
-        
-        // ── NUOVA LOGICA: Gestione dei testi dei ruoli basata sulle entità pulite ──
+
         if (p.tipoAmministratore) {
             ruoloLabel.setText("Amministratore");
         } else if (isGuida) {
@@ -143,7 +131,6 @@ public class MainView {
                 topNavLinks.setManaged(false);
             } 
         } else {
-            // REGOLE UTENTE / GUIDA: Mostra sidebar standard
             if (menuStandard != null) {
                 adminButtonSidebar.setVisible(false);
                 adminButtonSidebar.setManaged(false);
@@ -163,13 +150,12 @@ public class MainView {
                 }
             }
 
-            // UTENTE NORMALE / GUIDA: Mostriamo di nuovo i bottoni in alto
             if (topNavLinks != null) {
                 topNavLinks.setVisible(true);
                 topNavLinks.setManaged(true);
             }
         }
-    } // ⚡ E qui ho tolto le parentesi di troppo!
+    }
 
     public void setNavAttiva(String nav) {
         this.activeNav = nav;
@@ -188,21 +174,19 @@ public class MainView {
         }
     }
 
-    public void setOnHome(Runnable h)          { this.onHome         = h; }
-    public void setOnExplore(Runnable h)       { this.onExplore      = h; }
-    public void setOnProfilo(Runnable h)       { this.onProfilo      = h; }
-    public void setOnAdmin(Runnable h)         { this.onAdmin        = h; }
-    public void setOnLogout(Runnable h)        { this.onLogout       = h; }
+    public void setOnHome(Runnable h) { this.onHome         = h; }
+    public void setOnExplore(Runnable h) { this.onExplore      = h; }
+    public void setOnProfilo(Runnable h) { this.onProfilo      = h; }
+    public void setOnAdmin(Runnable h) { this.onAdmin        = h; }
+    public void setOnLogout(Runnable h) { this.onLogout       = h; }
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
-    public void setOnLogin(Runnable h)         { this.onLogin        = h; }
+    public void setOnLogin(Runnable h) { this.onLogin        = h; }
     public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
     public void setOnCreaEscursione(Runnable h) { this.onCreaEscursione = h; }
     public void setOnAggiungiLuogo(Runnable h) { this.onAggiungiLuogo = h; }
     public void setOnInserisciResoconto(Runnable h) { this.onInserisciResoconto = h; }
 
     public BorderPane getRoot() { return root; }
-
-    // ── TopBar ────────────────────────────────────────────────────────────────
 
     private HBox buildTopBar() {
         HBox bar = new HBox();
@@ -264,8 +248,6 @@ public class MainView {
         lbl.setOnMouseExited(ev  -> { if (!activeNav.equals(id)) lbl.setTextFill(Color.web(TEXT_MUTED)); });
         return lbl;
     }
-
-    // ── Sidebar ───────────────────────────────────────────────────────────────
 
     private VBox buildSidebar() {
         VBox sidebar = new VBox(0);
@@ -348,20 +330,6 @@ public class MainView {
         resocontoBlock.setPadding(new Insets(0, 12, 8, 12));
         resocontoBlock.setVisible(false);
         resocontoBlock.setManaged(false);
-
-        // Button aggiungiLuogoBtn = new Button("+ Aggiungi Luogo");
-        // aggiungiLuogoBtn.setOnAction(e -> onAggiungiLuogo.run()); // Assicurati di avere questo Runnable
-        // aggiungiLuogoBtn.setId("btn-luogo");
-        // aggiungiLuogoBtn.setMaxWidth(Double.MAX_VALUE);
-        // aggiungiLuogoBtn.setFont(Font.font("System", 12));
-        // aggiungiLuogoBtn.setStyle("-fx-background-color: transparent;"
-        //         + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
-        //         + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
-
-        // luogoBlock = new VBox(aggiungiLuogoBtn);
-        // luogoBlock.setPadding(new Insets(0, 12, 8, 12));
-        // luogoBlock.setVisible(false);
-        // luogoBlock.setManaged(false);
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);

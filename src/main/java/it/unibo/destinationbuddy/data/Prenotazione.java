@@ -82,7 +82,6 @@ public final class Prenotazione {
         public static boolean haAccessoPrioritario(Connection connection, String cf) {
             try (var stmt = DAOUtils.prepare(connection, Queries.CONTROLLA_ACCESSO_PRIORITARIO, cf);
                  var rs = stmt.executeQuery()) {
-                // Se la query restituisce un risultato, significa che ha i vantaggi attivi
                 return rs.next();
             } catch (Exception e) {
                 throw new DAOException(e);
@@ -91,7 +90,7 @@ public final class Prenotazione {
 
         public static int getPostiRimanenti(Connection connection, String idEscursione) {
             try (
-                var stmt = DAOUtils.prepare(connection, Queries.POSTI_RIMANENTI, idEscursione); // DAOUtils.prepare inserisce idEscursione al posto del "?" nella stringa SQL
+                var stmt = DAOUtils.prepare(connection, Queries.POSTI_RIMANENTI, idEscursione);
                 var rs = stmt.executeQuery()
             ) {
                 if (rs.next()) {
@@ -109,7 +108,7 @@ public final class Prenotazione {
                 if (rs.next()) {
                     int richieste = rs.getInt("cert_richieste");
                     int possedute = rs.getInt("cert_possedute_valide");
-                    return possedute >= richieste; // True se ha tutte le carte in regola!
+                    return possedute >= richieste;
                 }
                 return false;
             } catch (Exception e) {

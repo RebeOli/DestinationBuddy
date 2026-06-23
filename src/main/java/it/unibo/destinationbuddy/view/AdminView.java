@@ -18,22 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-
-/**
- * AdminView — pannello amministratore: certificazioni in attesa, guide, premi.
- * Aggiornata al Light Theme.
- *
- * UTILIZZO DAL CONTROLLER:
- * AdminView view = new AdminView();
- * view.setCertificazioniInAttesa(lista);
- * view.setGuide(lista);
- * view.setUtentiDaPremiare(lista);
- * // ⚡ MODIFICATO: Ora accetta e passa due parametri (idCert, nCert)
- * view.setOnValidaCert((idCert, nCert) -> controller.valida(idCert, nCert));
- * view.setOnAttivaGuida(p -> controller.attiva(p));
- * view.setOnDisattivaGuida(p -> controller.disattiva(p));
- * root.setCenter(view.getRoot());
- */
 public class AdminView {
 
     private static final String APP_BG     = "#F4EFE6"; 
@@ -107,7 +91,6 @@ public class AdminView {
             return;
         }
         for (Persona p : lista) {
-            // Controlliamo se la guida è nella "lista nera"
             boolean puoSospendere = cfSospendibili != null && cfSospendibili.contains(p.cf);
             
             guideContainer.getChildren().add(buildGuidaRow(p, puoSospendere));
@@ -139,7 +122,7 @@ public class AdminView {
                 "#F9EAE1");
         
         if (attiva && !puoSospendere) {
-            toggleBtn.setDisable(true); // Spegne il bottone
+            toggleBtn.setDisable(true);
             toggleBtn.setStyle("-fx-background-color: #E0E0E0; -fx-text-fill: #A0A0A0; -fx-background-radius: 6; -fx-padding: 5 12;");
             toggleBtn.setTooltip(new Tooltip("Servono >5 recensioni negative per sospendere questa guida."));
         }
@@ -281,8 +264,6 @@ public class AdminView {
 
         Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
-            
-            // ⚡ MODIFICA QUI: Estraiamo l'ID e passiamo ENTRAMBI i valori alla lambda function!
             String idCert = (c.tipologia != null) ? c.tipologia.idCertificazione : "";
             onValidaCert.accept(idCert, c.nCertificazione);
             

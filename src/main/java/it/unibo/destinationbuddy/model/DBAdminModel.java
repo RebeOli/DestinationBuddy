@@ -12,7 +12,7 @@ import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.data.Queries;
 import it.unibo.destinationbuddy.data.Recensione;
 
-public class DBAdminModel implements AdminModel{
+public class DBAdminModel implements AdminModel {
 
     public Connection connection;
     public Optional<List<Persona>> cacheUtentiDaPremiare;
@@ -26,11 +26,9 @@ public class DBAdminModel implements AdminModel{
     @Override
     public List<Persona> getUtentiDaPremiare() {
         if (cacheUtentiDaPremiare.isEmpty()) {
-            // Prima volta: chiama il DAO e salva in cache
             var risultato = Persona.DAO.getUtentiDaPremiare(connection);
             cacheUtentiDaPremiare = Optional.of(risultato);
         }
-        // Successive: restituisci direttamente la cache
         return cacheUtentiDaPremiare.get();
     }
 

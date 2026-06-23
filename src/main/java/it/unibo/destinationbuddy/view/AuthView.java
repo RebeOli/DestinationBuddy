@@ -11,40 +11,28 @@ import javafx.scene.text.FontWeight;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-/**
- * AuthView — Login e Registrazione in un'unica view con toggle.
- * Stile "Ibrido" Light Theme: Card bianca su sfondo sabbia, bottoni terracotta.
- */
 public class AuthView {
 
-    // ── VARIABILI LIGHT THEME ─────────────────────────────────────────────────
-    private static final String APP_BG       = "transparent"; // Prende il sabbia dal MainView
-    private static final String CARD_BG      = "#FFFFFF";     // Card bianca
-    private static final String BORDER_COLOR = "#DCD5C6";     // Bordo delicato
-    private static final String ACCENT       = "#B85D38";     // Terracotta
-    private static final String ACCENT_HOVER = "#4A7C59";     // Verde foresta
-    private static final String TEXT_DARK    = "#2C2A26";     // Testo scuro
-    private static final String TEXT_MUTED   = "#807B73";     // Testo secondario
-    private static final String FIELD_BG     = "#FAFAF9";     // Sfondo input leggermente grigio
-    // ──────────────────────────────────────────────────────────────────────────
+    private static final String APP_BG       = "transparent";
+    private static final String CARD_BG      = "#FFFFFF";
+    private static final String BORDER_COLOR = "#DCD5C6";
+    private static final String ACCENT       = "#B85D38";
+    private static final String ACCENT_HOVER = "#4A7C59";
+    private static final String TEXT_DARK    = "#2C2A26";
+    private static final String TEXT_MUTED   = "#807B73";
+    private static final String FIELD_BG     = "#FAFAF9";
 
-    // Callbacks
     private BiConsumer<String, String>                        onLogin     = (e, p) -> {};
     private Consumer<String[]>                                onRegistra  = arr -> {};
-
-    // Campi login
     private final TextField     loginEmail    = new TextField();
     private final PasswordField loginPassword = new PasswordField();
     private final Label         loginError    = new Label();
-
-    // Campi registrazione
     private final TextField     regNome       = new TextField();
     private final TextField     regCognome    = new TextField();
     private final TextField     regCF         = new TextField();
     private final TextField     regEmail      = new TextField();
     private final PasswordField regPassword   = new PasswordField();
     private final Label         regError      = new Label();
-
     private final StackPane root;
     private final VBox loginCard;
     private final VBox registerCard;
@@ -68,8 +56,6 @@ public class AuthView {
         root.setStyle("-fx-background-color: " + APP_BG + ";");
     }
 
-    // ── API pubblica ──────────────────────────────────────────────────────────
-
     public void setOnLogin(BiConsumer<String, String> handler)   { this.onLogin    = handler; }
     public void setOnRegistra(Consumer<String[]> handler)        { this.onRegistra = handler; }
 
@@ -91,12 +77,9 @@ public class AuthView {
 
     public StackPane getRoot() { return root; }
 
-    // ── Login card ────────────────────────────────────────────────────────────
-
     private VBox buildLoginCard() {
         VBox card = new VBox(16);
         card.setPadding(new Insets(32, 32, 32, 32));
-        // Stile della Card con ombra leggera
         card.setStyle("-fx-background-color: " + CARD_BG + "; -fx-background-radius: 16;"
                 + "-fx-border-color: " + BORDER_COLOR + "; -fx-border-radius: 16; -fx-border-width: 1;"
                 + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 15, 0, 0, 4);");
@@ -118,7 +101,7 @@ public class AuthView {
         styleField(loginPassword, "Password");
 
         loginError.setFont(Font.font("System", 12));
-        loginError.setTextFill(Color.web("#B03A2E")); // Rosso scuro per gli errori
+        loginError.setTextFill(Color.web("#B03A2E"));
         loginError.setVisible(false);
 
         Button loginBtn = new Button("Accedi");
@@ -150,8 +133,6 @@ public class AuthView {
                 loginError, loginBtn, switchRow);
         return card;
     }
-
-    // ── Register card ─────────────────────────────────────────────────────────
 
     private VBox buildRegisterCard() {
         VBox card = new VBox(14);
@@ -226,9 +207,7 @@ public class AuthView {
         registerCard.setVisible(!login);
         registerCard.setManaged(!login);
     }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
+    
     private void styleField(TextInputControl field, String prompt) {
         field.setPromptText(prompt);
         field.setStyle("-fx-background-color: " + FIELD_BG + ";"

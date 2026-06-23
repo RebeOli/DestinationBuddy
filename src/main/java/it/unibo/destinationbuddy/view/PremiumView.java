@@ -10,22 +10,11 @@ import javafx.scene.text.TextAlignment;
 
 import java.util.function.Consumer;
 
-/**
- * PremiumView — schermata con i piani di abbonamento Premium.
- * Tema chiaro (sabbia / terracotta / verde) tramite classi CSS.
- *
- * UTILIZZO DAL CONTROLLER:
- *   PremiumView view = new PremiumView();
- *   view.setOnScegliPiano(piano -> controller.sottoscriviAbbonamento(piano));
- *   view.setOnIndietro(() -> controller.tornaHome());
- *   mainView.setContenuto(view.getRoot());
- */
 public class PremiumView {
 
-    /** Rappresenta un piano: durata in mesi + prezzo mensile. */
     public enum Piano {
         MENSILE(1,  9.90,  "Mensile",   false),
-        SEMESTRALE(6, 7.90, "6 mesi",   true),   // piano consigliato
+        SEMESTRALE(6, 7.90, "6 mesi",   true),
         ANNUALE(12,  5.90,  "Annuale",  false);
 
         public final int     mesi;
@@ -54,14 +43,10 @@ public class PremiumView {
     public PremiumView() {
         VBox page = new VBox(24);
         page.setPadding(new Insets(20, 24, 24, 24));
-
-        // Breadcrumb
         Label back = new Label("← Indietro");
         back.getStyleClass().add("switch-link");
         back.setCursor(javafx.scene.Cursor.HAND);
         back.setOnMouseClicked(e -> onIndietro.run());
-
-        // Header
         VBox header = new VBox(8);
         header.setAlignment(Pos.CENTER);
         header.setPadding(new Insets(10, 0, 10, 0));
@@ -76,20 +61,17 @@ public class PremiumView {
 
         header.getChildren().addAll(titolo, sub);
 
-        // Errore (es. abbonamento già attivo oggi)
         errorLabel.getStyleClass().add("error-label");
         errorLabel.setVisible(false);
         errorLabel.setManaged(false);
 
-        // Vantaggi comuni
         HBox vantaggi = new HBox(24);
         vantaggi.setAlignment(Pos.CENTER);
         vantaggi.getChildren().addAll(
-                vantaggioPill("🏷", "20% sconto noleggio equipaggiamento"),
+                vantaggioPill("🏷", "Sconto noleggio equipaggiamento"),
                 vantaggioPill("⚡", "Accesso prioritario alle prenotazioni")
         );
 
-        // Griglia piani
         HBox pianiRow = new HBox(20);
         pianiRow.setAlignment(Pos.CENTER);
         for (Piano p : Piano.values()) {
@@ -97,14 +79,11 @@ public class PremiumView {
         }
 
         page.getChildren().addAll(back, header, errorLabel, vantaggi, pianiRow);
-
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         root.getStyleClass().add("scroll-pane");
     }
-
-    // ── API pubblica ──────────────────────────────────────────────
 
     public void setOnScegliPiano(Consumer<Piano> handler) { this.onScegliPiano = handler; }
     public void setOnIndietro(Runnable handler)            { this.onIndietro    = handler; }
@@ -116,8 +95,6 @@ public class PremiumView {
         errorLabel.setManaged(true);
     }
 
-    // ── Costruzione card piano ───────────────────────────────────
-
     private VBox buildPianoCard(Piano piano) {
         VBox card = new VBox(14);
         card.setAlignment(Pos.TOP_CENTER);
@@ -127,11 +104,9 @@ public class PremiumView {
 
         card.getStyleClass().add("card");
         if (piano.consigliato) {
-            // Bordo evidenziato in terracotta per il piano consigliato
             card.setStyle("-fx-border-color: -db-accent; -fx-border-width: 2; -fx-border-radius: 12;");
         }
 
-        // Badge "più popolare"
         if (piano.consigliato) {
             Label popBadge = new Label("PIÙ POPOLARE");
             popBadge.getStyleClass().addAll("badge", "badge-accent");
@@ -142,7 +117,6 @@ public class PremiumView {
         Label etichettaLbl = new Label(piano.etichetta);
         etichettaLbl.getStyleClass().add("text-muted");
 
-        // Prezzo mensile grande
         HBox prezzoRow = new HBox(2);
         prezzoRow.setAlignment(Pos.BASELINE_CENTER);
         Label prezzoLbl = new Label(String.format("€%.2f", piano.prezzoMensile));
@@ -152,12 +126,10 @@ public class PremiumView {
         perMeseLbl.getStyleClass().add("text-muted");
         prezzoRow.getChildren().addAll(prezzoLbl, perMeseLbl);
 
-        // Totale del periodo
         Label totaleLbl = new Label(String.format("Totale: €%.2f per %d mes%s",
                 piano.totale(), piano.mesi, piano.mesi == 1 ? "e" : "i"));
         totaleLbl.getStyleClass().add("text-muted");
 
-        // Risparmio rispetto al mensile (solo se non è il piano mensile)
         VBox risparmioBox = new VBox();
         if (piano.mesi > 1) {
             double risparmioPerc = (1 - piano.prezzoMensile / Piano.MENSILE.prezzoMensile) * 100;

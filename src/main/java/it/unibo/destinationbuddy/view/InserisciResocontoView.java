@@ -10,25 +10,11 @@ import javafx.scene.layout.*;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * InserisciResocontoView — form per le guide per inserire il resoconto di un'escursione.
- * Light Theme tramite classi CSS.
- *
- * UTILIZZO DAL CONTROLLER:
- *   InserisciResocontoView view = new InserisciResocontoView();
- *   view.setEscursioni(lista);          // escursioni create dalla guida
- *   view.setCfGuida(utenteCorrente.cf);
- *   view.setOnSalva(r -> model.inserisciResoconto(r));
- *   view.setOnAnnulla(() -> mostraProfilo());
- *   mainView.setContenuto(view.getRoot());
- */
 public class InserisciResocontoView {
 
     private Runnable              onAnnulla = () -> {};
     private Consumer<Resoconto>   onSalva   = r -> {};
-
     private String cfGuida = "";
-
     private final ComboBox<EscursionePreview> escursioneCombo = new ComboBox<>();
     private final DatePicker dataInizio  = new DatePicker();
     private final DatePicker dataFine    = new DatePicker();
@@ -41,8 +27,6 @@ public class InserisciResocontoView {
     public InserisciResocontoView() {
         VBox page = new VBox(20);
         page.setPadding(new Insets(20, 24, 24, 24));
-
-        // Breadcrumb
         HBox breadcrumb = new HBox(6);
         breadcrumb.setAlignment(Pos.CENTER_LEFT);
         Label back = new Label("← Profilo");
@@ -54,11 +38,7 @@ public class InserisciResocontoView {
         Label titoloPag = new Label("Inserisci resoconto escursione");
         titoloPag.getStyleClass().add("auth-title");
         titoloPag.setStyle("-fx-font-size: 22px;");
-
-        // Sezione principale
         VBox formSection = sectionBox("📋 Dati resoconto");
-
-        // Dropdown escursioni
         escursioneCombo.setMaxWidth(Double.MAX_VALUE);
         escursioneCombo.setPromptText("Seleziona un'escursione...");
         escursioneCombo.setCellFactory(lv -> new ListCell<>() {
@@ -76,7 +56,6 @@ public class InserisciResocontoView {
             }
         });
 
-        // Date
         styleDatePicker(dataInizio, "Data inizio escursione");
         styleDatePicker(dataFine, "Data fine escursione");
 
@@ -85,28 +64,20 @@ public class InserisciResocontoView {
         dateGrid.setVgap(12);
         addLabeledNode(dateGrid, "Data inizio", dataInizio, 0, 0);
         addLabeledNode(dateGrid, "Data fine", dataFine, 1, 0);
-
-        // Temperatura e precipitazioni
         styleField(temperatura, "Es. 18.5");
         styleField(precipitazioni, "Es. 0.0");
-
         GridPane meteoGrid = new GridPane();
         meteoGrid.setHgap(16);
         meteoGrid.setVgap(12);
         addLabeledField(meteoGrid, "Temperatura rilevata (°C)", temperatura, 0, 0);
         addLabeledField(meteoGrid, "Precipitazioni (mm)", precipitazioni, 1, 0);
-
         formSection.getChildren().addAll(
             labeledNode("Escursione", escursioneCombo),
             dateGrid,
             meteoGrid
         );
-
-        // Errore
         errorLabel.getStyleClass().add("error-label");
         errorLabel.setVisible(false);
-
-        // Pulsanti
         HBox actions = new HBox(12);
         Button salvaBtn = new Button("Salva resoconto");
         salvaBtn.getStyleClass().add("btn-accent");
@@ -124,8 +95,6 @@ public class InserisciResocontoView {
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         root.getStyleClass().add("scroll-pane");
     }
-
-    // ── API pubblica ──────────────────────────────────────────────
 
     public void setEscursioni(List<EscursionePreview> lista) {
         escursioneCombo.getItems().clear();
@@ -178,8 +147,6 @@ public class InserisciResocontoView {
         page.getChildren().add(success);
     }
 
-    // ── Validazione ───────────────────────────────────────────────
-
     private void tentaSalva() {
         errorLabel.setVisible(false);
 
@@ -211,8 +178,6 @@ public class InserisciResocontoView {
 
         onSalva.accept(r);
     }
-
-    // ── UI helpers ────────────────────────────────────────────────
 
     private VBox sectionBox(String titolo) {
         VBox box = new VBox(12);

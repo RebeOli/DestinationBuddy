@@ -8,11 +8,11 @@ public interface CertificazioniModel {
 
     List<Certificazione> getCertificazioniUtente(String cf);
 
-    List<Certificazione> getCertificazioniInAttesa(); //per amministratore
+    List<Certificazione> getCertificazioniInAttesa();
 
-    List<TipologiaCertificazione> getTipologieDisponibili(); //per guida quando crea escursione
+    List<TipologiaCertificazione> getTipologieDisponibili();
 
     void aggiungiCertificazione(Certificazione c);
 
-    void validaCertificazione(String idCertificazione, String nCertificazione); //per amministratore
+    void validaCertificazione(String idCertificazione, String nCertificazione);
 }

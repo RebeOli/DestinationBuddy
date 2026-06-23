@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-//in questa classe inseriamo solo i dati che deovno essere visibili nella preview di un'escursione 
-//nella pagina home. Quindi certi dati più specifici andranno indicati in EscursioneDettagio che 
-//mostra esattamente come un'entità escursione è realizzata. 
 public final class EscursionePreview {
 
     public final String idEscursione;

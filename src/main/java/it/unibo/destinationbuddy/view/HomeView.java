@@ -28,14 +28,11 @@ public class HomeView {
     private IntConsumer                 onMeseClick       = m -> {};
     private Runnable                    onExploreClick    = () -> {};
     private Runnable                    onUpgradeClick    = () -> {};
-
     private final ScrollPane root;
-    private final VBox        top5Container;
-    private final GridPane    mesiGrid;
-    private final VBox        mesiRisultati;
-    private final HBox        welcomeBanner;
-    
-    // Riferimenti diretti alle Label per poterle cambiare all'istante
+    private final VBox top5Container;
+    private final GridPane mesiGrid;
+    private final VBox mesiRisultati;
+    private final HBox welcomeBanner;
     private final Label inizialeAvatar = new Label("?");
     private final Label benvenutoLabel = new Label("Benvenuto!");
     private final Label statusLabel    = new Label("Accedi o registrati per pianificare le tue escursioni.");
@@ -46,15 +43,13 @@ public class HomeView {
         page.setPadding(new Insets(20, 24, 24, 24));
 
         welcomeBanner = buildWelcomeBanner();
-        refreshBanner(); // Si assicura che all'avvio sia tutto in stato "Sloggato"
+        refreshBanner();
 
-        // Top 5
         VBox top5Section = new VBox(12);
         HBox top5Header = sectionHeader("Top 5 Escursioni", "Vedi tutte →");
         top5Container = new VBox(10);
         top5Section.getChildren().addAll(top5Header, top5Container);
 
-        // Mesi
         VBox mesiSection = new VBox(12);
         Label mesiTitle = new Label("Le migliori per mese");
         mesiTitle.getStyleClass().add("section-title");
@@ -84,16 +79,14 @@ public class HomeView {
         root.getStyleClass().add("scroll-pane");
     }
 
-    // ── API pubblica ──────────────────────────────────────────────
-
     public void setUtente(Persona p) {
         this.utenteCorrente = p;
-        refreshBanner(); // Aggiorna i testi e i bottoni
+        refreshBanner();
     }
 
     public void setHaAbbonamentoAttivo(boolean attivo) {
         this.haAbbonamentoAttivo = attivo;
-        refreshBanner(); // Aggiorna i testi e i bottoni
+        refreshBanner();
     }
 
     public void setTop5(List<EscursionePreview> lista) {
@@ -129,20 +122,16 @@ public class HomeView {
     }
 
     public void setOnEscursioneClick(Consumer<EscursionePreview> h) { this.onEscursioneClick = h; }
-    public void setOnMeseClick(IntConsumer h)                        { this.onMeseClick       = h; }
-    public void setOnExploreClick(Runnable h)                        { this.onExploreClick    = h; }
-    public void setOnUpgradeClick(Runnable h)                        { this.onUpgradeClick    = h; }
-    public ScrollPane getRoot()                                       { return root; }
-
-    // ── UI ────────────────────────────────────────────────────────
+    public void setOnMeseClick(IntConsumer h) { this.onMeseClick       = h; }
+    public void setOnExploreClick(Runnable h) { this.onExploreClick    = h; }
+    public void setOnUpgradeClick(Runnable h) { this.onUpgradeClick    = h; }
+    public ScrollPane getRoot() { return root; }
 
     private HBox buildWelcomeBanner() {
         HBox banner = new HBox(14);
         banner.setPadding(new Insets(16, 20, 16, 20));
         banner.setAlignment(Pos.CENTER_LEFT);
         banner.getStyleClass().add("welcome-banner");
-
-        // Avatar
         Circle circle = new Circle(22);
         circle.setStyle("-fx-fill: -db-accent;");
         inizialeAvatar.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;");
@@ -152,7 +141,6 @@ public class HomeView {
 
         banner.getChildren().add(avatar);
 
-        // Testi
         VBox textBox = new VBox(3);
         benvenutoLabel.getStyleClass().add("auth-title");
         benvenutoLabel.setStyle("-fx-font-size: 15px;");
@@ -180,10 +168,8 @@ public class HomeView {
         return banner;
     }
 
-    // IL METODO DI AGGIORNAMENTO CORRETTO
     private void refreshBanner() {
         if (utenteCorrente == null) {
-            // REGOLE NON LOGGATO: Scritte standard e NASCONDE il box Upgrade
             inizialeAvatar.setText("?");
             benvenutoLabel.setText("Benvenuto!");
             statusLabel.setText("Accedi o registrati per pianificare le tue escursioni.");
@@ -193,7 +179,6 @@ public class HomeView {
                 upgradeBox.setManaged(false);
             }
         } else {
-            // REGOLE LOGGATO: Nome, Ruolo e MOSTRA l'Upgrade solo se necessario
             String iniziale = utenteCorrente.nome.isEmpty() ? "?" : String.valueOf(utenteCorrente.nome.charAt(0)).toUpperCase();
             inizialeAvatar.setText(iniziale);
             benvenutoLabel.setText("Bentornato, " + utenteCorrente.nome + "!");
@@ -202,13 +187,12 @@ public class HomeView {
                 statusLabel.setText("Sessione Amministratore attiva.");
             } else if (haAbbonamentoAttivo) {
                 statusLabel.setText("Account Premium attivo — Goditi i tuoi vantaggi!");
-            } else if (!utenteCorrente.tipoUtente) { // Se è una guida
+            } else if (!utenteCorrente.tipoUtente) {
                 statusLabel.setText("Guida certificata Destination Buddy.");
             } else {
                 statusLabel.setText("Account base");
             }
 
-            // A destra mostra l'upgrade SOLO se è un utente base e non è già premium
             if (upgradeBox != null) {
                 boolean mostraUpgrade = !utenteCorrente.tipoAmministratore && !haAbbonamentoAttivo;
                 upgradeBox.setVisible(mostraUpgrade);
@@ -304,8 +288,6 @@ public class HomeView {
         row.setOnMouseClicked(e -> onEscursioneClick.accept(exc));
         return row;
     }
-
-    // ── Helpers ───────────────────────────────────────────────────
 
     private HBox sectionHeader(String title, String linkText) {
         HBox header = new HBox();

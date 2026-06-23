@@ -78,8 +78,6 @@ public final class Giornata {
                     var id = resultSet.getString("ID_escursione");
                     var data = resultSet.getDate("data").toLocalDate();
                     var programma = resultSet.getString("programma");
-
-                    // Recupera le tappe di questa specifica giornata
                     var tappe = Tappa.DAO.listForGiornata(connection, id, data);
 
                     giornate.add(new Giornata(id, data, programma, tappe));

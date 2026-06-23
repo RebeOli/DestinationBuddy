@@ -67,12 +67,6 @@ public class AppController {
         mostraScenaMain();
     }
 
-    /*private void mostraScenaAuth() {
-        Scene scene = new Scene(authView.getRoot(), 1200, 700);
-        applicaCSS(scene);
-        primaryStage.setScene(scene);
-    }*/
-
     private void mostraScenaMain() {
         Scene scene = new Scene(mainView.getRoot(), 1200, 700);
         applicaCSS(scene);
@@ -483,7 +477,7 @@ private void collegaGestioneGeoView() {
 
         gestioneGeoView.setOnSalvaZona(dati -> {
             try {
-                escursioniModel.aggiungiZona(dati[0], dati[1], dati[2]); // 0=Paese, 1=Zona, 2=Desc
+                escursioniModel.aggiungiZona(dati[0], dati[1], dati[2]);
                 mostraAvviso("Successo", "Zona '" + dati[1] + "' salvata nel database!");
                 gestioneGeoView.pulisciForm();
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Zona."); }

@@ -18,18 +18,12 @@ public class GestioneGeograficaAdminView {
 
     private Consumer<String> onPaeseSelezionato = paese -> {};
     private Runnable onAnnulla = () -> {};
-
-    // Campi Luogo
     private final TextField nomeField = new TextField();
     private final ComboBox<String> paeseComboLuogo = new ComboBox<>();
     private final ComboBox<String> zonaComboLuogo = new ComboBox<>();
     private final ComboBox<String> categoriaCombo = new ComboBox<>();
     private final TextField quotaField = new TextField();
-    
-    // Campi Paese
     private final TextField nuovoPaeseField = new TextField();
-    
-    // Campi Zona
     private final ComboBox<String> paeseComboZona = new ComboBox<>();
     private final TextField nuovaZonaField = new TextField();
     private final TextArea descZonaField = new TextArea();
@@ -59,8 +53,6 @@ public class GestioneGeograficaAdminView {
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabPane.getStyleClass().add("card");
-
-        // --- CREAZIONE DELLE 4 SCHEDE (UNA SOLA VOLTA!) ---
         Tab tabPaese = new Tab("1. Aggiungi Paese");
         tabPaese.setContent(buildTabPaese());
 
@@ -72,8 +64,6 @@ public class GestioneGeograficaAdminView {
 
         Tab tabLuogo = new Tab("4. Aggiungi Luogo");
         tabLuogo.setContent(buildTabLuogo());
-
-        // --- AGGIUNTA AL TABPANE (TUTTE INSIEME, UNA SOLA VOLTA!) ---
         tabPane.getTabs().addAll(tabPaese, tabZona, tabCategoria, tabLuogo);
 
         page.getChildren().addAll(breadcrumb, titoloPag, tabPane, errorLabel);

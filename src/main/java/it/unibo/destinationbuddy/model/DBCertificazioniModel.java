@@ -26,28 +26,24 @@ public class DBCertificazioniModel implements CertificazioniModel {
 
     @Override
     public List<Certificazione> getCertificazioniUtente(String cf) {
-        return Certificazione.DAO.listForUtente(connection, cf); //non uso la cache perchè quando cambia utente la cache rimarrebbe la stessa, 
+        return Certificazione.DAO.listForUtente(connection, cf);
     }
 
     @Override
     public List<Certificazione> getCertificazioniInAttesa() {
         if (cacheInAttesa.isEmpty()) {
-            // Prima volta: chiama il DAO e salva in cache
             var risultato = Certificazione.DAO.listInAttesa(connection);
             cacheInAttesa = Optional.of(risultato);
         }
-        // Successive: restituisci direttamente la cache
         return cacheInAttesa.get();
     }
 
     @Override
     public List<TipologiaCertificazione> getTipologieDisponibili() {
         if (cacheTipologie.isEmpty()) {
-            // Prima volta: chiama il DAO e salva in cache
             var risultato = TipologiaCertificazione.DAO.listAll(connection);
             cacheTipologie = Optional.of(risultato);
         }
-        // Successive: restituisci direttamente la cache
         return cacheTipologie.get();
     }
 
@@ -60,9 +56,8 @@ public class DBCertificazioniModel implements CertificazioniModel {
 
     @Override
     public void validaCertificazione(String idCertificazione, String nCertificazione) {
-        // Passiamo entrambi i parametri al DAO per identificare la certificazione corretta
         Certificazione.DAO.valida(connection, idCertificazione, nCertificazione);
-        cacheInAttesa = Optional.empty();  // la certificazione validata non è più in attesa
+        cacheInAttesa = Optional.empty();
     }
     
 }

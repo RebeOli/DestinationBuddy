@@ -18,7 +18,6 @@ public final class DAOUtils {
     private static final String USER = "app_java";
     private static final String PASSWORD = "DestinationBuddy_ACR";
 
-    // 1. IL VOSTRO METODO DI CONNESSIONE (aggiornato allo stile del prof)
     public static Connection connetti() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);

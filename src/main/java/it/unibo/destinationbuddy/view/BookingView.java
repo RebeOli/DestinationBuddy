@@ -12,17 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-/**
- * BookingView — prenotazione escursione + noleggio equipaggiamento.
- * Light Theme tramite classi CSS.
- *
- * UTILIZZO DAL CONTROLLER:
- *   BookingView view = new BookingView();
- *   view.setEscursione(escursione, utente, postiRimanenti, scontoNoleggio);
- *   view.setOnConferma((idEscursione, equipSelezionati) -> controller.conferma(...));
- *   view.setOnIndietro(() -> controller.tornaDettaglio());
- *   mainView.setContenuto(view.getRoot());
- */
 public class BookingView {
 
     private BiConsumer<String, Map<String, Boolean>> onConferma = (id, eq) -> {};
@@ -51,8 +40,6 @@ public class BookingView {
         root.getStyleClass().add("scroll-pane");
     }
 
-    // ── API pubblica ──────────────────────────────────────────────
-
     public void setEscursione(Escursione escursione, Persona utente,
                                int postiRimanenti, double scontoNoleggio) {
         this.escursioneCorrente = escursione;
@@ -77,7 +64,6 @@ public class BookingView {
         return root;
     }
 
-    /** Mostra un messaggio di successo dopo la conferma. */
     public void mostraConferma() {
         contentBox.getChildren().clear();
         VBox success = new VBox(16);
@@ -101,7 +87,6 @@ public class BookingView {
         contentBox.getChildren().add(success);
     }
 
-    /** Mostra un errore (certificazioni mancanti, posti esauriti, ecc.). */
     public void mostraErrore(String messaggio) {
         contentBox.getChildren().removeIf(n -> "error-box".equals(n.getId()));
         Label err = new Label("⚠ " + messaggio);
@@ -112,12 +97,8 @@ public class BookingView {
         contentBox.getChildren().add(0, err);
     }
 
-    // ── Costruzione UI ────────────────────────────────────────────
-
     private void buildUI(int postiRimanenti) {
         Escursione exc = escursioneCorrente;
-
-        // Breadcrumb
         HBox breadcrumb = new HBox(6);
         breadcrumb.setAlignment(Pos.CENTER_LEFT);
         Label back = new Label("← Dettaglio");
@@ -129,17 +110,13 @@ public class BookingView {
         Label cur = new Label("Prenotazione");
         cur.getStyleClass().add("text-muted");
         breadcrumb.getChildren().addAll(back, sep, cur);
-
-        // Riepilogo escursione
         VBox riepilogo = new VBox(10);
         riepilogo.setPadding(new Insets(16));
         riepilogo.getStyleClass().add("card");
         riepilogo.setStyle("-fx-border-color: -db-accent; -fx-border-width: 1.5;");
-
         Label escTitolo = new Label(exc.titolo);
         escTitolo.getStyleClass().add("auth-title");
         escTitolo.setStyle("-fx-font-size: 18px;");
-
         GridPane info = new GridPane();
         info.setHgap(24);
         info.setVgap(8);
@@ -151,10 +128,7 @@ public class BookingView {
                 exc.dataAperturaEscursione != null ? exc.dataAperturaEscursione.toString() : "—", 1, 1);
         addInfoCell(info, "Chiusura",
                 exc.dataChiusuraEscursione != null ? exc.dataChiusuraEscursione.toString() : "—", 2, 1);
-
         riepilogo.getChildren().addAll(escTitolo, info);
-
-        // Dati partecipante
         VBox partecipante = sectionBox("👤 Partecipante");
         GridPane partGrid = new GridPane();
         partGrid.setHgap(16);
@@ -163,10 +137,7 @@ public class BookingView {
         addFormField(partGrid, "Cognome",utenteCorrente != null ? utenteCorrente.cognome : "", 1);
         addFormField(partGrid, "Email",  utenteCorrente != null ? utenteCorrente.email   : "", 2);
         partecipante.getChildren().add(partGrid);
-
-        // Equipaggiamento noleggio
         VBox equipSection = sectionBox("🎒 Noleggio equipaggiamento");
-
         double costoTotaleGiornalieroSomma = (exc.equipaggiamento != null)
                 ? exc.equipaggiamento.stream().mapToDouble(e -> e.costoTotaleGiornaliero).sum()
                 : 0.0;
@@ -191,7 +162,6 @@ public class BookingView {
             }
         }
 
-        // Totale
         VBox totaleBox = new VBox(8);
         totaleBox.setPadding(new Insets(14));
         totaleBox.getStyleClass().add("card");
@@ -229,7 +199,6 @@ public class BookingView {
 
         totaleBox.getChildren().addAll(costoEscRow, equipRow, totalRow);
 
-        // Pulsanti
         HBox actions = new HBox(12);
         actions.setAlignment(Pos.CENTER_LEFT);
 
@@ -305,8 +274,6 @@ public class BookingView {
         equipTotalLabel.setText(String.format("€ %.2f", costoEquipaggiamento));
         totalLabel.setText(String.format("€ %.2f", costoEscursione + costoEquipaggiamento));
     }
-
-    // ── Helpers ───────────────────────────────────────────────────
 
     private VBox sectionBox(String titolo) {
         VBox box = new VBox(12);

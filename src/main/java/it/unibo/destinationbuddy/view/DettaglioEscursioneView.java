@@ -48,11 +48,8 @@ public class DettaglioEscursioneView {
         root.getStyleClass().add("scroll-pane");
     }
 
-    /** Riempie la view con tutti i dati dell'escursione. */
     public void setEscursione(Escursione exc) {
         contentBox.getChildren().clear();
-
-        // Breadcrumb
         HBox breadcrumb = new HBox(6);
         breadcrumb.setAlignment(Pos.CENTER_LEFT);
         Label back = new Label("← Esplora");
@@ -65,14 +62,12 @@ public class DettaglioEscursioneView {
         current.getStyleClass().add("text-muted");
         breadcrumb.getChildren().addAll(back, sep, current);
 
-        // Header
         VBox header = new VBox(8);
         Label titoloLbl = new Label(exc.titolo);
         titoloLbl.getStyleClass().add("auth-title");
         titoloLbl.setStyle("-fx-font-size: 26px;");
         titoloLbl.setWrapText(true);
 
-        // Luogo dell'escursione: Unisce tutti i luoghi unici separati da " • "
         String posizione = trovaPosizione(exc);
         if (posizione != null) {
             Label posizioneLbl = new Label("📍 " + posizione);
@@ -88,7 +83,6 @@ public class DettaglioEscursioneView {
         }
         header.getChildren().addAll(titoloLbl, badges);
 
-        // Info grid
         GridPane infoGrid = new GridPane();
         infoGrid.setHgap(24);
         infoGrid.setVgap(10);
@@ -104,7 +98,6 @@ public class DettaglioEscursioneView {
                 exc.dataChiusuraEscursione != null ? exc.dataChiusuraEscursione.toString() : "—", 1, 1);
         addInfoCell(infoGrid, "Difficoltà", exc.difficolta, 2, 1);
 
-        // Certificazioni richieste
         VBox certBox = buildSection("🏅 Certificazioni richieste");
         if (exc.certificazioniRichieste == null || exc.certificazioniRichieste.isEmpty()) {
             certBox.getChildren().add(muted("Nessuna certificazione richiesta."));
@@ -117,7 +110,6 @@ public class DettaglioEscursioneView {
             certBox.getChildren().add(certBadges);
         }
 
-        // Programma giornate
         VBox giornateBox = buildSection("📅 Programma");
         if (exc.giornate == null || exc.giornate.isEmpty()) {
             giornateBox.getChildren().add(muted("Nessuna giornata definita."));
@@ -127,7 +119,6 @@ public class DettaglioEscursioneView {
             }
         }
 
-        // Equipaggiamento minimo
         VBox equipBox = buildSection("🎒 Equipaggiamento minimo");
         if (exc.equipaggiamento == null || exc.equipaggiamento.isEmpty()) {
             equipBox.getChildren().add(muted("Nessun equipaggiamento specificato."));
@@ -140,7 +131,6 @@ public class DettaglioEscursioneView {
             equipBox.getChildren().add(equipBadges);
         }
 
-        // Pulsanti azione
         HBox actions = new HBox(12);
         actions.setAlignment(Pos.CENTER_LEFT);
         Button prenotaBtn = new Button("Prenota questa escursione");
@@ -158,7 +148,6 @@ public class DettaglioEscursioneView {
     }
 
     public void setPostiRimanenti(int posti) {
-        // Per semplicità basta richiamare setEscursione con l'escursione aggiornata
     }
 
     public void setRecensioni(List<Recensione> lista, boolean puoRecensire, String idEscursione, String cfUtente) {
@@ -184,12 +173,11 @@ public class DettaglioEscursioneView {
         }
     }
 
-    public void setOnPrenota(Consumer<Escursione> handler)  { this.onPrenota  = handler; }
-    public void setOnIndietro(Runnable handler)              { this.onIndietro = handler; }
+    public void setOnPrenota(Consumer<Escursione> handler) { this.onPrenota  = handler; }
+    public void setOnIndietro(Runnable handler) { this.onIndietro = handler; }
     public void setOnInviaRecensione(Consumer<Recensione> h) { this.onInviaRecensione = h; }
-    public ScrollPane getRoot()                              { return root; }
+    public ScrollPane getRoot() { return root; }
 
-    /** Raccoglie tutti i luoghi unici dell'escursione e li unisce con un puntino. */
     private String trovaPosizione(Escursione exc) {
         if (exc.giornate == null) return null;
         
@@ -213,8 +201,6 @@ public class DettaglioEscursioneView {
         return String.join(" • ", itinerario);
     }
 
-    // ── Helpers ───────────────────────────────────────────────────
-
     private VBox buildSection(String titolo) {
         VBox box = new VBox(10);
         box.setPadding(new Insets(14));
@@ -225,13 +211,10 @@ public class DettaglioEscursioneView {
         return box;
     }
 
-    /** Costruisce la riga del programma: Giorno + Descrizione + Lista Tappe */
     private VBox buildGiornataRow(Giornata g) {
         VBox row = new VBox(6);
         row.setPadding(new Insets(6, 0, 12, 0));
         row.setStyle("-fx-border-color: transparent transparent #E0DCD3 transparent; -fx-border-width: 0 0 1 0;");
-        
-        // Riga superiore: numero giorno e descrizione
         HBox header = new HBox(12);
         Label num = new Label("Giorno " + g.data);
         num.getStyleClass().add("text-accent");
@@ -244,10 +227,9 @@ public class DettaglioEscursioneView {
         
         row.getChildren().add(header);
 
-        // Elenco delle tappe (indentato per grafica)
         if (g.tappe != null && !g.tappe.isEmpty()) {
             VBox tappeBox = new VBox(4);
-            tappeBox.setPadding(new Insets(4, 0, 0, 92)); // Indentazione per allinearlo alla descrizione
+            tappeBox.setPadding(new Insets(4, 0, 0, 92));
 
             for (int i = 0; i < g.tappe.size(); i++) {
                 var t = g.tappe.get(i);

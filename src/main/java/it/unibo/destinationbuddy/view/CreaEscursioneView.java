@@ -15,21 +15,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-/**
- * CreaEscursioneView — form per le guide per creare una nuova escursione.
- * Light Theme tramite classi CSS.
- */
 public class CreaEscursioneView {
 
     private Consumer<EscursioneFormData> onCrea    = d -> {};
     private Runnable                     onAnnulla = () -> {};
-
-    // Fornitori di dati per i menu a tendina a cascata
     private Supplier<List<String>> providerPaesi = ArrayList::new;
     private Function<String, List<String>> providerZone = p -> new ArrayList<>();
     private BiFunction<String, String, List<String>> providerLuoghi = (p, z) -> new ArrayList<>();
 
-    // Campi form
     private final TextField    titolo         = new TextField();
     private final TextArea     descrizione    = new TextArea();
     private final TextField    difficolta     = new TextField();
@@ -345,8 +338,6 @@ public class CreaEscursioneView {
 
             durataField.setPromptText("Durata in ore (Es. 4)");
             durataField.getStyleClass().add("form-field");
-
-            // --- LOGICA A CASCATA ---
             paeseBox.setOnAction(e -> {
                 String p = paeseBox.getValue();
                 if (p != null) {

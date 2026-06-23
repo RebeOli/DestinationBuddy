@@ -13,11 +13,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import java.sql.Connection;
 
-/**
- * App — punto di ingresso JavaFX.
- * Crea la connessione, istanzia i Model, passa tutto all'AppController.
- * Nessuna logica di navigazione qui: tutto vive in AppController.
- */
 public class App extends Application {
 
     private Connection connection;
@@ -25,9 +20,9 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            System.out.println("🚀 Avvio di DestinationBuddy...");
+            System.out.println("Avvio di DestinationBuddy...");
             connection = DAOUtils.connetti();
-            System.out.println("✅ Connessione stabilita.");
+            System.out.println("Connessione stabilita.");
 
             // Model reali del DB 
             EscursioniModel     escursioniModel = new DBEscursioniModel(connection);
@@ -44,7 +39,6 @@ public class App extends Application {
             // AdminModel          adminModel      = new MockedAdminModel();
             // PrenotazioniModel   prenotModel     = new MockedPrenotazioniModel();
 
-            // Il controller fa tutto il resto
             AppController controller = new AppController(
                 primaryStage,
                 escursioniModel,
@@ -57,7 +51,7 @@ public class App extends Application {
             controller.avvia();
 
         } catch (Exception e) {
-            System.err.println("❌ Errore critico all'avvio:");
+            System.err.println("Errore all'avvio:");
             e.printStackTrace();
         }
     }
@@ -66,7 +60,7 @@ public class App extends Application {
     public void stop() {
         if (connection != null) {
             try {
-                System.out.println("🛑 Chiusura. Disconnessione dal database...");
+                System.out.println("Chiusura. Disconnessione dal database...");
                 connection.close();
             } catch (Exception ignored) {}
         }

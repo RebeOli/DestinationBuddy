@@ -7,7 +7,7 @@ import java.util.List;
 public final class TipologiaEscursione {
 
     public final String idTipologia;
-    public final List<String> certificazioniRichieste; // Lista degli ID
+    public final List<String> certificazioniRichieste;
 
     public TipologiaEscursione(String idTipologia, List<String> certificazioniRichieste) {
         this.idTipologia = idTipologia == null ? "" : idTipologia;
@@ -57,7 +57,6 @@ public final class TipologiaEscursione {
                 try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_TIPOLOGIA_ESCURSIONE, tipologia.idTipologia)) {
                     statement.executeUpdate();
                 }
-                // Scorre la lista e inserisce ogni certificazione nella tabella ponte "richiede"
                 for (String idCertificazione : tipologia.certificazioniRichieste) {
                     try (var stmt = DAOUtils.prepare(connection, Queries.ASSOCIA_CERTIFICAZIONE_TIPOLOGIA, tipologia.idTipologia, idCertificazione)) {
                         stmt.executeUpdate();

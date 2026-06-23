@@ -12,7 +12,6 @@ import it.unibo.destinationbuddy.data.EscursionePreview;
 import it.unibo.destinationbuddy.data.LuogoEsplorabile;
 import it.unibo.destinationbuddy.data.Queries;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
-// IMPORTANTE: Aggiunto l'import per TipologiaCertificazione
 import it.unibo.destinationbuddy.data.TipologiaCertificazione; 
 
 public class DBEscursioniModel implements EscursioniModel {
