@@ -13,7 +13,6 @@ create table if not exists PERSONE (
     data_assunzione date,
     email varchar(100) not null,
     password varchar(255) not null,
-    ruolo varchar(50),
     constraint persone_pk primary key (CF)
 );
 
@@ -31,7 +30,7 @@ create table if not exists TIPOLOGIE_CERTIFICAZIONE (
     constraint tipologie_certificazione_pk primary key (ID_certificazione)
 );
 
-create table if not exists TIPOLOGIE_ESCURSIONI (
+create table if not exists TIPOLOGIE_ESCURSIONE (
     ID_tipologia varchar(50) not null,
     constraint tipologie_escursioni_pk primary key (ID_tipologia)
 );
@@ -254,7 +253,7 @@ alter table prenota add constraint prenota_references_escursioni
 foreign key (ID_escursione) references ESCURSIONI (ID_escursione);
 
 alter table richiede add constraint richiede_references_escursioni
-foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONI (ID_tipologia);
+foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONE (ID_tipologia);
 
 alter table richiede add constraint richiede_references_certificazioni
 foreign key (ID_certificazione) references TIPOLOGIE_CERTIFICAZIONE (ID_certificazione);
@@ -269,13 +268,13 @@ alter table assume add constraint assume_references_escursioni
 foreign key (ID_escursione) references ESCURSIONI (ID_escursione);
 
 alter table assume add constraint assume_references_tipologie
-foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONI (ID_tipologia);
+foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONE (ID_tipologia);
 
 alter table necessita add constraint necessita_references_equipaggiamenti
 foreign key (ID_categoria) references EQUIPAGGIAMENTI (ID_categoria);
 
 alter table necessita add constraint necessita_references_tipologie
-foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONI (ID_tipologia);
+foreign key (ID_tipologia) references TIPOLOGIE_ESCURSIONE (ID_tipologia);
 
 alter table assegna add constraint assegna_references_pezzi
 foreign key (ID_pezzo) references PEZZI (ID_pezzo);
