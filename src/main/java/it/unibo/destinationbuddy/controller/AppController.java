@@ -266,6 +266,33 @@ public class AppController {
                 mostraLogin();
                 return;
             }
+
+            LocalDate oggi = LocalDate.now();
+            LocalDate aperturaNormale = exc.dataAperturaEscursione; // Dal DB: data_apertura_iscrizione
+            LocalDate chiusura = exc.dataChiusuraEscursione;        // Dal DB: data_chiusura_iscrizione
+            
+            // Verifichiamo se l'utente è Premium sfruttando il metodo che avevamo già
+            boolean isPremium = utentiModel.getUltimoAbbonamento(utenteCorrente)
+                                           .map(it.unibo.destinationbuddy.data.Abbonamento::isAttivo)
+                                           .orElse(false);
+
+            // Calcoliamo l'apertura "anticipata" (meno 15 giorni) se è premium
+            LocalDate aperturaEffettiva = isPremium ? aperturaNormale.minusDays(15) : aperturaNormale;
+
+            if (oggi.isAfter(chiusura)) {
+                mostraAvviso("Iscrizioni Chiuse", "Spiacenti, le iscrizioni per questa escursione sono terminate il " + chiusura + ".");
+                return;
+            }
+
+            if (oggi.isBefore(aperturaEffettiva)) {
+                if (isPremium) {
+                    mostraAvviso("Accesso Anticipato", "Hai il Premium, ma è troppo presto!\nLe iscrizioni in accesso anticipato apriranno il " + aperturaEffettiva + ".");
+                } else {
+                    mostraAvviso("Iscrizioni Chiuse", "Le iscrizioni standard apriranno il " + aperturaNormale + ".\n\n👑 Passa a Premium per sbloccare l'accesso anticipato dal " + aperturaNormale.minusDays(15) + "!");
+                }
+                return;
+            }
+
             int posti = prenotModel.getPostiRimanenti(exc.idEscursione);
             double sconto = prenotModel.getScontoNoleggio(utenteCorrente.cf);
             bookingView.setEscursione(exc, utenteCorrente, posti, sconto);
@@ -429,5 +456,13 @@ public class AppController {
     private void applicaCSS(Scene scene) {
         var css = getClass().getResource("/style.css");
         if (css != null) scene.getStylesheets().add(css.toExternalForm());
+    }
+
+    private void mostraAvviso(String titolo, String messaggio) {
+        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(messaggio);
+        alert.showAndWait();
     }
 }
