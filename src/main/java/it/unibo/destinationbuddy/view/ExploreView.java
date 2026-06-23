@@ -136,7 +136,7 @@ public class ExploreView {
         // Applichiamo la classe per lo sfondo sabbia sfumato
         imgBox.getStyleClass().add("card-image-box"); 
         
-        Label icon = new Label("⛰");
+        Label icon = new Label("🗺️");
         // Imposta solo la dimensione in Java, il colore e l'opacità le prende dal CSS
         icon.setStyle("-fx-font-size: 50px;"); 
         // Applichiamo la classe per l'icona color terracotta semi-trasparente
