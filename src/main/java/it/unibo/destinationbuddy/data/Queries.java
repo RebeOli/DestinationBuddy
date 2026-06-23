@@ -279,16 +279,23 @@ public final class Queries {
         VALUES (?, ?)
         """;
 
-    // ==================== QUERY PER LA HOME ====================
     public static final String PRENOTAZIONI_UTENTE =
         """
-        SELECT p.CF, p.ID_escursione, p.data_prenotazione, p.stato,
+        SELECT p.CF, p.ID_escursione, p.data_prenotazione, 
+            CASE 
+                WHEN MAX(g.data) < CURRENT_DATE THEN 'Completata'
+                WHEN MAX(g.data) >= CURRENT_DATE AND p.stato = 'Completata' THEN 'Confermata'
+                ELSE p.stato 
+            END AS stato,
             e.titolo
         FROM prenota p
         JOIN ESCURSIONI e ON p.ID_escursione = e.ID_escursione
+        JOIN GIORNATE g ON e.ID_escursione = g.ID_escursione
         WHERE p.CF = ?
+        GROUP BY p.CF, p.ID_escursione, p.data_prenotazione, p.stato, e.titolo
         ORDER BY p.data_prenotazione DESC
         """;
+
     public static final String LIST_ESCURSIONI =
         """
         SELECT ID_escursione, titolo, difficolta, costo
@@ -517,6 +524,7 @@ public final class Queries {
         WHERE CF = ?
         ORDER BY data_inizio DESC
         """;
+
 }
 
 
