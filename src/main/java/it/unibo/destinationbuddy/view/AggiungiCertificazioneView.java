@@ -22,7 +22,6 @@ public class AggiungiCertificazioneView {
     private Consumer<Certificazione> onSalva   = c -> {};
     private Runnable                 onAnnulla = () -> {};
     private String cfUtente = "";
-    private List<TipologiaCertificazione> tipologie = List.of();
     private final ComboBox<TipologiaCertificazione> tipologiaBox = new ComboBox<>();
     private final TextField  nCertificazione = new TextField();
     private final TextField  enteRilasciante = new TextField();
@@ -119,7 +118,6 @@ public class AggiungiCertificazioneView {
     }
 
     public void setTipologie(List<TipologiaCertificazione> lista) {
-        this.tipologie = lista;
         tipologiaBox.getItems().setAll(lista);
     }
 
