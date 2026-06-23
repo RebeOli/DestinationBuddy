@@ -384,14 +384,14 @@ public final class Queries {
             AND T.nome_luogo = L.nome
         WHERE L.nome_categoria = ?
         """;*/
-        // Per EscursionePreview.DAO
-        public static final String ESCURSIONI_PER_TIPOLOGIA =
-            """
-            SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
-            FROM ESCURSIONI E
-            JOIN assume A ON E.ID_escursione = A.ID_escursione
-            WHERE A.ID_tipologia = ?
-            """;
+    // Per EscursionePreview.DAO
+    public static final String ESCURSIONI_PER_TIPOLOGIA =
+        """
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
+        FROM ESCURSIONI E
+        JOIN assume A ON E.ID_escursione = A.ID_escursione
+        WHERE A.ID_tipologia = ?
+        """;
 
     public static final String CATEGORIE_ALL =
         """
@@ -401,12 +401,12 @@ public final class Queries {
         """;
 
     //==================== QUERY PER PERSONA ====================
-    public static final String AUTENTICA_PERSONA = 
+    public static final String AUTENTICA_PERSONA =
         """
-        SELECT *
-        FROM PERSONE
-        WHERE EMAIL = ?
-        AND PASSWORD = ?
+        SELECT p.*, g.stato_account
+        FROM PERSONE p
+        LEFT JOIN GUIDE g ON p.CF = g.CF
+        WHERE p.email = ? AND p.password = ?
         """;
 
     public static final String ULTIMO_ABBONAMENTO_UTENTE =
@@ -436,6 +436,26 @@ public final class Queries {
 
     public static final String LIST_TIPOLOGIE_ESCURSIONE =
         "SELECT ID_tipologia FROM tipologie_escursione";
+
+    public static final String RECENSIONI_ESCURSIONE = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        WHERE R.ID_escursione = ?
+        """;
+
+    // ==================== OPERAZIONE: Moderazione Recensioni ====================
+    public static final String GET_TUTTE_RECENSIONI = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        ORDER BY R.voto ASC
+        """;
+
+    public static final String ELIMINA_RECENSIONE = 
+        "DELETE FROM RECENSIONI WHERE CF = ? AND ID_escursione = ?";
 
     public static final String TROVA_CF_CERTIFICAZIONE =
         """
@@ -483,6 +503,19 @@ public final class Queries {
     public static final String LIST_ZONE_PER_PAESE = 
         """
         SELECT nome FROM ZONE WHERE nome_paese = ? ORDER BY nome
+        """;
+    public static final String ESCURSIONI_PER_GUIDA =
+        """
+        SELECT ID_escursione, titolo, difficolta, costo
+        FROM ESCURSIONI
+        WHERE Guida_CF = ?
+        """;
+    public static final String RESOCONTI_GUIDA =
+        """
+        SELECT ID_escursione, data_inizio, data_fine, temperatura_rilevata, precipitazioni
+        FROM riepiloga
+        WHERE CF = ?
+        ORDER BY data_inizio DESC
         """;
 }
 

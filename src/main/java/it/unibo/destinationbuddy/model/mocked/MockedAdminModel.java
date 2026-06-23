@@ -1,6 +1,7 @@
 package it.unibo.destinationbuddy.model.mocked;
 
 import it.unibo.destinationbuddy.data.Persona;
+import it.unibo.destinationbuddy.data.Recensione;
 import it.unibo.destinationbuddy.model.AdminModel;
 
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "mario.rossi@email.com",
                 "password123",
-                null
+                false
             ),
             new Persona(
                 "BNCGCM90B02A001Z",
@@ -38,7 +39,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "giacomo.bianchi@email.com",
                 "pass456",
-                null
+                false
             )
         );
     }
@@ -59,8 +60,17 @@ public class MockedAdminModel implements AdminModel {
     }
 
     @Override
+    public List<Recensione> getTutteLeRecensioni() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void eliminaRecensione(String cf, String idEscursione) {
+    }
+
+    @Override
     public List<String> getGuideSospendibili() {
         System.out.println("[MOCK] Amministratore: Recupero lista guide con troppe recensioni negative...");
-        return List.of("GDA88Y88Y888Y");
+            return List.of("GDA88Y88Y888Y");
     }
 }

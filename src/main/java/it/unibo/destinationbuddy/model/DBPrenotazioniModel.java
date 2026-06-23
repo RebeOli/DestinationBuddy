@@ -1,11 +1,13 @@
 package it.unibo.destinationbuddy.model;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import it.unibo.destinationbuddy.data.Pezzo;
 import it.unibo.destinationbuddy.data.Prenotazione;
+import it.unibo.destinationbuddy.data.Recensione;
 
 public class DBPrenotazioniModel implements PrenotazioniModel {
 
@@ -54,5 +56,16 @@ public class DBPrenotazioniModel implements PrenotazioniModel {
     @Override
     public List<Prenotazione> getPrenotazioniUtente(String cf) {
         return Prenotazione.DAO.getPrenotazioniUtente(connection, cf);
+    }
+
+    @Override
+    public List<Recensione> getRecensioniPerEscursione(String idEscursione) {
+        return Recensione.DAO.getRecensioniPerEscursione(connection, idEscursione)
+                .orElse(new ArrayList<>());
+    }
+
+    @Override
+    public boolean inserisciRecensione(Recensione r) {
+        return Recensione.DAO.inserisci(connection, r);
     }
 }

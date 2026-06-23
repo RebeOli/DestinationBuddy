@@ -232,6 +232,33 @@ public class CreaEscursioneView {
         nuovaCertBox.setVisible(false); nuovaCertBox.setManaged(false);
     }
 
+    public void mostraConferma(String titoloEscursione) {
+        ScrollPane sp = (ScrollPane) root;
+        VBox page = (VBox) sp.getContent();
+        page.getChildren().clear();
+
+        VBox success = new VBox(16);
+        success.setAlignment(Pos.CENTER);
+        success.setPadding(new Insets(60, 0, 0, 0));
+
+        Label icon = new Label("✅");
+        icon.setStyle("-fx-font-size: 48px;");
+
+        Label titolo = new Label("Escursione pubblicata!");
+        titolo.getStyleClass().add("auth-title");
+        titolo.setStyle("-fx-font-size: 22px;");
+
+        Label sub = new Label("\"" + titoloEscursione + "\" è ora visibile nel catalogo.");
+        sub.getStyleClass().add("text-muted");
+
+        Button tornaBtn = new Button("Torna al profilo");
+        tornaBtn.getStyleClass().add("btn-accent");
+        tornaBtn.setOnAction(e -> onAnnulla.run());
+
+        success.getChildren().addAll(icon, titolo, sub, tornaBtn);
+        page.getChildren().add(success);
+    }
+
     // ── Giornate ──────────────────────────────────────────────────
 
     private void aggiungiGiornata() {

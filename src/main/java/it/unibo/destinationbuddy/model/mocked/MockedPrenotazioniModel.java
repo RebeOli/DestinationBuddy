@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.unibo.destinationbuddy.data.Prenotazione;
+import it.unibo.destinationbuddy.data.Recensione;
 import it.unibo.destinationbuddy.model.PrenotazioniModel;
 
 public class MockedPrenotazioniModel implements PrenotazioniModel {
@@ -49,4 +50,16 @@ public class MockedPrenotazioniModel implements PrenotazioniModel {
     public List<Prenotazione> getPrenotazioniUtente(String cf) {
         return new ArrayList<>();
     }
+
+    @Override
+    public List<Recensione> getRecensioniPerEscursione(String idEscursione) {
+        return new java.util.ArrayList<>();
+    }
+
+    @Override
+    public boolean inserisciRecensione(Recensione r) {
+        return true;
+    }
+
+
 }

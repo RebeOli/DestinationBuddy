@@ -114,4 +114,9 @@ public class MockedEscursioniModel implements EscursioniModel {
     public List<String> getCategorieLuoghi() {
         return List.of("Rifugio", "Bivacco", "Sentiero", "Via Ferrata", "Ghiacciaio", "Sito d'Arrampicata", "Grotta");
     }
+
+    @Override
+    public List<EscursionePreview> getEscursioniGuida(String guidaCF) { 
+        return List.of();
+    }
 }

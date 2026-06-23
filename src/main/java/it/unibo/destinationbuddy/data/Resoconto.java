@@ -2,6 +2,8 @@ package it.unibo.destinationbuddy.data;
 
 import java.sql.Connection;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public final class Resoconto {
@@ -67,6 +69,27 @@ public final class Resoconto {
             } catch (Exception e) {
                 throw new DAOException(e);
             }
+        }
+        public static List<Resoconto> listForGuida(Connection connection, String cfGuida) {
+            var lista = new ArrayList<Resoconto>();
+            try (
+                var stmt = DAOUtils.prepare(connection, Queries.RESOCONTI_GUIDA, cfGuida);
+                var rs = stmt.executeQuery()
+            ) {
+                while (rs.next()) {
+                    lista.add(new Resoconto(
+                        rs.getString("ID_escursione"),
+                        rs.getDate("data_inizio").toLocalDate(),
+                        rs.getDate("data_fine").toLocalDate(),
+                        rs.getDouble("temperatura_rilevata"),
+                        rs.getDouble("precipitazioni"),
+                        cfGuida
+                    ));
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+            return lista;
         }
     }
 }

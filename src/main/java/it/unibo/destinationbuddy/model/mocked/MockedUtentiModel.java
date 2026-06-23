@@ -17,7 +17,7 @@ public class MockedUtentiModel implements UtentiModel {
             return Optional.of(new Persona(
                 "ADMN99Z99Z999Z", "Admin", "Superiore", true, true, // tipoAmministratore = true
                 "ACC-ADMIN", 0, LocalDate.of(2020, 1, 1), null, 
-                email, password, null
+                email, password, false
             ));
         }
         
@@ -26,7 +26,7 @@ public class MockedUtentiModel implements UtentiModel {
             return Optional.of(new Persona(
                 "GDA88Y88Y888Y", "Guida", "Alpina", true, false, 
                 "ACC-GUIDA", 50, LocalDate.of(2018, 5, 10), LocalDate.of(2019, 1, 1), // ha la data di assunzione!
-                email, password, "Attivo" // ha lo stato dell'account
+                email, password, true // ha lo stato dell'account
             ));
         }
 
@@ -34,7 +34,7 @@ public class MockedUtentiModel implements UtentiModel {
         return Optional.of(new Persona(
             "RSSMRA80A01H501U", "Mario", "Rossi", true, false, 
             "ACC-001", 3, LocalDate.now(), null, 
-            email, password, null
+            email, password, false
         ));
     }
 
