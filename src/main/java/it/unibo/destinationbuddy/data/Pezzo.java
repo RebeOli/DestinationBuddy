@@ -42,9 +42,6 @@ public final class Pezzo {
     }
 
     public static final class DAO {
-        /**
-         * 3.1: Recupera la percentuale di sconto sul noleggio associata all'abbonamento dell'utente.
-         */
         public static double getScontoNoleggio(Connection connection, String cf) {
             try (var stmt = DAOUtils.prepare(connection, Queries.SCONTO_NOLEGGIO, cf);
                  var rs = stmt.executeQuery()) {
@@ -57,24 +54,18 @@ public final class Pezzo {
             }
         }
 
-        /**
-         * 3.2: Cerca in magazzino il primo pezzo disponibile che appartiene alla categoria richiesta.
-         */
         public static String trovaPezzoDisponibile(Connection connection, String idCategoria) {
             try (var stmt = DAOUtils.prepare(connection, Queries.PEZZO_DISPONIBILE, idCategoria);
                  var rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("ID_pezzo");
                 }
-                return null; // Ritorna null se l'attrezzatura di quella categoria è esaurita
+                return null;
             } catch (Exception e) {
                 throw new DAOException(e);
             }
         }
 
-        /**
-         * 3.3: Finalizza il noleggio assegnando il pezzo all'utente e aggiornando lo stato del magazzino.
-         */
         public static boolean noleggiaPezzo(Connection connection, String idPezzo, String idEscursione, String cf, int durataNoleggio) {
             try {
                 try (var stmtAssegna = DAOUtils.prepare(connection, Queries.ASSEGNA_PEZZO, idPezzo, idEscursione, cf, durataNoleggio)) {

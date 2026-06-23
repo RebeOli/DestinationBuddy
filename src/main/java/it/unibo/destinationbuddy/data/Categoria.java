@@ -43,10 +43,7 @@ public final class Categoria {
         return "Categoria [nomeCategoria=" + nomeCategoria + "]";
     }
 
-    //SE NON FILTRIAMO PER CATEGORIA NON SERVE. 
     public static final class DAO {
-
-        // Lista di tutte le categorie disponibili (per popolare il dropdown del filtro)
         public static List<Categoria> listAll(Connection connection) {
             var categorie = new ArrayList<Categoria>();
             try (

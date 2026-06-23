@@ -79,9 +79,6 @@ public final class Prenotazione {
 
     public static final class DAO {
 
-        /**
-         * Verifica se l'utente ha il vantaggio "accesso prioritario" attivo.
-         */
         public static boolean haAccessoPrioritario(Connection connection, String cf) {
             try (var stmt = DAOUtils.prepare(connection, Queries.CONTROLLA_ACCESSO_PRIORITARIO, cf);
                  var rs = stmt.executeQuery()) {
@@ -92,9 +89,6 @@ public final class Prenotazione {
             }
         }
 
-        /**
-         * Verifica i posti.
-         */
         public static int getPostiRimanenti(Connection connection, String idEscursione) {
             try (
                 var stmt = DAOUtils.prepare(connection, Queries.POSTI_RIMANENTI, idEscursione); // DAOUtils.prepare inserisce idEscursione al posto del "?" nella stringa SQL
@@ -103,15 +97,12 @@ public final class Prenotazione {
                 if (rs.next()) {
                     return rs.getInt("posti_rimanenti");
                 }
-                return 0; // Se non trova nulla, restituisce 0
+                return 0;
             } catch (Exception e) {
                 throw new DAOException(e);
             }
         }
 
-        /**
-         * Verifica che l'utente possieda le certificazioni richieste dall'escursione.
-         */
         public static boolean verificaCertificazioni(Connection connection, String idEscursione, String cf) {
             try (var stmt = DAOUtils.prepare(connection, Queries.VERIFICA_CERTIFICAZIONI, idEscursione, cf, idEscursione);
                  var rs = stmt.executeQuery()) {
@@ -126,16 +117,12 @@ public final class Prenotazione {
             }
         }
 
-        /**
-         * Se tutti i controlli sopra vanno a buon fine, inserisce la prenotazione.
-         */
         public static boolean confermaPrenotazione(Connection connection, String cf, String idEscursione) {
             try (
                 var stmt = DAOUtils.prepare(connection, Queries.CONFERMA_PRENOTAZIONE, cf, idEscursione)
             ) {
                 return stmt.executeUpdate() > 0;
             } catch (java.sql.SQLIntegrityConstraintViolationException e) {
-                // Utente ha già una prenotazione per questa escursione
                 return false;
             } catch (Exception e) {
                 throw new DAOException(e);

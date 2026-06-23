@@ -128,7 +128,6 @@ public final class Tappa {
             return tappe;
         }
 
-        // Inserisce una nuova tappa
         public static void create(Connection connection, Tappa t) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.INSERISCI_TAPPA,

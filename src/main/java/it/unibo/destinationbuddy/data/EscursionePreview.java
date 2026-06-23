@@ -57,27 +57,18 @@ public final class EscursionePreview {
 
     public static final class DAO {
 
-        //lista con le preview di tutte le escursioni
         public static List<EscursionePreview> list(Connection connection) {
             return execute(connection, Queries.LIST_ESCURSIONI);
         }
 
-        //lisat con le top 5 escursioni in base alle recensioni
         public static List<EscursionePreview> top5(Connection connection) {
             return execute(connection, Queries.MIGLIORI_ESCURSIONI, 2);
         }
 
-        //lista con le escursioni in base al mese
         public static List<EscursionePreview> perMese (Connection connection, int mese) {
             return execute(connection, Queries.ESCURSIONI_PER_MESE, mese);
         }
 
-        //seleziono in base alla categoria. 
-        /*public static List<EscursionePreview> listByCategoria(Connection connection, String nomeCategoria) {
-            return execute(connection, Queries.ESCURSIONI_PER_CATEGORIA, nomeCategoria);
-        }*/
-
-        // Filtro per tipologia (es. "Trekking", "Alpinismo")
         public static List<EscursionePreview> listByTipologia(Connection connection, String idTipologia) {
             return execute(connection, Queries.ESCURSIONI_PER_TIPOLOGIA, idTipologia);
         }
