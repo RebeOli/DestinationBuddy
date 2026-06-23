@@ -206,6 +206,21 @@ public class AppController {
             resocontoView.pulisciForm();
             mainView.setContenuto(resocontoView.getRoot());
         });
+
+        mainView.setOnCreaEscursione(() -> {
+            if (utenteCorrente == null) return;
+            creaView.setGuidaCF(utenteCorrente.cf);
+            creaView.setTipologieDisponibili(escursioniModel.getTipologie());
+            creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
+            
+            // ---> AGGIUNGI QUESTE TRE RIGHE:
+            creaView.setProviderPaesi(() -> escursioniModel.getPaesi());
+            creaView.setProviderZone(paese -> escursioniModel.getZonePerPaese(paese));
+            creaView.setProviderLuoghi((paese, zona) -> escursioniModel.getLuoghiPerZona(paese, zona));
+            // <---
+            
+            mainView.setContenuto(creaView.getRoot());
+        });
     }
 
     private void mostraLogin() {
@@ -376,22 +391,49 @@ public class AppController {
     }
 
     private void collegaCreaView() {
+        // Quando premi "Annulla" o la freccia indietro
         creaView.setOnAnnulla(() -> {
             creaView.pulisciForm();
             mostraProfilo();
         });
+
+        // Quando premi "Pubblica Escursione"
         creaView.setOnCrea(formData -> {
-            escursioniModel.creaEscursione(
-                formData.escursione, 
-                formData.descrizione, 
-                formData.numeroPartecipanti, 
-                formData.guidaCF, 
-                formData.tipologie,
-                formData.certificazioniSelezionate,
-                formData.nuovaCertificazione
-            );
-            exploreView.setEscursioni(escursioniModel.getAll());
-            creaView.mostraConferma(formData.escursione.titolo);
+            try {
+                // 1. Salviamo nel database
+                escursioniModel.creaEscursione(
+                    formData.escursione, 
+                    formData.descrizione, 
+                    formData.numeroPartecipanti, 
+                    formData.guidaCF, 
+                    formData.tipologie,
+                    formData.certificazioniSelezionate,
+                    formData.nuovaCertificazione
+                );
+                
+                // 2. Aggiorniamo la pagina "Explore" con i nuovi dati
+                exploreView.setEscursioni(escursioniModel.getAll());
+                
+                // 3. IL NUOVO POP-UP (sostituisce il vecchio mostraConferma)
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Escursione Pubblicata");
+                alert.setHeaderText(null);
+                alert.setContentText("L'escursione \"" + formData.escursione.titolo + "\" è stata pubblicata con successo ed è ora visibile nel catalogo!");
+                alert.showAndWait();
+
+                // 4. Ripuliamo il form per la prossima volta e torniamo al profilo
+                creaView.pulisciForm();
+                mostraProfilo();
+
+            } catch (Exception e) {
+                // Se c'è un errore col database, non crasha l'app ma avvisa
+                javafx.scene.control.Alert alertErrore = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alertErrore.setTitle("Errore di Salvataggio");
+                alertErrore.setHeaderText(null);
+                alertErrore.setContentText("Non è stato possibile pubblicare l'escursione. Controlla che i dati siano corretti.");
+                alertErrore.showAndWait();
+                e.printStackTrace();
+            }
         });
     }
 

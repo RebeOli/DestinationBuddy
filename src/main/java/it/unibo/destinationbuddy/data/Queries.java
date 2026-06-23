@@ -525,6 +525,14 @@ public final class Queries {
         ORDER BY data_inizio DESC
         """;
 
+    public static final String LIST_LUOGHI_PER_ZONA = 
+        """
+        SELECT nome 
+        FROM LUOGHI_ESPLORABILI
+        WHERE nome_paese = ? 
+        AND nome_zona = ? 
+        ORDER BY nome
+        """;
 }
 
 

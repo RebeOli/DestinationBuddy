@@ -36,4 +36,6 @@ public interface EscursioniModel {
 
     List<EscursionePreview> getEscursioniGuida(String guidaCF);
 
+    List<String> getLuoghiPerZona(String paese, String zona);
+
 }

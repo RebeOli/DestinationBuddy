@@ -1,13 +1,16 @@
 package it.unibo.destinationbuddy.model;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import it.unibo.destinationbuddy.data.DAOUtils;
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
 import it.unibo.destinationbuddy.data.LuogoEsplorabile;
+import it.unibo.destinationbuddy.data.Queries;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
 // IMPORTANTE: Aggiunto l'import per TipologiaCertificazione
 import it.unibo.destinationbuddy.data.TipologiaCertificazione; 
@@ -108,5 +111,21 @@ public class DBEscursioniModel implements EscursioniModel {
     @Override
         public List<EscursionePreview> getEscursioniGuida(String guidaCF) {
         return EscursionePreview.DAO.listByGuida(connection, guidaCF);
+    }
+
+    @Override
+    public List<String> getLuoghiPerZona(String paese, String zona) {
+        var luoghi = new ArrayList<String>();
+        try (
+            var statement = DAOUtils.prepare(connection, Queries.LIST_LUOGHI_PER_ZONA, paese, zona);
+            var resultSet = statement.executeQuery();
+        ) {
+            while (resultSet.next()) {
+                luoghi.add(resultSet.getString("nome"));
+            }
+        } catch (Exception e) {
+            throw new it.unibo.destinationbuddy.data.DAOException(e);
+        }
+        return luoghi;
     }
 }
