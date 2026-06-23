@@ -7,7 +7,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -29,7 +28,6 @@ public class ExploreView {
     private final ScrollPane root;
     private final FlowPane cardsPane;
     private final FlowPane filtriBar;
-    private TipologiaEscursione tipologiaAttiva = null;
 
     public ExploreView() {
         VBox page = new VBox(16);
@@ -160,8 +158,6 @@ public class ExploreView {
             if (!btn.getStyleClass().contains("filter-btn-active")) {
                 btn.getStyleClass().add("filter-btn-active");
             }
-            
-            tipologiaAttiva = tipologia;
             if (tipologia == null) onFiltraReset.run();
             else onFiltraTipologia.accept(tipologia);
         });

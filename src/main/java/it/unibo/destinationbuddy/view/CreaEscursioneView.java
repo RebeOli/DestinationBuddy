@@ -32,11 +32,7 @@ public class CreaEscursioneView {
     private final DatePicker   dataChiusura   = new DatePicker();
     private final VBox         giornateBox    = new VBox(10);
     private final Label        errorLabel     = new Label();
-
-    private List<TipologiaEscursione> tipologieDisponibili = new ArrayList<>();
     private final VBox          tipologieBox   = new VBox(8);
-
-    private List<TipologiaCertificazione> certificazioniDisponibili = new ArrayList<>();
     private final VBox          certificazioniBox = new VBox(8);
     private final CheckBox      creaNuovaCertCb   = new CheckBox("Crea nuova certificazione");
     private final TextField     nuovaCertIdField  = new TextField();
@@ -152,7 +148,6 @@ public class CreaEscursioneView {
     public void setProviderLuoghi(BiFunction<String, String, List<String>> provider) { this.providerLuoghi = provider; }
 
     public void setTipologieDisponibili(List<TipologiaEscursione> lista) {
-        this.tipologieDisponibili = lista;
         tipologieBox.getChildren().clear();
         FlowPane flow = new FlowPane(10, 8);
         for (TipologiaEscursione tipologia : lista) {
@@ -164,7 +159,6 @@ public class CreaEscursioneView {
     }
 
    public void setCertificazioniDisponibili(List<TipologiaCertificazione> lista) {
-        this.certificazioniDisponibili = lista;
         certificazioniBox.getChildren().clear();
         FlowPane flow = new FlowPane(10, 8);
         for (TipologiaCertificazione cert : lista) {
@@ -177,10 +171,10 @@ public class CreaEscursioneView {
         certificazioniBox.getChildren().add(flow);
     }
 
-    public void setGuidaCF(String cf)                            { this.guidaCF = cf; }
-    public void setOnCrea(Consumer<EscursioneFormData> handler)  { this.onCrea = handler; }
-    public void setOnAnnulla(Runnable handler)                   { this.onAnnulla = handler; }
-    public ScrollPane getRoot()                                  { return root; }
+    public void setGuidaCF(String cf) { this.guidaCF = cf; }
+    public void setOnCrea(Consumer<EscursioneFormData> handler) { this.onCrea = handler; }
+    public void setOnAnnulla(Runnable handler) { this.onAnnulla = handler; }
+    public ScrollPane getRoot() { return root; }
 
     public void mostraErrore(String msg) {
         errorLabel.setText(msg);
@@ -371,13 +365,12 @@ public class CreaEscursioneView {
     }
 
     private class GiornataForm {
-        final int        numero;
         final DatePicker dataPicker     = new DatePicker();
         final TextField  programmaField = new TextField();
         final VBox       tappeBox       = new VBox(8);
         final List<TappaForm> tappaForms = new ArrayList<>();
 
-        GiornataForm(int n) { this.numero = n; }
+        GiornataForm(int n) { }
 
         VBox build(int n) {
             VBox box = new VBox(8);
