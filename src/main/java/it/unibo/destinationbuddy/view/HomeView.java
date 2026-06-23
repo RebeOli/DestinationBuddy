@@ -166,7 +166,7 @@ public class HomeView {
         // Box Upgrade
         upgradeBox = new VBox(6);
         upgradeBox.setAlignment(Pos.CENTER_RIGHT);
-        Label upgradeMsg = new Label("Passa a Premium: sconto del 20%\nsul noleggio e prenotazione prioritaria.");
+        Label upgradeMsg = new Label("Passa a Premium: sconto sul noleggio e prenotazione con accesso anticipato!");
         upgradeMsg.getStyleClass().add("text-muted");
         upgradeMsg.setTextAlignment(TextAlignment.RIGHT);
 
