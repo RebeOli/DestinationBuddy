@@ -12,6 +12,8 @@ repositories {
 dependencies {
     // Il driver per il database del professore
     implementation("com.mysql:mysql-connector-j:9.3.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
 // Facciamo configurare JavaFX direttamente al plugin
