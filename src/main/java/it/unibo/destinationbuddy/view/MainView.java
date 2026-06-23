@@ -29,7 +29,6 @@ public class MainView {
     private Runnable onLogout   = () -> {};
     private Runnable onPrenotaNuova = () -> {};
     private Runnable onLogin    = () -> {};
-    private Runnable onImpostazioni = () -> {};
     private Runnable onCreaEscursione = () -> {};
     private Runnable onAggiungiLuogo = () -> {};
     private Runnable onInserisciResoconto = () -> {};
@@ -181,7 +180,6 @@ public class MainView {
     public void setOnLogout(Runnable h) { this.onLogout       = h; }
     public void setOnPrenotaNuova(Runnable h) { this.onPrenotaNuova = h; }
     public void setOnLogin(Runnable h) { this.onLogin        = h; }
-    public void setOnImpostazioni(Runnable h) { this.onImpostazioni = h; }
     public void setOnCreaEscursione(Runnable h) { this.onCreaEscursione = h; }
     public void setOnAggiungiLuogo(Runnable h) { this.onAggiungiLuogo = h; }
     public void setOnInserisciResoconto(Runnable h) { this.onInserisciResoconto = h; }
@@ -248,6 +246,8 @@ public class MainView {
         lbl.setOnMouseExited(ev  -> { if (!activeNav.equals(id)) lbl.setTextFill(Color.web(TEXT_MUTED)); });
         return lbl;
     }
+
+    // ── Sidebar ───────────────────────────────────────────────────────────────
 
     private VBox buildSidebar() {
         VBox sidebar = new VBox(0);

@@ -172,7 +172,6 @@ public class AppController {
         });
         mainView.setOnAdmin(() -> mostraAdmin());
         mainView.setOnPrenotaNuova(() -> mostraExplore());
-        mainView.setOnImpostazioni(() -> { });
         mainView.setOnLogin(() -> mostraLogin());
         mainView.setOnLogout(() -> {
             if (utenteCorrente != null) eseguiLogout();
