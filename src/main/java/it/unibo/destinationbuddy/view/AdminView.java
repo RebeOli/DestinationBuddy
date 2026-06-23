@@ -45,6 +45,7 @@ public class AdminView {
     private BiConsumer<String, String> onValidaCert = (id, n) -> {};
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
+    private Runnable onApriGestioneGeo = () -> {};
 
     private final ScrollPane root;
     private final VBox certsContainer      = new VBox(10);
@@ -63,8 +64,14 @@ public class AdminView {
         titolo.setFont(Font.font("System", FontWeight.BOLD, 24));
         titolo.setTextFill(Color.web(TEXT_DARK));
 
+        Button btnGeografia = new Button("🌍 Gestione Database Geografico (Paesi, Zone, Luoghi)");
+        btnGeografia.getStyleClass().add("btn-accent");
+        btnGeografia.setMaxWidth(Double.MAX_VALUE);
+        btnGeografia.setOnAction(e -> onApriGestioneGeo.run());
+
         page.getChildren().addAll(
                 titolo,
+                btnGeografia, // <-- AGGIUNGI IL BOTTONE QUI IN ALTO
                 buildSection("📋 Certificazioni in attesa", certsContainer),
                 buildSection("🚩 Moderazione Recensioni", recensioniContainer),
                 buildSection("👤 Gestione guide", guideContainer),
@@ -190,6 +197,8 @@ public class AdminView {
     public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida = handler; }
     public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
     public void setOnEliminaRecensione(Consumer<Recensione> handler) { this.onEliminaRecensione = handler; }
+    public void setOnApriGestioneGeo(Runnable handler) { this.onApriGestioneGeo = handler; }
+
     public ScrollPane getRoot(){ return root; }
     private VBox buildRecensioneAdminRow(Recensione r) {
         VBox row = new VBox(8);

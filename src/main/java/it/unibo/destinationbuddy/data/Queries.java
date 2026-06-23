@@ -533,6 +533,15 @@ public final class Queries {
         AND nome_zona = ? 
         ORDER BY nome
         """;
+
+    public static final String INSERISCI_PAESE =
+        "INSERT INTO PAESI (nome) VALUES (?)";
+
+    public static final String INSERISCI_ZONA =
+        "INSERT INTO ZONE (nome_paese, nome, descrizione) VALUES (?, ?, ?)";
+
+    public static final String INSERISCI_CATEGORIA =
+        "INSERT INTO CATEGORIE (nome_categoria) VALUES (?)";
 }
 
 

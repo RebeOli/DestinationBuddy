@@ -352,19 +352,19 @@ public class MainView {
         resocontoBlock.setVisible(false);
         resocontoBlock.setManaged(false);
 
-        Button aggiungiLuogoBtn = new Button("+ Aggiungi Luogo");
-        aggiungiLuogoBtn.setOnAction(e -> onAggiungiLuogo.run()); // Assicurati di avere questo Runnable
-        aggiungiLuogoBtn.setId("btn-luogo");
-        aggiungiLuogoBtn.setMaxWidth(Double.MAX_VALUE);
-        aggiungiLuogoBtn.setFont(Font.font("System", 12));
-        aggiungiLuogoBtn.setStyle("-fx-background-color: transparent;"
-                + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
-                + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
+        // Button aggiungiLuogoBtn = new Button("+ Aggiungi Luogo");
+        // aggiungiLuogoBtn.setOnAction(e -> onAggiungiLuogo.run()); // Assicurati di avere questo Runnable
+        // aggiungiLuogoBtn.setId("btn-luogo");
+        // aggiungiLuogoBtn.setMaxWidth(Double.MAX_VALUE);
+        // aggiungiLuogoBtn.setFont(Font.font("System", 12));
+        // aggiungiLuogoBtn.setStyle("-fx-background-color: transparent;"
+        //         + "-fx-text-fill: " + ACCENT + "; -fx-border-color: " + ACCENT + ";"
+        //         + "-fx-border-radius: 8; -fx-cursor: hand; -fx-padding: 8 0;");
 
-        luogoBlock = new VBox(aggiungiLuogoBtn);
-        luogoBlock.setPadding(new Insets(0, 12, 8, 12));
-        luogoBlock.setVisible(false);
-        luogoBlock.setManaged(false);
+        // luogoBlock = new VBox(aggiungiLuogoBtn);
+        // luogoBlock.setPadding(new Insets(0, 12, 8, 12));
+        // luogoBlock.setVisible(false);
+        // luogoBlock.setManaged(false);
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -394,7 +394,7 @@ public class MainView {
         bottom.getChildren().addAll(adminBlock,
                 sidebarItem("↪", "Esci",    () -> onLogout.run()));
 
-        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, luogoBlock, resocontoBlock, spacer, bottom);
+        sidebar.getChildren().addAll(profileBlock, menuStandard, prenotaBlock, creaBlock, resocontoBlock, spacer, bottom);
         return sidebar;
     }
 
