@@ -53,7 +53,6 @@ public final class Equipaggiamento {
 
 
     public static final class DAO {
-    // Lista delle giornate di una specifica escursione di una specifica escursione
         public static List<Equipaggiamento> listForEscursione(Connection connection, String idEscursione) {
             var equipaggiamenti = new ArrayList<Equipaggiamento>();
             try (

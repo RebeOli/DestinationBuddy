@@ -68,7 +68,6 @@ public final class Giornata {
     }
 
     public static final class DAO {
-    // Lista delle giornate di una specifica escursione di una specifica escursione
         public static List<Giornata> listForEscursione(Connection connection, String idEscursione) {
             var giornate = new ArrayList<Giornata>();
             try (
@@ -91,16 +90,12 @@ public final class Giornata {
             return giornate;
         }
 
-        // Inserisce una nuova tappa
         public static void create(Connection connection, Giornata g) {
             try {
-                // Inserisce la giornata
                 try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_GIORNATA,
                         g.idEscursione, java.sql.Date.valueOf(g.data), g.programma)) {
                     statement.executeUpdate();
                 }
-                
-                // Inserisce a cascata tutte le tappe della giornata
                 for (Tappa t : g.tappe) {
                     Tappa.DAO.create(connection, t);
                 }

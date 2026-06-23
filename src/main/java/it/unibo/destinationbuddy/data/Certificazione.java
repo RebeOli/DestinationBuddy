@@ -103,7 +103,6 @@ public final class Certificazione {
 
 
     public static final class DAO {
-        // Metodo privato per leggere una certificazione dal ResultSet (riduce ripetizione)
             private static Certificazione readCertificazione(ResultSet rs) throws SQLException {
                 var tipologia = new TipologiaCertificazione(
                     rs.getString("ID_certificazione"),
@@ -127,7 +126,6 @@ public final class Certificazione {
                     rs.getString("Guida_CF")
                 );
             }
-        // tutte le certificzioni di un utente, da visualizzare sul profilo
         public static List<Certificazione> listForUtente(Connection connection, String cf ) {
             var certificazioni = new ArrayList<Certificazione>();
             try (
@@ -143,7 +141,6 @@ public final class Certificazione {
             return certificazioni;
         }
 
-        //Lista di certificazioni in attesa, serve per l'operazione 9
         public static List<Certificazione> listInAttesa(Connection connection) {
             var certificazioni = new ArrayList<Certificazione>();
             try (
@@ -160,7 +157,6 @@ public final class Certificazione {
 
         }
 
-        //Per l'aggiunta da parte di un utente di una certificazione nuova -> operazione 1
         public static void create(Connection connection, Certificazione c) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.INSERISCI_CERTIFICAZIONE,
@@ -172,7 +168,6 @@ public final class Certificazione {
                 throw new DAOException(e);
             }
         }
-        //per cambiare lo stato della certificazione, sempre operazione 9
         public static void valida(Connection connection, String idCertificazione, String nCertificazione) {
             try (
                 var statement = DAOUtils.prepare(connection, Queries.VALIDA_CERTIFICAZIONE, idCertificazione, nCertificazione);

@@ -18,7 +18,7 @@ public final class Escursione {
     public final String guidaNome;
     public final String guidaCognome;
     public final List<Giornata> giornate;
-    public final List<Equipaggiamento> equipaggiamento; //non indica i singoli pezzi
+    public final List<Equipaggiamento> equipaggiamento;
     public final List<String> tipologie;
 
 
@@ -180,7 +180,6 @@ public final class Escursione {
 
         public static void create(Connection connection, Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, List<String> tipologieDaAssociare) {
             try {
-                // 1. Inserisce l'escursione base
                 try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_ESCURSIONE,
                     e.idEscursione, e.titolo, descrizione, e.difficolta, numeroPartecipanti,
                     e.costo, java.sql.Date.valueOf(e.dataAperturaEscursione),

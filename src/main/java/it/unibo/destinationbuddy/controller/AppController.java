@@ -67,11 +67,11 @@ public class AppController {
         mostraScenaMain();
     }
 
-    private void mostraScenaAuth() {
+    /*private void mostraScenaAuth() {
         Scene scene = new Scene(authView.getRoot(), 1200, 700);
         applicaCSS(scene);
         primaryStage.setScene(scene);
-    }
+    }*/
 
     private void mostraScenaMain() {
         Scene scene = new Scene(mainView.getRoot(), 1200, 700);
@@ -121,6 +121,7 @@ public class AppController {
     }
 
     private void mostraAdmin() {
+        mainView.setModalitaUtente(false);
         mainView.setContenuto(adminView.getRoot());
         mainView.setNavAttiva("");
 
@@ -134,6 +135,7 @@ public class AppController {
         utenteCorrente = null;
         mainView.setAutenticato(false);
         mainView.setUtente(null, false); 
+        mainView.setModalitaUtente(false);
         homeView.setUtente(null); 
         mostraHome();
     }
@@ -183,7 +185,6 @@ public class AppController {
             else mostraLogin();
         });
         
-        // GESTIONE DEL BOTTONE "CREA ESCURSIONE" DELLA SIDEBAR
         mainView.setOnCreaEscursione(() -> {
             if (utenteCorrente == null) return;
             creaView.setGuidaCF(utenteCorrente.cf);
@@ -192,13 +193,6 @@ public class AppController {
             mainView.setContenuto(creaView.getRoot());
         });
 
-        // GESTIONE DEL BOTTONE "AGGIUNGI LUOGO" DELLA SIDEBAR
-        // mainView.setOnAggiungiLuogo(() -> {
-        //     aggiungiLuogoView.pulisciForm();
-        //     aggiungiLuogoView.setPaesi(escursioniModel.getPaesi());
-        //     aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
-        //     mainView.setContenuto(aggiungiLuogoView.getRoot());
-        // });
         mainView.setOnInserisciResoconto(() -> {
             if (utenteCorrente == null) return;
             resocontoView.setCfGuida(utenteCorrente.cf);
@@ -213,11 +207,9 @@ public class AppController {
             creaView.setTipologieDisponibili(escursioniModel.getTipologie());
             creaView.setCertificazioniDisponibili(certsModel.getTipologieDisponibili());
             
-            // ---> AGGIUNGI QUESTE TRE RIGHE:
             creaView.setProviderPaesi(() -> escursioniModel.getPaesi());
             creaView.setProviderZone(paese -> escursioniModel.getZonePerPaese(paese));
             creaView.setProviderLuoghi((paese, zona) -> escursioniModel.getLuoghiPerZona(paese, zona));
-            // <---
             
             mainView.setContenuto(creaView.getRoot());
         });
@@ -283,15 +275,13 @@ public class AppController {
             }
 
             LocalDate oggi = LocalDate.now();
-            LocalDate aperturaNormale = exc.dataAperturaEscursione; // Dal DB: data_apertura_iscrizione
-            LocalDate chiusura = exc.dataChiusuraEscursione;        // Dal DB: data_chiusura_iscrizione
+            LocalDate aperturaNormale = exc.dataAperturaEscursione;
+            LocalDate chiusura = exc.dataChiusuraEscursione;
             
-            // Verifichiamo se l'utente è Premium sfruttando il metodo che avevamo già
             boolean isPremium = utentiModel.getUltimoAbbonamento(utenteCorrente)
                                            .map(it.unibo.destinationbuddy.data.Abbonamento::isAttivo)
                                            .orElse(false);
 
-            // Calcoliamo l'apertura "anticipata" (meno 15 giorni) se è premium
             LocalDate aperturaEffettiva = isPremium ? aperturaNormale.minusDays(15) : aperturaNormale;
 
             if (oggi.isAfter(chiusura)) {
@@ -382,12 +372,13 @@ public class AppController {
             gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi());
             mainView.setContenuto(gestioneGeoView.getRoot());
         });
+        adminView.setOnVaiComeUtente(() -> {
+            mainView.setModalitaUtente(true);
+            mostraHome();
+        });
     }
 
     private void collegaProfiloView() {
-        // "Crea Escursione" non serve più qui perché è in MainView
-        // "Aggiungi Luogo" non serve più qui perché è in MainView
-
         profiloView.setOnAggiungiCert(() -> {
             if (utenteCorrente == null) return;
             aggCertView.setCfUtente(utenteCorrente.cf);
@@ -398,16 +389,13 @@ public class AppController {
     }
 
     private void collegaCreaView() {
-        // Quando premi "Annulla" o la freccia indietro
         creaView.setOnAnnulla(() -> {
             creaView.pulisciForm();
             mostraProfilo();
         });
 
-        // Quando premi "Pubblica Escursione"
         creaView.setOnCrea(formData -> {
             try {
-                // 1. Salviamo nel database
                 escursioniModel.creaEscursione(
                     formData.escursione, 
                     formData.descrizione, 
@@ -418,22 +406,18 @@ public class AppController {
                     formData.nuovaCertificazione
                 );
                 
-                // 2. Aggiorniamo la pagina "Explore" con i nuovi dati
                 exploreView.setEscursioni(escursioniModel.getAll());
                 
-                // 3. IL NUOVO POP-UP (sostituisce il vecchio mostraConferma)
                 javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                 alert.setTitle("Escursione Pubblicata");
                 alert.setHeaderText(null);
                 alert.setContentText("L'escursione \"" + formData.escursione.titolo + "\" è stata pubblicata con successo ed è ora visibile nel catalogo!");
                 alert.showAndWait();
 
-                // 4. Ripuliamo il form per la prossima volta e torniamo al profilo
                 creaView.pulisciForm();
                 mostraProfilo();
 
             } catch (Exception e) {
-                // Se c'è un errore col database, non crasha l'app ma avvisa
                 javafx.scene.control.Alert alertErrore = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
                 alertErrore.setTitle("Errore di Salvataggio");
                 alertErrore.setHeaderText(null);
@@ -473,13 +457,12 @@ public class AppController {
     }
 
 private void collegaGestioneGeoView() {
-        gestioneGeoView.setOnAnnulla(() -> mostraAdmin()); // Torna all'admin!
+        gestioneGeoView.setOnAnnulla(() -> mostraAdmin());
         
         gestioneGeoView.setOnPaeseSelezionato(paese -> {
             gestioneGeoView.setZone(escursioniModel.getZonePerPaese(paese));
         });
 
-        // 1. Salvataggio Luogo
         gestioneGeoView.setOnSalvaLuogo(luogo -> {
             try {
                 escursioniModel.aggiungiLuogoEsplorabile(luogo);
@@ -489,17 +472,15 @@ private void collegaGestioneGeoView() {
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare il Luogo."); }
         });
 
-        // 2. Salvataggio Paese
         gestioneGeoView.setOnSalvaPaese(paese -> {
             try {
                 escursioniModel.aggiungiPaese(paese);
                 mostraAvviso("Successo", "Paese '" + paese + "' salvato nel database!");
                 gestioneGeoView.pulisciForm();
-                gestioneGeoView.setPaesi(escursioniModel.getPaesi()); // Aggiorna i menu a tendina
+                gestioneGeoView.setPaesi(escursioniModel.getPaesi());
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare il Paese (forse esiste già?)."); }
         });
 
-        // 3. Salvataggio Zona
         gestioneGeoView.setOnSalvaZona(dati -> {
             try {
                 escursioniModel.aggiungiZona(dati[0], dati[1], dati[2]); // 0=Paese, 1=Zona, 2=Desc
@@ -508,13 +489,12 @@ private void collegaGestioneGeoView() {
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Zona."); }
         });
 
-        // 4. Salvataggio Categoria
         gestioneGeoView.setOnSalvaCategoria(categoria -> {
             try {
                 escursioniModel.aggiungiCategoria(categoria);
                 mostraAvviso("Successo", "Categoria '" + categoria + "' salvata nel database!");
                 gestioneGeoView.pulisciForm();
-                gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi()); // Aggiorna a tendina
+                gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi());
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Categoria (forse esiste già?)."); }
         });
     }

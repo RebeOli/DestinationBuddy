@@ -120,7 +120,6 @@ public class MainView {
         }
 
         if (p.tipoAmministratore) {
-            // REGOLE ADMIN: Nascondi la sidebar standard, mostra solo Admin
             if (menuStandard != null) {
                 menuStandard.setVisible(false);
                 menuStandard.setManaged(false);
@@ -139,8 +138,6 @@ public class MainView {
                 adminButtonSidebar.setVisible(true);
                 adminButtonSidebar.setManaged(true);
             }
-
-            // NASCONDIAMO I BOTTONI IN ALTO (Home, Explore, Profilo)
             if (topNavLinks != null) {
                 topNavLinks.setVisible(false);
                 topNavLinks.setManaged(false);
@@ -442,5 +439,16 @@ public class MainView {
                     }
                 });
             });
+    }
+    public void setModalitaUtente(boolean attiva) {
+        if (menuStandard == null) return;
+        menuStandard.setVisible(attiva);
+        menuStandard.setManaged(attiva);
+        prenotaBlock.setVisible(attiva);
+        prenotaBlock.setManaged(attiva);
+        if (topNavLinks != null) {
+            topNavLinks.setVisible(attiva);
+            topNavLinks.setManaged(attiva);
+        }
     }
 }

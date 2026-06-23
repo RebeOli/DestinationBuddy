@@ -373,25 +373,12 @@ public final class Queries {
         WHERE ID_escursione = ?
         """;
 
-    //tabella associa -> escursione-tipologia
     public static final String ASSOCIA_ESCURSIONE_TIPOLOGIA =
         """
         INSERT INTO assume (ID_escursione, ID_tipologia)
         VALUES (?, ?)
         """;
 
-    /*public static final String ESCURSIONI_PER_CATEGORIA =
-        """
-        SELECT DISTINCT E.ID_escursione, E.titolo, E.difficolta, E.costo
-        FROM ESCURSIONI E
-        JOIN GIORNATE G ON E.ID_escursione = G.ID_escursione
-        JOIN TAPPE T ON G.ID_escursione = T.ID_escursione AND G.data = T.data
-        JOIN LUOGHI_ESPLORABILI L ON T.nome_paese = L.nome_paese
-            AND T.nome_zona = L.nome_zona
-            AND T.nome_luogo = L.nome
-        WHERE L.nome_categoria = ?
-        """;*/
-    // Per EscursionePreview.DAO
     public static final String ESCURSIONI_PER_TIPOLOGIA =
         """
         SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
