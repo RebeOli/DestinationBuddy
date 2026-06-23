@@ -38,4 +38,8 @@ public interface EscursioniModel {
 
     List<String> getLuoghiPerZona(String paese, String zona);
 
+    void aggiungiPaese(String nomePaese);
+
+    void aggiungiZona(String nomePaese, String nomeZona, String descrizione);
+
 }

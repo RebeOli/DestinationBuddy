@@ -29,7 +29,7 @@ public class AppController {
     private final CreaEscursioneView          creaView      = new CreaEscursioneView();
     private final AggiungiCertificazioneView  aggCertView   = new AggiungiCertificazioneView();
     private final PremiumView                 premiumView   = new PremiumView();
-    private final AggiungiLuogoView           aggiungiLuogoView = new AggiungiLuogoView();
+    private final GestioneGeograficaAdminView gestioneGeoView = new GestioneGeograficaAdminView();
     private final InserisciResocontoView resocontoView = new InserisciResocontoView();
 
     private Persona utenteCorrente = null;
@@ -56,7 +56,7 @@ public class AppController {
         collegaCreaView();
         collegaAggCertView();
         collegaPremiumView();
-        collegaAggiungiLuogoView();
+        collegaGestioneGeoView();
         collegaResocontoView();
 
         homeView.setTop5(escursioniModel.getTop5());
@@ -193,12 +193,12 @@ public class AppController {
         });
 
         // GESTIONE DEL BOTTONE "AGGIUNGI LUOGO" DELLA SIDEBAR
-        mainView.setOnAggiungiLuogo(() -> {
-            aggiungiLuogoView.pulisciForm();
-            aggiungiLuogoView.setPaesi(escursioniModel.getPaesi());
-            aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
-            mainView.setContenuto(aggiungiLuogoView.getRoot());
-        });
+        // mainView.setOnAggiungiLuogo(() -> {
+        //     aggiungiLuogoView.pulisciForm();
+        //     aggiungiLuogoView.setPaesi(escursioniModel.getPaesi());
+        //     aggiungiLuogoView.setCategorie(escursioniModel.getCategorieLuoghi());
+        //     mainView.setContenuto(aggiungiLuogoView.getRoot());
+        // });
         mainView.setOnInserisciResoconto(() -> {
             if (utenteCorrente == null) return;
             resocontoView.setCfGuida(utenteCorrente.cf);
@@ -375,6 +375,13 @@ public class AppController {
             try { adminModel.eliminaRecensione(recensione.cf, recensione.idEscursione); } catch (Exception ignored) {}
             mostraAdmin();
         });
+
+        adminView.setOnApriGestioneGeo(() -> {
+            gestioneGeoView.pulisciForm();
+            gestioneGeoView.setPaesi(escursioniModel.getPaesi());
+            gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi());
+            mainView.setContenuto(gestioneGeoView.getRoot());
+        });
     }
 
     private void collegaProfiloView() {
@@ -465,24 +472,43 @@ public class AppController {
         });
     }
 
-    private void collegaAggiungiLuogoView() {
-        aggiungiLuogoView.setOnAnnulla(() -> mostraProfilo());
+private void collegaGestioneGeoView() {
+        gestioneGeoView.setOnAnnulla(() -> mostraAdmin()); // Torna all'admin!
         
-        // Quando la guida seleziona un Paese, carichiamo le sue zone dal DB dinamicamente!
-        aggiungiLuogoView.setOnPaeseSelezionato(paese -> {
-            aggiungiLuogoView.setZone(escursioniModel.getZonePerPaese(paese));
+        gestioneGeoView.setOnPaeseSelezionato(paese -> {
+            gestioneGeoView.setZone(escursioniModel.getZonePerPaese(paese));
         });
 
-        aggiungiLuogoView.setOnSalva(luogo -> {
+        // 1. Salvataggio Luogo
+        gestioneGeoView.setOnSalvaLuogo(luogo -> {
             try {
                 escursioniModel.aggiungiLuogoEsplorabile(luogo);
-                aggiungiLuogoView.pulisciForm();
-                mostraProfilo(); 
-            } catch (Exception e) {
-                System.err.println("Errore salvataggio luogo: " + e.getMessage());
-            }
+                mostraAvviso("Successo", "Luogo salvato nel database!");
+                gestioneGeoView.pulisciForm();
+                mostraAdmin(); 
+            } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare il Luogo."); }
+        });
+
+        // 2. Salvataggio Paese
+        gestioneGeoView.setOnSalvaPaese(paese -> {
+            try {
+                escursioniModel.aggiungiPaese(paese);
+                mostraAvviso("Successo", "Paese '" + paese + "' salvato nel database!");
+                gestioneGeoView.pulisciForm();
+                gestioneGeoView.setPaesi(escursioniModel.getPaesi()); // Aggiorna i menu a tendina
+            } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare il Paese (forse esiste già?)."); }
+        });
+
+        // 3. Salvataggio Zona
+        gestioneGeoView.setOnSalvaZona(dati -> {
+            try {
+                escursioniModel.aggiungiZona(dati[0], dati[1], dati[2]); // 0=Paese, 1=Zona, 2=Desc
+                mostraAvviso("Successo", "Zona '" + dati[1] + "' salvata nel database!");
+                gestioneGeoView.pulisciForm();
+            } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Zona."); }
         });
     }
+
     private void collegaResocontoView() {
         resocontoView.setOnAnnulla(() -> mostraProfilo());
         resocontoView.setOnSalva(r -> {

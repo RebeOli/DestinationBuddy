@@ -128,4 +128,22 @@ public class DBEscursioniModel implements EscursioniModel {
         }
         return luoghi;
     }
+
+    @Override
+    public void aggiungiPaese(String nomePaese) {
+        try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_PAESE, nomePaese)) {
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new it.unibo.destinationbuddy.data.DAOException(e);
+        }
+    }
+
+    @Override
+    public void aggiungiZona(String nomePaese, String nomeZona, String descrizione) {
+        try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_ZONA, nomePaese, nomeZona, descrizione)) {
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new it.unibo.destinationbuddy.data.DAOException(e);
+        }
+    }
 }

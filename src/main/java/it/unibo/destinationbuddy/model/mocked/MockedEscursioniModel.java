@@ -132,4 +132,14 @@ public class MockedEscursioniModel implements EscursioniModel {
     public List<EscursionePreview> getEscursioniGuida(String guidaCF) { 
         return List.of();
     }
+
+    @Override
+    public void aggiungiPaese(String nomePaese) {
+        System.out.println("[MOCK DB] Paese aggiunto: " + nomePaese);
+    }
+
+    @Override
+    public void aggiungiZona(String nomePaese, String nomeZona, String descrizione) {
+        System.out.println("[MOCK DB] Zona aggiunta: " + nomeZona + " in " + nomePaese);
+    }
 }
