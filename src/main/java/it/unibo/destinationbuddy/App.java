@@ -3,11 +3,12 @@ package it.unibo.destinationbuddy;
 import it.unibo.destinationbuddy.controller.AppController;
 import it.unibo.destinationbuddy.data.DAOUtils;
 import it.unibo.destinationbuddy.model.*;
-import it.unibo.destinationbuddy.model.mocked.MockedAdminModel;
-import it.unibo.destinationbuddy.model.mocked.MockedCertificazioniModel;
-import it.unibo.destinationbuddy.model.mocked.MockedEscursioniModel;
-import it.unibo.destinationbuddy.model.mocked.MockedPrenotazioniModel;
-import it.unibo.destinationbuddy.model.mocked.MockedUtentiModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedAdminModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedCertificazioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedEscursioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedPrenotazioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedUtentiModel;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import java.sql.Connection;
