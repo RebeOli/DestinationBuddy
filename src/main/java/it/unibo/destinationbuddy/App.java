@@ -3,6 +3,12 @@ package it.unibo.destinationbuddy;
 import it.unibo.destinationbuddy.controller.AppController;
 import it.unibo.destinationbuddy.data.DAOUtils;
 import it.unibo.destinationbuddy.model.*;
+// import it.unibo.destinationbuddy.model.mocked.MockedAdminModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedCertificazioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedEscursioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedPrenotazioniModel;
+// import it.unibo.destinationbuddy.model.mocked.MockedUtentiModel;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import java.sql.Connection;
@@ -23,13 +29,20 @@ public class App extends Application {
             connection = DAOUtils.connetti();
             System.out.println("✅ Connessione stabilita.");
 
-            // Crea i Model
+            // Model reali del DB 
             EscursioniModel     escursioniModel = new DBEscursioniModel(connection);
             UtentiModel         utentiModel     = new DBUtentiModel(connection);
             CertificazioniModel certsModel      = new DBCertificazioniModel(connection);
             AdminModel          adminModel      = new DBAdminModel(connection);
             PrenotazioniModel   prenotModel     = new DBPrenotazioniModel(connection);
             PostEscursioneModel postEscursioneModel = new DBPostEscursioneModel(connection);
+
+            // Model finti del Mocked
+            // EscursioniModel     escursioniModel = new MockedEscursioniModel();
+            // UtentiModel         utentiModel     = new MockedUtentiModel();
+            // CertificazioniModel certsModel      = new MockedCertificazioniModel();
+            // AdminModel          adminModel      = new MockedAdminModel();
+            // PrenotazioniModel   prenotModel     = new MockedPrenotazioniModel();
 
             // Il controller fa tutto il resto
             AppController controller = new AppController(

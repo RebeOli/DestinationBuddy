@@ -3,12 +3,18 @@ package it.unibo.destinationbuddy.view;
 import it.unibo.destinationbuddy.data.Equipaggiamento;
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.Giornata;
+import it.unibo.destinationbuddy.data.Recensione;
 import it.unibo.destinationbuddy.data.TipologiaCertificazione;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.FileChooser;
+import java.io.File;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -27,9 +33,11 @@ public class DettaglioEscursioneView {
 
     private Consumer<Escursione> onPrenota  = e -> {};
     private Runnable             onIndietro = () -> {};
+    private Consumer<Recensione> onInviaRecensione = r -> {};
 
     private final ScrollPane root;
     private final VBox        contentBox;
+    private final VBox        recensioniBox;
 
     public DettaglioEscursioneView() {
         contentBox = new VBox(20);
@@ -39,13 +47,13 @@ public class DettaglioEscursioneView {
         placeholder.getStyleClass().add("text-muted");
         contentBox.getChildren().add(placeholder);
 
+        recensioniBox = buildSection("⭐ Recensioni");
+
         root = new ScrollPane(contentBox);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         root.getStyleClass().add("scroll-pane");
     }
-
-    // ── API pubblica ─────────────────────────────────────────────
 
     /** Riempie la view con tutti i dati dell'escursione. */
     public void setEscursione(Escursione exc) {
@@ -152,7 +160,7 @@ public class DettaglioEscursioneView {
         actions.getChildren().addAll(prenotaBtn, indietroBtn);
 
         contentBox.getChildren().addAll(breadcrumb, header, infoGrid,
-                certBox, giornateBox, equipBox, actions);
+            certBox, giornateBox, equipBox, recensioniBox, actions);
     }
 
     /** Aggiorna il numero di posti rimanenti (chiamato dopo conferma prenotazione). */
@@ -160,8 +168,32 @@ public class DettaglioEscursioneView {
         // Per semplicità basta richiamare setEscursione con l'escursione aggiornata
     }
 
+    public void setRecensioni(List<Recensione> lista, boolean puoRecensire, String idEscursione, String cfUtente) {
+        recensioniBox.getChildren().clear();
+        Label lbl = new Label("⭐ Recensioni");
+        lbl.getStyleClass().add("card-title");
+        recensioniBox.getChildren().add(lbl);
+
+        if (lista == null || lista.isEmpty()) {
+            recensioniBox.getChildren().add(muted("Nessuna recensione ancora presente."));
+        } else {
+            for (Recensione r : lista) {
+                recensioniBox.getChildren().add(buildRecensioneRow(r));
+            }
+        }
+
+        if (puoRecensire) {
+            Button scriviBtn = new Button("Scrivi una recensione");
+            scriviBtn.getStyleClass().add("btn-accent");
+            scriviBtn.setStyle("-fx-background-color: #854D0E; -fx-text-fill: white;"); // Stile distinto
+            scriviBtn.setOnAction(e -> mostraPopupRecensione(idEscursione, cfUtente));
+            recensioniBox.getChildren().add(scriviBtn);
+        }
+    }
+
     public void setOnPrenota(Consumer<Escursione> handler)  { this.onPrenota  = handler; }
     public void setOnIndietro(Runnable handler)              { this.onIndietro = handler; }
+    public void setOnInviaRecensione(Consumer<Recensione> h) { this.onInviaRecensione = h; }
     public ScrollPane getRoot()                              { return root; }
 
     /** Recupera "Luogo, Zona (Paese)" dalla prima tappa disponibile, o null se non c'è nessuna giornata/tappa. */
@@ -203,6 +235,52 @@ public class DettaglioEscursioneView {
         return row;
     }
 
+    private VBox buildRecensioneRow(Recensione r) {
+        VBox row = new VBox(8);
+        row.setPadding(new Insets(12, 0, 12, 0));
+        row.setStyle("-fx-border-color: transparent transparent #E0DCD3 transparent; -fx-border-width: 0 0 1 0;");
+
+        HBox top = new HBox(10);
+        top.setAlignment(Pos.CENTER_LEFT);
+        Label title = new Label(r.titolo);
+        title.setStyle("-fx-font-weight: bold; -fx-text-fill: #2C2A26;");
+        String testoStelle = "★".repeat(r.voto) + "☆".repeat(5 - r.voto);
+        Label stelle = new Label(testoStelle);
+        stelle.setStyle("-fx-text-fill: #EAB308; -fx-font-size: 14px;"); 
+        top.getChildren().addAll(title, stelle);
+
+        Label desc = new Label(r.descrizione);
+        desc.setWrapText(true);
+        desc.setStyle("-fx-text-fill: #807B73;");
+        row.getChildren().addAll(top, desc);
+        if (r.immagini != null && !r.immagini.isBlank()) {
+            try {
+                File fileFoto = new File(r.immagini);
+                if (fileFoto.exists()) {
+                    Image img = new Image(fileFoto.toURI().toString());
+                    ImageView imgView = new ImageView(img);
+                    imgView.setFitHeight(120);
+                    imgView.setPreserveRatio(true);
+                    VBox boxFoto = new VBox(imgView);
+                    boxFoto.setStyle("-fx-border-color: #E0DCD3; -fx-border-radius: 4; -fx-border-width: 1; -fx-padding: 2;");
+                    boxFoto.setMaxWidth(Region.USE_PREF_SIZE);
+                    row.getChildren().add(boxFoto);
+                }
+            } catch (Exception e) {
+                System.err.println("Immagine non trovata al percorso: " + r.immagini);
+            }
+        }
+
+        String nomeCompleto = r.nomeAutore + " " + r.cognomeAutore;
+        if (nomeCompleto.trim().isEmpty()) {
+            nomeCompleto = r.cf;
+        }
+        Label autore = new Label("Scritta da: " + nomeCompleto);
+        autore.setStyle("-fx-text-fill: #A09C96; -fx-font-size: 11px; -fx-font-style: italic;");
+        row.getChildren().add(autore);
+        return row;
+    }
+
     private void addInfoCell(GridPane grid, String label, String value, int col, int row) {
         VBox cell = new VBox(3);
         Label lbl = new Label(label);
@@ -223,5 +301,64 @@ public class DettaglioEscursioneView {
         Label l = new Label(testo);
         l.getStyleClass().add("text-muted");
         return l;
+    }
+
+    private void mostraPopupRecensione(String idEscursione, String cfUtente) {
+        Dialog<Recensione> dialog = new Dialog<>();
+        dialog.setTitle("Scrivi una recensione");
+        dialog.setHeaderText("Racconta la tua esperienza!");
+
+        ButtonType inviaButtonType = new ButtonType("Invia Recensione", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(inviaButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 10, 10));
+
+        TextField titolo = new TextField();
+        titolo.setPromptText("Titolo");
+        
+        ComboBox<Integer> voto = new ComboBox<>();
+        voto.getItems().addAll(1, 2, 3, 4, 5);
+        voto.setValue(5);
+        
+        TextArea descrizione = new TextArea();
+        descrizione.setPromptText("Come ti sei trovato?");
+        descrizione.setPrefRowCount(3);
+        Button btnAllega = new Button("📸 Allega Foto");
+        Label lblPercorsoFoto = new Label("Nessuna foto selezionata");
+        lblPercorsoFoto.setStyle("-fx-text-fill: #807B73; -fx-font-size: 11px;");
+        final String[] percorsoImmagine = {""}; 
+
+        btnAllega.setOnAction(e -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Scegli una foto");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
+            File fileScelto = fileChooser.showOpenDialog(dialog.getOwner());
+            if (fileScelto != null) {
+                percorsoImmagine[0] = fileScelto.getAbsolutePath();
+                lblPercorsoFoto.setText(fileScelto.getName());
+            }
+        });
+        grid.add(new Label("Titolo:"), 0, 0);
+        grid.add(titolo, 1, 0);
+        grid.add(new Label("Voto:"), 0, 1);
+        grid.add(voto, 1, 1);
+        grid.add(new Label("Foto:"), 0, 2);
+        HBox boxFoto = new HBox(10, btnAllega, lblPercorsoFoto);
+        boxFoto.setAlignment(Pos.CENTER_LEFT);
+        grid.add(boxFoto, 1, 2);
+        grid.add(new Label("Descrizione:"), 0, 3);
+        grid.add(descrizione, 1, 3);
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == inviaButtonType) {
+                return new Recensione(titolo.getText(), cfUtente, voto.getValue(), percorsoImmagine[0], descrizione.getText(), "In attesa", idEscursione);
+            }
+            return null;
+        });
+        dialog.showAndWait().ifPresent(r -> onInviaRecensione.accept(r));
     }
 }

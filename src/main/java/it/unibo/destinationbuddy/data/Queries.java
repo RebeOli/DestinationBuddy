@@ -384,14 +384,14 @@ public final class Queries {
             AND T.nome_luogo = L.nome
         WHERE L.nome_categoria = ?
         """;*/
-        // Per EscursionePreview.DAO
-        public static final String ESCURSIONI_PER_TIPOLOGIA =
-            """
-            SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
-            FROM ESCURSIONI E
-            JOIN assume A ON E.ID_escursione = A.ID_escursione
-            WHERE A.ID_tipologia = ?
-            """;
+    // Per EscursionePreview.DAO
+    public static final String ESCURSIONI_PER_TIPOLOGIA =
+        """
+        SELECT E.ID_escursione, E.titolo, E.difficolta, E.costo
+        FROM ESCURSIONI E
+        JOIN assume A ON E.ID_escursione = A.ID_escursione
+        WHERE A.ID_tipologia = ?
+        """;
 
     public static final String CATEGORIE_ALL =
         """
@@ -436,6 +436,26 @@ public final class Queries {
 
     public static final String LIST_TIPOLOGIE_ESCURSIONE =
         "SELECT ID_tipologia FROM tipologie_escursione";
+
+    public static final String RECENSIONI_ESCURSIONE = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        WHERE R.ID_escursione = ?
+        """;
+
+    // ==================== OPERAZIONE: Moderazione Recensioni ====================
+    public static final String GET_TUTTE_RECENSIONI = 
+        """
+        SELECT R.*, P.nome, P.cognome
+        FROM RECENSIONI R
+        JOIN PERSONE P ON R.CF = P.CF
+        ORDER BY R.voto ASC
+        """;
+
+    public static final String ELIMINA_RECENSIONE = 
+        "DELETE FROM RECENSIONI WHERE CF = ? AND ID_escursione = ?";
 
     public static final String TROVA_CF_CERTIFICAZIONE =
         """

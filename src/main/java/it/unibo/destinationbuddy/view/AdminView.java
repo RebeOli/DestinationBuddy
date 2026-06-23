@@ -2,7 +2,7 @@ package it.unibo.destinationbuddy.view;
 
 import it.unibo.destinationbuddy.data.Certificazione;
 import it.unibo.destinationbuddy.data.Persona;
-import it.unibo.destinationbuddy.data.TipologiaCertificazione;
+import it.unibo.destinationbuddy.data.Recensione;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -10,7 +10,11 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import java.io.File;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -32,21 +36,23 @@ import java.util.function.Consumer;
  */
 public class AdminView {
 
-    // ── VARIABILI LIGHT THEME (Per fallback in Java) ──────────────────────────
-    private static final String APP_BG     = "#F4EFE6"; // Sabbia
-    private static final String ACCENT     = "#B85D38"; // Terracotta
-    private static final String TEXT_DARK  = "#2C2A26"; // Testo scuro
-    private static final String TEXT_MUTED = "#807B73"; // Testo secondario
-    // ──────────────────────────────────────────────────────────────────────────
+    private static final String APP_BG     = "#F4EFE6"; 
+    private static final String ACCENT     = "#B85D38"; 
+    private static final String TEXT_DARK  = "#2C2A26"; 
+    private static final String TEXT_MUTED = "#807B73"; 
 
-    private BiConsumer<String, String> onValidaCert = (id, n) -> {};    
+    private Consumer<Recensione> onEliminaRecensione = r -> {};
+    private BiConsumer<String, String> onValidaCert = (id, n) -> {};
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
 
     private final ScrollPane root;
-    private final VBox certsContainer  = new VBox(10);
-    private final VBox guideContainer  = new VBox(10);
-    private final VBox premiContainer  = new VBox(10);
+    private final VBox certsContainer      = new VBox(10);
+    private final VBox guideContainer      = new VBox(10);
+    private final VBox premiContainer      = new VBox(10);
+    private final VBox recensioniContainer = new VBox(10); 
+    private List<Recensione> listaRecensioniCache = new ArrayList<>();
+    private boolean recensioniEspanse = false;
 
     public AdminView() {
         VBox page = new VBox(20);
@@ -55,12 +61,12 @@ public class AdminView {
 
         Label titolo = new Label("Pannello amministratore");
         titolo.setFont(Font.font("System", FontWeight.BOLD, 24));
-        titolo.setTextFill(Color.web(TEXT_DARK)); // Titolo scuro
+        titolo.setTextFill(Color.web(TEXT_DARK));
 
-        // Tab-like: tre sezioni con titolo espandibile
         page.getChildren().addAll(
                 titolo,
-                buildSection("📋 Certificazioni in attesa di verifica", certsContainer),
+                buildSection("📋 Certificazioni in attesa", certsContainer),
+                buildSection("🚩 Moderazione Recensioni", recensioniContainer),
                 buildSection("👤 Gestione guide", guideContainer),
                 buildSection("🏆 Utenti da premiare (tutti i paesi)", premiContainer)
         );
@@ -68,11 +74,8 @@ public class AdminView {
         root = new ScrollPane(page);
         root.setFitToWidth(true);
         root.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG
-                + "; -fx-border-color: transparent;");
+        root.setStyle("-fx-background: " + APP_BG + "; -fx-background-color: " + APP_BG + "; -fx-border-color: transparent;");
     }
-
-    // ── API pubblica ──────────────────────────────────────────────────────────
 
     public void setCertificazioniInAttesa(List<Certificazione> lista) {
         certsContainer.getChildren().clear();
@@ -80,9 +83,7 @@ public class AdminView {
             certsContainer.getChildren().add(muted("Nessuna certificazione in attesa."));
             return;
         }
-        for (Certificazione c : lista) {
-            certsContainer.getChildren().add(buildCertRow(c));
-        }
+        for (Certificazione c : lista) { certsContainer.getChildren().add(buildCertRow(c)); }
     }
 
     public void setGuide(List<Persona> lista, List<String> cfSospendibili) {
@@ -144,39 +145,123 @@ public class AdminView {
             premiContainer.getChildren().add(muted("Nessun utente ha completato tutti i paesi."));
             return;
         }
-        for (Persona p : lista) {
-            premiContainer.getChildren().add(buildPremioRow(p));
+        for (Persona p : lista) { premiContainer.getChildren().add(buildPremioRow(p)); }
+    }
+
+    public void setRecensioniDaModerare(List<Recensione> lista) {
+        this.listaRecensioniCache = (lista == null) ? new ArrayList<>() : lista;
+        aggiornaVistaRecensioni();
+    }
+
+    private void aggiornaVistaRecensioni() {
+        recensioniContainer.getChildren().clear();
+        
+        if (listaRecensioniCache.isEmpty()) {
+            recensioniContainer.getChildren().add(muted("Nessuna recensione nel sistema."));
+            return;
+        }
+
+        int limite = recensioniEspanse ? listaRecensioniCache.size() : Math.min(5, listaRecensioniCache.size());
+
+        for (int i = 0; i < limite; i++) {
+            recensioniContainer.getChildren().add(buildRecensioneAdminRow(listaRecensioniCache.get(i)));
+        }
+
+        if (listaRecensioniCache.size() > 5) {
+            String testoBottone = recensioniEspanse 
+                ? "▲ Mostra meno" 
+                : "▼ Mostra di più (" + (listaRecensioniCache.size() - 5) + " nascoste)";
+                
+            Button btnEspandi = new Button(testoBottone);
+            btnEspandi.setStyle("-fx-background-color: transparent; -fx-text-fill: #B85D38; -fx-cursor: hand; -fx-font-weight: bold;");
+            
+            btnEspandi.setOnAction(e -> {
+                recensioniEspanse = !recensioniEspanse;
+                aggiornaVistaRecensioni();
+            });
+            
+            HBox boxBottone = new HBox(btnEspandi);
+            boxBottone.setAlignment(Pos.CENTER);
+            recensioniContainer.getChildren().add(boxBottone);
         }
     }
 
     public void setOnValidaCert(BiConsumer<String, String> handler) { this.onValidaCert = handler; }
     public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida = handler; }
     public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
-    public ScrollPane getRoot() { return root; }
+    public void setOnEliminaRecensione(Consumer<Recensione> handler) { this.onEliminaRecensione = handler; }
+    public ScrollPane getRoot(){ return root; }
+    private VBox buildRecensioneAdminRow(Recensione r) {
+        VBox row = new VBox(8);
+        row.setPadding(new Insets(12, 14, 12, 14));
+        row.getStyleClass().add("cert-row"); 
+        HBox top = new HBox(10);
+        top.setAlignment(Pos.CENTER_LEFT);
 
-    // ── Righe ─────────────────────────────────────────────────────────────────
+        VBox info = new VBox(3);
+        HBox.setHgrow(info, Priority.ALWAYS);
+        
+        Label nomeLbl = new Label("Voto: " + r.voto + "★ — " + r.titolo);
+        nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
+        nomeLbl.setTextFill(Color.web(TEXT_DARK));
+        
+        String nomeCompleto = (r.nomeAutore + " " + r.cognomeAutore).trim();
+        if (nomeCompleto.isEmpty()) nomeCompleto = r.cf;
+        
+        Label sub = new Label("Di: " + nomeCompleto + " (" + r.cf + ") · ID: " + r.idEscursione);
+        sub.setFont(Font.font("System", 11));
+        sub.setTextFill(Color.web(TEXT_MUTED));
+        
+        info.getChildren().addAll(nomeLbl, sub);
+
+        Button eliminaBtn = smallBtn("🗑 Elimina", "#721C24", "#F8D7DA");
+        eliminaBtn.setOnAction(e -> onEliminaRecensione.accept(r));
+
+        top.getChildren().addAll(info, eliminaBtn);
+
+        Label desc = new Label(r.descrizione);
+        desc.setWrapText(true);
+        desc.setStyle("-fx-text-fill: #4A4A4A;"); 
+
+        row.getChildren().addAll(top, desc);
+
+        if (r.immagini != null && !r.immagini.isBlank()) {
+            try {
+                File fileFoto = new File(r.immagini);
+                if (fileFoto.exists()) {
+                    Image img = new Image(fileFoto.toURI().toString());
+                    ImageView imgView = new ImageView(img);
+                    imgView.setFitHeight(70);
+                    imgView.setPreserveRatio(true);
+                    
+                    VBox boxFoto = new VBox(imgView);
+                    boxFoto.setStyle("-fx-border-color: #E0DCD3; -fx-border-radius: 4; -fx-border-width: 1; -fx-padding: 2;");
+                    boxFoto.setMaxWidth(Region.USE_PREF_SIZE);
+                    row.getChildren().add(boxFoto);
+                }
+            } catch (Exception e) {
+            }
+        }
+
+        return row;
+    }
 
     private HBox buildCertRow(Certificazione c) {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        row.getStyleClass().add("cert-row"); // Usa il CSS!
-
+        row.getStyleClass().add("cert-row");
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);
-        String tipo = c.tipologia != null
-                ? c.tipologia.idCertificazione + " — " + c.tipologia.livello : "—";
+        String tipo = c.tipologia != null ? c.tipologia.idCertificazione + " — " + c.tipologia.livello : "—";
         Label tipoLbl = new Label(tipo);
         tipoLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
         tipoLbl.setTextFill(Color.web(TEXT_DARK));
-        Label sub = new Label("Codice: " + c.nCertificazione
-                + "  ·  Ente: " + c.enteRilasciante
-                + "  ·  CF: " + c.cf);
+        Label sub = new Label("Codice: " + c.nCertificazione + "  ·  Ente: " + c.enteRilasciante + "  ·  CF: " + c.cf);
         sub.setFont(Font.font("System", 11));
         sub.setTextFill(Color.web(TEXT_MUTED));
         info.getChildren().addAll(tipoLbl, sub);
 
-        // Bottone color verde pastello per validare
         Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
             
@@ -196,7 +281,6 @@ public class AdminView {
         HBox row = new HBox(14);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
-        // Sfondo giallino tenue per i premiati
         row.setStyle("-fx-background-color: #FFF9E6; -fx-background-radius: 8;"
                 + "-fx-border-color: #FDE68A; -fx-border-radius: 8; -fx-border-width: 1;");
 
@@ -217,17 +301,13 @@ public class AdminView {
         return row;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
     private VBox buildSection(String titolo, VBox container) {
         VBox section = new VBox(12);
         section.setPadding(new Insets(16));
-        section.getStyleClass().add("card"); // Usa il CSS per le ombre e lo sfondo bianco!
-        
+        section.getStyleClass().add("card"); 
         Label lbl = new Label(titolo);
         lbl.setFont(Font.font("System", FontWeight.BOLD, 16));
         lbl.setTextFill(Color.web(TEXT_DARK));
-        
         section.getChildren().addAll(lbl, container);
         return section;
     }
