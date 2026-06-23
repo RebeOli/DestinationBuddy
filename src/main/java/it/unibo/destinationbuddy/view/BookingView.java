@@ -39,6 +39,7 @@ public class BookingView {
     private final Map<String, CheckBox> equipCheckboxes = new HashMap<>();
 
     private final Label totalLabel = new Label("€ 0.00");
+    private final Label equipTotalLabel = new Label("€ 0.00");
 
     public BookingView() {
         contentBox = new VBox(20);
@@ -197,7 +198,18 @@ public class BookingView {
         totaleBox.setStyle("-fx-border-color: -db-accent; -fx-border-width: 1;");
 
         HBox costoEscRow = totaleRow("Costo iscrizione", String.format("€ %.2f", exc.costo));
-        HBox equipRow    = totaleRow("Noleggio selezionato", "€ 0.00");
+
+        equipTotalLabel.setText("€ 0.00");
+        equipTotalLabel.getStyleClass().add("sidebar-item-text");
+
+        HBox equipRow = new HBox();
+        equipRow.setAlignment(Pos.CENTER_LEFT);
+        Label lblEquipDesc = new Label("Noleggio selezionato");
+        lblEquipDesc.getStyleClass().add("text-muted");
+        Region spEquip = new Region();
+        HBox.setHgrow(spEquip, Priority.ALWAYS);
+        equipRow.getChildren().addAll(lblEquipDesc, spEquip, equipTotalLabel);
+
         equipRow.setId("equip-totale-row");
 
         totalLabel.getStyleClass().add("text-accent");
@@ -279,17 +291,19 @@ public class BookingView {
 
     private void aggiornaTotale() {
         if (escursioneCorrente == null) return;
-        double tot = escursioneCorrente.costo;
+        double costoEscursione = escursioneCorrente.costo;
         int durata = escursioneCorrente.giornate != null ? escursioneCorrente.giornate.size() : 1;
+        double costoEquipaggiamento = 0.0;
         if (escursioneCorrente.equipaggiamento != null) {
             for (Equipaggiamento eq : escursioneCorrente.equipaggiamento) {
                 CheckBox cb = equipCheckboxes.get(eq.idCategoria);
                 if (cb != null && cb.isSelected()) {
-                    tot += eq.costoTotaleGiornaliero * durata * (1 - scontoNoleggio);
+                    costoEquipaggiamento += eq.costoTotaleGiornaliero * durata * (1 - scontoNoleggio);
                 }
             }
         }
-        totalLabel.setText(String.format("€ %.2f", tot));
+        equipTotalLabel.setText(String.format("€ %.2f", costoEquipaggiamento));
+        totalLabel.setText(String.format("€ %.2f", costoEscursione + costoEquipaggiamento));
     }
 
     // ── Helpers ───────────────────────────────────────────────────
