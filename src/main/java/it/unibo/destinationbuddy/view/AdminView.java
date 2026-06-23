@@ -3,7 +3,6 @@ package it.unibo.destinationbuddy.view;
 import it.unibo.destinationbuddy.data.Certificazione;
 import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.data.Recensione;
-import it.unibo.destinationbuddy.data.TipologiaCertificazione;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -275,33 +274,6 @@ public class AdminView {
         });
 
         row.getChildren().addAll(info, approvaBtn);
-        return row;
-    }
-
-    private HBox buildGuidaRow(Persona p) {
-        HBox row = new HBox(14);
-        row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(12, 14, 12, 14));
-        row.getStyleClass().add("cert-row"); 
-        boolean attiva = p.statoAccount;
-        
-        VBox info = new VBox(3);
-        HBox.setHgrow(info, Priority.ALWAYS);
-        Label nomeLbl = new Label(p.nome + " " + p.cognome);
-        nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        nomeLbl.setTextFill(Color.web(TEXT_DARK));
-        Label sub = new Label("CF: " + p.cf + "  ·  Stato: " + (attiva ? "Attivo" : "Sospeso"));
-        sub.setFont(Font.font("System", 11));
-        sub.setTextFill(Color.web(TEXT_MUTED));
-        info.getChildren().addAll(nomeLbl, sub);
-        
-        Button toggleBtn = smallBtn(attiva ? "Disattiva" : "Attiva", ACCENT, "#F9EAE1");
-        toggleBtn.setOnAction(e -> {
-            if (attiva) onDisattivaGuida.accept(p);
-            else onAttivaGuida.accept(p);
-        });
-
-        row.getChildren().addAll(info, toggleBtn);
         return row;
     }
 
