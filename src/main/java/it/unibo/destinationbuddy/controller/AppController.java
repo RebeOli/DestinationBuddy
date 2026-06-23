@@ -121,6 +121,7 @@ public class AppController {
     }
 
     private void mostraAdmin() {
+        mainView.setModalitaUtente(false);
         mainView.setContenuto(adminView.getRoot());
         mainView.setNavAttiva("");
 
@@ -134,6 +135,7 @@ public class AppController {
         utenteCorrente = null;
         mainView.setAutenticato(false);
         mainView.setUtente(null, false); 
+        mainView.setModalitaUtente(false);
         homeView.setUtente(null); 
         mostraHome();
     }
@@ -381,6 +383,10 @@ public class AppController {
             gestioneGeoView.setPaesi(escursioniModel.getPaesi());
             gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi());
             mainView.setContenuto(gestioneGeoView.getRoot());
+        });
+        adminView.setOnVaiComeUtente(() -> {
+            mainView.setModalitaUtente(true);
+            mostraHome();
         });
     }
 

@@ -46,6 +46,7 @@ public class AdminView {
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
     private Runnable onApriGestioneGeo = () -> {};
+    private Runnable onVaiComeUtente = () -> {};
 
     private final ScrollPane root;
     private final VBox certsContainer      = new VBox(10);
@@ -69,9 +70,15 @@ public class AdminView {
         btnGeografia.setMaxWidth(Double.MAX_VALUE);
         btnGeografia.setOnAction(e -> onApriGestioneGeo.run());
 
+        Button btnUtente = new Button("👤 Vai come utente");
+        btnUtente.getStyleClass().add("btn-ghost");
+        btnUtente.setOnAction(e -> onVaiComeUtente.run());
+
+
         page.getChildren().addAll(
                 titolo,
-                btnGeografia, // <-- AGGIUNGI IL BOTTONE QUI IN ALTO
+                btnGeografia,
+                btnUtente,
                 buildSection("📋 Certificazioni in attesa", certsContainer),
                 buildSection("🚩 Moderazione Recensioni", recensioniContainer),
                 buildSection("👤 Gestione guide", guideContainer),
@@ -198,6 +205,7 @@ public class AdminView {
     public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
     public void setOnEliminaRecensione(Consumer<Recensione> handler) { this.onEliminaRecensione = handler; }
     public void setOnApriGestioneGeo(Runnable handler) { this.onApriGestioneGeo = handler; }
+    public void setOnVaiComeUtente(Runnable handler) { this.onVaiComeUtente = handler; }
 
     public ScrollPane getRoot(){ return root; }
     private VBox buildRecensioneAdminRow(Recensione r) {
