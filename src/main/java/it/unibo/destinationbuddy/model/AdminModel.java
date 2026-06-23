@@ -11,4 +11,5 @@ public interface AdminModel {
     List<Persona> getTutteLeGuide();
     List<Recensione> getTutteLeRecensioni();
     void eliminaRecensione(String cf, String idEscursione);
+    List<String> getGuideSospendibili();
 }

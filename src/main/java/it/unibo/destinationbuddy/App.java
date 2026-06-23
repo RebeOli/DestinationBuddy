@@ -35,6 +35,7 @@ public class App extends Application {
             CertificazioniModel certsModel      = new DBCertificazioniModel(connection);
             AdminModel          adminModel      = new DBAdminModel(connection);
             PrenotazioniModel   prenotModel     = new DBPrenotazioniModel(connection);
+            PostEscursioneModel postEscursioneModel = new DBPostEscursioneModel(connection);
 
             // Model finti del Mocked
             // EscursioniModel     escursioniModel = new MockedEscursioniModel();
@@ -50,7 +51,8 @@ public class App extends Application {
                 utentiModel,
                 certsModel,
                 adminModel,
-                prenotModel
+                prenotModel, 
+                postEscursioneModel
             );
             controller.avvia();
 

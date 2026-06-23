@@ -3,6 +3,7 @@ package it.unibo.destinationbuddy.view;
 import it.unibo.destinationbuddy.data.Certificazione;
 import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.data.Prenotazione;
+import it.unibo.destinationbuddy.data.Resoconto;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -28,7 +29,6 @@ import java.util.List;
  * view.setAbbonamento(abbonamentoOptional);
  * view.setPrenotazioni(lista);
  * view.setOnAggiungiCertificazione(c -> controller.aggiungi(c));
- * view.setOnCreaEscursione(() -> controller.apriCreaEscursione()); // solo se guida
  * root.setCenter(view.getRoot());
  */
 public class ProfiloView {
@@ -40,7 +40,6 @@ public class ProfiloView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private Runnable onCreaEscursione = () -> {};
     private Runnable onAggiungiCert   = () -> {};
     private Runnable onVaiPremium     = () -> {};
 
@@ -54,6 +53,8 @@ public class ProfiloView {
     private final VBox  certsContainer  = new VBox(10);
     private final VBox  abbonamentoBox  = new VBox(10);
     private final VBox  prenotazioniContainer = new VBox(10);
+    private final VBox resocontiContainer = new VBox(10);
+    
     private static final DateTimeFormatter DATA_FMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public ProfiloView() {
@@ -64,7 +65,8 @@ public class ProfiloView {
                 buildProfileHeader(),
                 buildAbbonamentoSection(),
                 buildPrenotazioniSection(),
-                buildCertSection()
+                buildCertSection(),
+                buildResocontiSection()
         );
         root = new ScrollPane(contentBox);
         root.setFitToWidth(true);
@@ -74,17 +76,15 @@ public class ProfiloView {
 
     // ── API pubblica ──────────────────────────────────────────────────────────
 
-    public void setUtente(Persona p) {
+    public void setUtente(Persona p, boolean isGuida) {
         nomeLabel.setText(p.nome + " " + p.cognome);
         subLabel.setText("Membro dal " + (p.dataIscrizione != null ? p.dataIscrizione.toString() : "—")
                 + "  ·  " + p.escursioniEffettuate + " escursioni effettuate");
         inizialeLabel.setText(p.nome.isEmpty() ? "?" : String.valueOf(p.nome.charAt(0)).toUpperCase());
-
-        // Mostra pulsante "Crea escursione" solo se è una guida
-        boolean isGuida = !p.tipoUtente || (p.statoAccount != null && !p.statoAccount.isEmpty());
         contentBox.getChildren().stream()
-                .filter(n -> "btn-crea".equals(n.getId()))
-                .forEach(n -> n.setVisible(isGuida));
+            .filter(n -> "resoconti-section".equals(n.getId()))
+            .forEach(n -> { n.setVisible(isGuida); n.setManaged(isGuida); 
+        });
     }
 
     public void setCertificazioni(List<Certificazione> lista) {
@@ -116,7 +116,6 @@ public class ProfiloView {
         }
     }
 
-    public void setOnCreaEscursione(Runnable handler)   { this.onCreaEscursione = handler; }
     public void setOnAggiungiCert(Runnable handler)     { this.onAggiungiCert   = handler; }
     public void setOnVaiPremium(Runnable handler)       { this.onVaiPremium     = handler; }
     public ScrollPane getRoot()                          { return root; }
@@ -147,15 +146,10 @@ public class ProfiloView {
         subLabel.setTextFill(Color.web(TEXT_MUTED));
         textBox.getChildren().addAll(nomeLabel, subLabel);
 
-        // Pulsante crea escursione (visibile solo per guide)
-        Button creaBtn = new Button("+ Nuova escursione");
-        creaBtn.setId("btn-crea");
-        creaBtn.setFont(Font.font("System", FontWeight.BOLD, 13));
-        creaBtn.getStyleClass().add("btn-accent"); // Usa il CSS
-        creaBtn.setOnAction(e -> onCreaEscursione.run());
-        creaBtn.setVisible(false);
-
-        header.getChildren().addAll(avatar, textBox, creaBtn);
+        // Rimosso il ButtonBox e i pulsanti Crea Escursione / Aggiungi Luogo
+        
+        header.getChildren().addAll(avatar, textBox);
+        
         return header;
     }
 
@@ -361,5 +355,59 @@ public class ProfiloView {
 
         section.getChildren().addAll(titolo, abbonamentoBox);
         return section;
+    }
+    public void setResoconti(List<Resoconto> lista) {
+        resocontiContainer.getChildren().clear();
+        if (lista == null || lista.isEmpty()) {
+            Label empty = new Label("Nessun resoconto inserito.");
+            empty.setFont(Font.font("System", 13));
+            empty.setTextFill(Color.web(TEXT_MUTED));
+            resocontiContainer.getChildren().add(empty);
+            return;
+        }
+        for (Resoconto r : lista) {
+            resocontiContainer.getChildren().add(buildResocontoCard(r));
+        }
+        
+    }
+    private VBox buildResocontiSection() {
+        VBox section = new VBox(14);
+        section.setPadding(new Insets(18));
+        section.getStyleClass().add("card");
+        section.setId("resoconti-section");
+        section.setVisible(false);
+        section.setManaged(false);
+        Label titolo = new Label("I miei resoconti");
+        titolo.setFont(Font.font("System", FontWeight.BOLD, 16));
+        titolo.setTextFill(Color.web(TEXT_DARK));
+        section.getChildren().addAll(titolo, resocontiContainer);
+        return section;
+    }
+
+    private HBox buildResocontoCard(Resoconto r) {
+        HBox card = new HBox(14);
+        card.setPadding(new Insets(12, 14, 12, 14));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.getStyleClass().add("cert-row");
+
+        Label icon = new Label("📋");
+        icon.setFont(Font.font(20));
+
+        VBox info = new VBox(3);
+        HBox.setHgrow(info, Priority.ALWAYS);
+        Label idLbl = new Label("Escursione: " + r.idEscursione);
+        idLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
+        idLbl.setTextFill(Color.web(TEXT_DARK));
+        Label dettagli = new Label(
+            "Dal " + r.dataInizio + " al " + r.dataFine
+            + "  ·  Temp: " + r.temperaturaRilevata + "°C"
+            + "  ·  Precipitazioni: " + (r.precipitazioni > 0 ? "Sì" : "No")
+        );
+        dettagli.setFont(Font.font("System", 11));
+        dettagli.setTextFill(Color.web(TEXT_MUTED));
+        info.getChildren().addAll(idLbl, dettagli);
+
+        card.getChildren().addAll(icon, info);
+        return card;
     }
 }

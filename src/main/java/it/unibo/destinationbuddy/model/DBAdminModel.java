@@ -76,4 +76,9 @@ public class DBAdminModel implements AdminModel{
             throw new DAOException(e);
         }
     }
+
+    @Override
+    public List<String> getGuideSospendibili() {
+        return Persona.DAO.getGuideSospendibili(connection);
+    }
 }

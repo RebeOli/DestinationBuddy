@@ -3,6 +3,7 @@ package it.unibo.destinationbuddy.view;
 import it.unibo.destinationbuddy.data.Certificazione;
 import it.unibo.destinationbuddy.data.Persona;
 import it.unibo.destinationbuddy.data.Recensione;
+import it.unibo.destinationbuddy.data.TipologiaCertificazione;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -16,8 +17,24 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+/**
+ * AdminView — pannello amministratore: certificazioni in attesa, guide, premi.
+ * Aggiornata al Light Theme.
+ *
+ * UTILIZZO DAL CONTROLLER:
+ * AdminView view = new AdminView();
+ * view.setCertificazioniInAttesa(lista);
+ * view.setGuide(lista);
+ * view.setUtentiDaPremiare(lista);
+ * // ⚡ MODIFICATO: Ora accetta e passa due parametri (idCert, nCert)
+ * view.setOnValidaCert((idCert, nCert) -> controller.valida(idCert, nCert));
+ * view.setOnAttivaGuida(p -> controller.attiva(p));
+ * view.setOnDisattivaGuida(p -> controller.disattiva(p));
+ * root.setCenter(view.getRoot());
+ */
 public class AdminView {
 
     private static final String APP_BG     = "#F4EFE6"; 
@@ -25,10 +42,10 @@ public class AdminView {
     private static final String TEXT_DARK  = "#2C2A26"; 
     private static final String TEXT_MUTED = "#807B73"; 
 
-    private Consumer<String>     onValidaCert     = s -> {};
-    private Consumer<Persona>    onAttivaGuida    = p -> {};
-    private Consumer<Persona>    onDisattivaGuida = p -> {};
     private Consumer<Recensione> onEliminaRecensione = r -> {};
+    private BiConsumer<String, String> onValidaCert = (id, n) -> {};
+    private Consumer<Persona> onAttivaGuida   = p -> {};
+    private Consumer<Persona> onDisattivaGuida = p -> {};
 
     private final ScrollPane root;
     private final VBox certsContainer      = new VBox(10);
@@ -70,13 +87,57 @@ public class AdminView {
         for (Certificazione c : lista) { certsContainer.getChildren().add(buildCertRow(c)); }
     }
 
-    public void setGuide(List<Persona> lista) {
+    public void setGuide(List<Persona> lista, List<String> cfSospendibili) {
         guideContainer.getChildren().clear();
         if (lista == null || lista.isEmpty()) {
             guideContainer.getChildren().add(muted("Nessuna guida registrata."));
             return;
         }
-        for (Persona p : lista) { guideContainer.getChildren().add(buildGuidaRow(p)); }
+        for (Persona p : lista) {
+            // Controlliamo se la guida è nella "lista nera"
+            boolean puoSospendere = cfSospendibili != null && cfSospendibili.contains(p.cf);
+            
+            guideContainer.getChildren().add(buildGuidaRow(p, puoSospendere));
+        }
+    }
+
+    private HBox buildGuidaRow(Persona p, boolean puoSospendere) {
+        HBox row = new HBox(14);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.setPadding(new Insets(12, 14, 12, 14));
+        row.getStyleClass().add("cert-row"); 
+        
+        boolean attiva = p.statoAccount;
+        String statoVisivo = attiva ? "Attivo" : "Sospeso";
+
+        VBox info = new VBox(3);
+        HBox.setHgrow(info, Priority.ALWAYS);
+        Label nomeLbl = new Label(p.nome + " " + p.cognome);
+        nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
+        nomeLbl.setTextFill(Color.web(TEXT_DARK));
+        Label sub = new Label("CF: " + p.cf + "  ·  Stato: " + statoVisivo);
+        sub.setFont(Font.font("System", 11));
+        sub.setTextFill(Color.web(TEXT_MUTED));
+        info.getChildren().addAll(nomeLbl, sub);
+
+        Button toggleBtn = smallBtn(
+                attiva ? "Disattiva" : "Attiva",
+                ACCENT,
+                "#F9EAE1");
+        
+        if (attiva && !puoSospendere) {
+            toggleBtn.setDisable(true); // Spegne il bottone
+            toggleBtn.setStyle("-fx-background-color: #E0E0E0; -fx-text-fill: #A0A0A0; -fx-background-radius: 6; -fx-padding: 5 12;");
+            toggleBtn.setTooltip(new Tooltip("Servono >5 recensioni negative per sospendere questa guida."));
+        }
+
+        toggleBtn.setOnAction(e -> {
+            if (attiva) onDisattivaGuida.accept(p);
+            else onAttivaGuida.accept(p);
+        });
+
+        row.getChildren().addAll(info, toggleBtn);
+        return row;
     }
 
     public void setUtentiDaPremiare(List<Persona> lista) {
@@ -126,12 +187,11 @@ public class AdminView {
         }
     }
 
-    public void setOnValidaCert(Consumer<String> handler)     { this.onValidaCert     = handler; }
-    public void setOnAttivaGuida(Consumer<Persona> handler)   { this.onAttivaGuida    = handler; }
+    public void setOnValidaCert(BiConsumer<String, String> handler) { this.onValidaCert = handler; }
+    public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida = handler; }
     public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
     public void setOnEliminaRecensione(Consumer<Recensione> handler) { this.onEliminaRecensione = handler; }
-    public ScrollPane getRoot()                                { return root; }
-
+    public ScrollPane getRoot(){ return root; }
     private VBox buildRecensioneAdminRow(Recensione r) {
         VBox row = new VBox(8);
         row.setPadding(new Insets(12, 14, 12, 14));
@@ -205,7 +265,11 @@ public class AdminView {
 
         Button approvaBtn = smallBtn("✓ Valida", "#155724", "#D4EDDA");
         approvaBtn.setOnAction(e -> {
-            onValidaCert.accept(c.nCertificazione);
+            
+            // ⚡ MODIFICA QUI: Estraiamo l'ID e passiamo ENTRAMBI i valori alla lambda function!
+            String idCert = (c.tipologia != null) ? c.tipologia.idCertificazione : "";
+            onValidaCert.accept(idCert, c.nCertificazione);
+            
             approvaBtn.setText("✓ Validata");
             approvaBtn.setDisable(true);
         });
@@ -219,8 +283,7 @@ public class AdminView {
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 14, 12, 14));
         row.getStyleClass().add("cert-row"); 
-        String statoDb = (p.statoAccount == null) ? "" : p.statoAccount.trim().toLowerCase();
-        boolean attiva = statoDb.equals("attivo") || statoDb.equals("1") || statoDb.equals("true");
+        boolean attiva = p.statoAccount;
         
         VBox info = new VBox(3);
         HBox.setHgrow(info, Priority.ALWAYS);

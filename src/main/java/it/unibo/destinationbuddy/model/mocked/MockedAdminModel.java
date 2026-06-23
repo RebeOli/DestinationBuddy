@@ -25,7 +25,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "mario.rossi@email.com",
                 "password123",
-                null
+                false
             ),
             new Persona(
                 "BNCGCM90B02A001Z",
@@ -39,7 +39,7 @@ public class MockedAdminModel implements AdminModel {
                 null,
                 "giacomo.bianchi@email.com",
                 "pass456",
-                null
+                false
             )
         );
     }
@@ -66,5 +66,11 @@ public class MockedAdminModel implements AdminModel {
 
     @Override
     public void eliminaRecensione(String cf, String idEscursione) {
+    }
+
+    @Override
+    public List<String> getGuideSospendibili() {
+        System.out.println("[MOCK] Amministratore: Recupero lista guide con troppe recensioni negative...");
+            return List.of("GDA88Y88Y888Y");
     }
 }

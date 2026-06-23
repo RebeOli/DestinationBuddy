@@ -17,11 +17,12 @@ import java.util.function.Consumer;
  * Light Theme tramite classi CSS.
  *
  * UTILIZZO DAL CONTROLLER:
- *   CreaEscursioneView view = new CreaEscursioneView();
- *   view.setTipologieDisponibili(lista);
- *   view.setOnCrea(escursione -> controller.creaEscursione(escursione));
- *   view.setOnAnnulla(() -> controller.tornaProfilo());
- *   mainView.setContenuto(view.getRoot());
+ * CreaEscursioneView view = new CreaEscursioneView();
+ * view.setTipologieDisponibili(lista);
+ * view.setCertificazioniDisponibili(listaCert);
+ * view.setOnCrea(escursione -> controller.creaEscursione(escursione));
+ * view.setOnAnnulla(() -> controller.tornaProfilo());
+ * mainView.setContenuto(view.getRoot());
  */
 public class CreaEscursioneView {
 
@@ -29,18 +30,27 @@ public class CreaEscursioneView {
     private Runnable                     onAnnulla = () -> {};
 
     // Campi form
-    private final TextField     titolo         = new TextField();
-    private final TextArea      descrizione    = new TextArea();
-    private final TextField     difficolta     = new TextField();
-    private final TextField     costo          = new TextField();
-    private final TextField     maxPartecipanti = new TextField();
-    private final DatePicker    dataApertura   = new DatePicker();
-    private final DatePicker    dataChiusura   = new DatePicker();
-    private final VBox          giornateBox    = new VBox(10);
-    private final Label         errorLabel     = new Label();
+    private final TextField    titolo         = new TextField();
+    private final TextArea     descrizione    = new TextArea();
+    private final TextField    difficolta     = new TextField();
+    private final TextField    costo          = new TextField();
+    private final TextField    maxPartecipanti = new TextField();
+    private final DatePicker   dataApertura   = new DatePicker();
+    private final DatePicker   dataChiusura   = new DatePicker();
+    private final VBox         giornateBox    = new VBox(10);
+    private final Label        errorLabel     = new Label();
 
     private List<TipologiaEscursione> tipologieDisponibili = new ArrayList<>();
     private final VBox          tipologieBox   = new VBox(8);
+
+    // --- NUOVI CAMPI PER CERTIFICAZIONI ---
+    private List<TipologiaCertificazione> certificazioniDisponibili = new ArrayList<>();
+    private final VBox          certificazioniBox = new VBox(8);
+    private final CheckBox      creaNuovaCertCb   = new CheckBox("Crea nuova certificazione");
+    private final TextField     nuovaCertIdField  = new TextField();
+    private final TextField     nuovaCertLivField = new TextField();
+    private final VBox          nuovaCertBox      = new VBox(8);
+    // --------------------------------------
 
     private final List<GiornataForm> giornataForms = new ArrayList<>();
     private String guidaCF = "";
@@ -101,6 +111,33 @@ public class CreaEscursioneView {
         VBox tipologieSection = sectionBox("🏷 Tipologie escursione");
         tipologieSection.getChildren().add(tipologieBox);
 
+        // --- NUOVA SEZIONE: Certificazioni ---
+        VBox certificazioniSection = sectionBox("📜 Requisiti (Certificazioni)");
+        
+        Label lblCertIstruzioni = new Label("Seleziona le certificazioni richieste per l'escursione:");
+        lblCertIstruzioni.getStyleClass().add("text-muted");
+        
+        // Form per crearne una nuova (inizialmente nascosto)
+        styleField(nuovaCertIdField, "Codice (Es. CAI-BASE)");
+        styleField(nuovaCertLivField, "Livello (Es. Base)");
+        nuovaCertBox.getChildren().addAll(
+            new Label("Nuova certificazione:"), 
+            nuovaCertIdField, 
+            nuovaCertLivField
+        );
+        nuovaCertBox.setVisible(false);
+        nuovaCertBox.setManaged(false);
+
+        // Quando il checkbox viene cliccato, mostra o nasconde il form
+        creaNuovaCertCb.setOnAction(e -> {
+            boolean crea = creaNuovaCertCb.isSelected();
+            nuovaCertBox.setVisible(crea);
+            nuovaCertBox.setManaged(crea);
+        });
+
+        certificazioniSection.getChildren().addAll(lblCertIstruzioni, certificazioniBox, creaNuovaCertCb, nuovaCertBox);
+        // --------------------------------------
+
         // Giornate
         VBox giornateSection = sectionBox("📅 Programma giornaliero");
         Button addGiornataBtn = new Button("+ Aggiungi giornata");
@@ -126,8 +163,9 @@ public class CreaEscursioneView {
         annullaBtn.setOnAction(e -> onAnnulla.run());
         actions.getChildren().addAll(creaBtn, annullaBtn);
 
+        // Aggiunta al layout della pagina (inclusa la nuova sezione certificazioni)
         page.getChildren().addAll(breadcrumb, titoloPag, infoBase,
-                tipologieSection, giornateSection, errorLabel, actions);
+                tipologieSection, certificazioniSection, giornateSection, errorLabel, actions);
 
         root = new ScrollPane(page);
         root.setFitToWidth(true);
@@ -152,6 +190,24 @@ public class CreaEscursioneView {
         tipologieBox.getChildren().add(flow);
     }
 
+   public void setCertificazioniDisponibili(List<TipologiaCertificazione> lista) {
+        this.certificazioniDisponibili = lista;
+        certificazioniBox.getChildren().clear();
+
+        FlowPane flow = new FlowPane(10, 8);
+
+        for (TipologiaCertificazione cert : lista) {
+            String testoDaMostrare = cert.idCertificazione + " (Livello: " + cert.livello + ")";
+            CheckBox cb = new CheckBox(testoDaMostrare);
+            
+            cb.setId(cert.idCertificazione);
+            cb.getStyleClass().add("sidebar-item-text");
+            flow.getChildren().add(cb);
+        }
+
+        certificazioniBox.getChildren().add(flow);
+    }
+
     public void setGuidaCF(String cf)                            { this.guidaCF = cf; }
     public void setOnCrea(Consumer<EscursioneFormData> handler)  { this.onCrea = handler; }
     public void setOnAnnulla(Runnable handler)                   { this.onAnnulla = handler; }
@@ -169,6 +225,38 @@ public class CreaEscursioneView {
         giornataForms.clear(); giornateBox.getChildren().clear();
         errorLabel.setVisible(false);
         aggiungiGiornata();
+
+        // Pulizia campi nuova certificazione
+        nuovaCertIdField.clear(); nuovaCertLivField.clear();
+        creaNuovaCertCb.setSelected(false);
+        nuovaCertBox.setVisible(false); nuovaCertBox.setManaged(false);
+    }
+
+    public void mostraConferma(String titoloEscursione) {
+        ScrollPane sp = (ScrollPane) root;
+        VBox page = (VBox) sp.getContent();
+        page.getChildren().clear();
+
+        VBox success = new VBox(16);
+        success.setAlignment(Pos.CENTER);
+        success.setPadding(new Insets(60, 0, 0, 0));
+
+        Label icon = new Label("✅");
+        icon.setStyle("-fx-font-size: 48px;");
+
+        Label titolo = new Label("Escursione pubblicata!");
+        titolo.getStyleClass().add("auth-title");
+        titolo.setStyle("-fx-font-size: 22px;");
+
+        Label sub = new Label("\"" + titoloEscursione + "\" è ora visibile nel catalogo.");
+        sub.getStyleClass().add("text-muted");
+
+        Button tornaBtn = new Button("Torna al profilo");
+        tornaBtn.getStyleClass().add("btn-accent");
+        tornaBtn.setOnAction(e -> onAnnulla.run());
+
+        success.getChildren().addAll(icon, titolo, sub, tornaBtn);
+        page.getChildren().add(success);
     }
 
     // ── Giornate ──────────────────────────────────────────────────
@@ -213,6 +301,25 @@ public class CreaEscursioneView {
             }
         }
 
+        // --- RACCOGLIE CERTIFICAZIONI SELEZIONATE E/O CREATE ---
+        List<String> certSelezionate = new ArrayList<>();
+        if (!certificazioniBox.getChildren().isEmpty() && certificazioniBox.getChildren().get(0) instanceof FlowPane fpCert) {
+            for (var node : fpCert.getChildren()) {
+                if (node instanceof CheckBox cb && cb.isSelected()) {
+                    certSelezionate.add(cb.getId()); // Usiamo l'ID che abbiamo nascosto prima
+                }
+            }
+        }
+
+        TipologiaCertificazione nuovaCertificazione = null;
+        if (creaNuovaCertCb.isSelected()) {
+            if (nuovaCertIdField.getText().isBlank() || nuovaCertLivField.getText().isBlank()) {
+                mostraErrore("Compila tutti i campi della nuova certificazione."); return;
+            }
+            nuovaCertificazione = new TipologiaCertificazione(nuovaCertIdField.getText().trim(), nuovaCertLivField.getText().trim());
+        }
+        // -------------------------------------------------------
+
         // Raccoglie giornate
         List<Giornata> giornate = new ArrayList<>();
         String idEsc = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -230,7 +337,8 @@ public class CreaEscursioneView {
             new ArrayList<>(), "", "", giornate, new ArrayList<>(), tipologieSel
         );
 
-        onCrea.accept(new EscursioneFormData(nuova, descrizione.getText(), maxP, guidaCF, tipologieSel));
+        // PASSIAMO ANCHE I DATI SULLE CERTIFICAZIONI AL DTO
+        onCrea.accept(new EscursioneFormData(nuova, descrizione.getText(), maxP, guidaCF, tipologieSel, certSelezionate, nuovaCertificazione));
     }
 
     // ── Helper classi interne ─────────────────────────────────────
@@ -242,13 +350,19 @@ public class CreaEscursioneView {
         public final int        numeroPartecipanti;
         public final String     guidaCF;
         public final List<String> tipologie;
+        // NUOVI CAMPI AGGIUNTI
+        public final List<String> certificazioniSelezionate;
+        public final TipologiaCertificazione nuovaCertificazione;
 
-        public EscursioneFormData(Escursione e, String desc, int np, String cf, List<String> tip) {
+        public EscursioneFormData(Escursione e, String desc, int np, String cf, List<String> tip, 
+                                  List<String> certSel, TipologiaCertificazione nuovaCert) {
             this.escursione         = e;
             this.descrizione        = desc;
             this.numeroPartecipanti = np;
             this.guidaCF            = cf;
             this.tipologie          = tip;
+            this.certificazioniSelezionate = certSel;
+            this.nuovaCertificazione = nuovaCert;
         }
     }
 

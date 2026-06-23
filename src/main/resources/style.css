@@ -405,3 +405,31 @@
     -fx-border-radius: 20;
     -fx-background-radius: 20;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   CARD IMMAGINE PLACEHOLDER (Tema Sabbia & Terracotta)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Lo sfondo del riquadro superiore */
+.card-image-box {
+    /* Un gradiente elegantissimo che va dal tuo colore Sabbia a un beige leggermente più caldo */
+    -fx-background-color: linear-gradient(to bottom right, #F4EFE6, #E8DFCE);
+    
+    /* Arrotonda solo gli angoli in alto (12px) per seguire la forma della card */
+    -fx-background-radius: 12 12 0 0;
+    
+    /* Crea una riga sottilissima sotto al riquadro per staccarlo dal bianco della card */
+    -fx-border-color: transparent transparent #DCD5C6 transparent;
+    -fx-border-width: 0 0 1 0;
+    
+    /* Assicura che l'icona al centro sia perfettamente allineata */
+    -fx-alignment: center;
+}
+
+/* L'icona della montagna al centro */
+.card-image-icon {
+    /* Usiamo il tuo color Terracotta per l'icona */
+    -fx-fill: #B85D38; 
+    /* Ma la rendiamo semi-trasparente così fa solo da "trama" e non disturba */
+    -fx-opacity: 0.15; 
+}

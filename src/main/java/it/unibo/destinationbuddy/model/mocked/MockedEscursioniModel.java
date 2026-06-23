@@ -2,7 +2,9 @@ package it.unibo.destinationbuddy.model.mocked;
 
 import it.unibo.destinationbuddy.data.Escursione;
 import it.unibo.destinationbuddy.data.EscursionePreview;
+import it.unibo.destinationbuddy.data.LuogoEsplorabile;
 import it.unibo.destinationbuddy.data.TipologiaEscursione;
+import it.unibo.destinationbuddy.data.TipologiaCertificazione; 
 import it.unibo.destinationbuddy.model.EscursioniModel;
 
 import java.time.LocalDate;
@@ -60,8 +62,14 @@ public class MockedEscursioniModel implements EscursioniModel {
     }
 
     @Override
-    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, List<String> tipologie) {
+    public void creaEscursione(Escursione e, String descrizione, int numeroPartecipanti, String guidaCF, 
+                               List<String> tipologie, List<String> certificazioniSelezionate, 
+                               TipologiaCertificazione nuovaCertificazione) {
         System.out.println("[MOCK] Creata nuova escursione: " + e.titolo + " (Guida CF: " + guidaCF + ")");
+        System.out.println("[MOCK] Certificazioni richieste selezionate: " + certificazioniSelezionate.size());
+        if (nuovaCertificazione != null) {
+            System.out.println("[MOCK] È stata inventata e creata anche la nuova certificazione: " + nuovaCertificazione.idCertificazione);
+        }
     }
 
     @Override
@@ -78,5 +86,37 @@ public class MockedEscursioniModel implements EscursioniModel {
         lista.add(new TipologiaEscursione("Ferrata", new ArrayList<>()));
         
         return lista;
+    }
+
+    @Override
+    public void aggiungiLuogoEsplorabile(LuogoEsplorabile l) {
+        System.out.println("[MOCK DB] Salvato con successo il nuovo luogo: " + l.nome + " (" + l.nomeZona + ", " + l.nomePaese + ") - Cat: " + l.nomeCategoria);
+    }
+
+    @Override
+    public List<String> getPaesi() {
+        return List.of("Italia", "Francia", "Svizzera", "Austria");
+    }
+
+    @Override
+    public List<String> getZonePerPaese(String paese) {
+        if ("Italia".equalsIgnoreCase(paese)) {
+            return List.of("Valle d'Aosta", "Piemonte", "Trentino-Alto Adige", "Toscana", "Abruzzo");
+        } else if ("Francia".equalsIgnoreCase(paese)) {
+            return List.of("Alta Savoia", "Alpi Marittime", "Provenza");
+        } else if ("Svizzera".equalsIgnoreCase(paese)) {
+            return List.of("Vallese", "Canton Ticino", "Grigioni");
+        }
+        return List.of("Zona Alpina Generica", "Zona di Confine");
+    }
+
+    @Override
+    public List<String> getCategorieLuoghi() {
+        return List.of("Rifugio", "Bivacco", "Sentiero", "Via Ferrata", "Ghiacciaio", "Sito d'Arrampicata", "Grotta");
+    }
+
+    @Override
+    public List<EscursionePreview> getEscursioniGuida(String guidaCF) { 
+        return List.of();
     }
 }
