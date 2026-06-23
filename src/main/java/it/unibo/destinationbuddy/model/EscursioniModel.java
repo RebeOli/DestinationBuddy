@@ -42,4 +42,6 @@ public interface EscursioniModel {
 
     void aggiungiZona(String nomePaese, String nomeZona, String descrizione);
 
+	void aggiungiCategoria(String nomeCategoria);
+
 }

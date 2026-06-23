@@ -142,4 +142,9 @@ public class MockedEscursioniModel implements EscursioniModel {
     public void aggiungiZona(String nomePaese, String nomeZona, String descrizione) {
         System.out.println("[MOCK DB] Zona aggiunta: " + nomeZona + " in " + nomePaese);
     }
+
+    @Override
+    public void aggiungiCategoria(String nomeCategoria) {
+        System.out.println("[MOCK DB] Categoria aggiunta: " + nomeCategoria);
+    }
 }

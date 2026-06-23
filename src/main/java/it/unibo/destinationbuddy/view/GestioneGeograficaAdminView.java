@@ -13,7 +13,9 @@ public class GestioneGeograficaAdminView {
     private Consumer<LuogoEsplorabile> onSalvaLuogo = l -> {};
     private Consumer<String> onSalvaPaese = p -> {};
     private Consumer<String[]> onSalvaZona = z -> {};
-    
+    private Consumer<String> onSalvaCategoria = c -> {};
+    private final TextField nuovaCategoriaField = new TextField();
+
     private Consumer<String> onPaeseSelezionato = paese -> {};
     private Runnable onAnnulla = () -> {};
 
@@ -58,19 +60,21 @@ public class GestioneGeograficaAdminView {
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         tabPane.getStyleClass().add("card");
 
-        // --- TAB 1: PAESE ---
+        // --- CREAZIONE DELLE 4 SCHEDE (UNA SOLA VOLTA!) ---
         Tab tabPaese = new Tab("1. Aggiungi Paese");
         tabPaese.setContent(buildTabPaese());
 
-        // --- TAB 2: ZONA ---
         Tab tabZona = new Tab("2. Aggiungi Zona");
         tabZona.setContent(buildTabZona());
 
-        // --- TAB 3: LUOGO ---
-        Tab tabLuogo = new Tab("3. Aggiungi Luogo");
+        Tab tabCategoria = new Tab("3. Aggiungi Categoria");
+        tabCategoria.setContent(buildTabCategoria());
+
+        Tab tabLuogo = new Tab("4. Aggiungi Luogo");
         tabLuogo.setContent(buildTabLuogo());
 
-        tabPane.getTabs().addAll(tabPaese, tabZona, tabLuogo);
+        // --- AGGIUNTA AL TABPANE (TUTTE INSIEME, UNA SOLA VOLTA!) ---
+        tabPane.getTabs().addAll(tabPaese, tabZona, tabCategoria, tabLuogo);
 
         page.getChildren().addAll(breadcrumb, titoloPag, tabPane, errorLabel);
 
@@ -132,6 +136,26 @@ public class GestioneGeograficaAdminView {
         return box;
     }
 
+    private VBox buildTabCategoria() {
+        VBox box = new VBox(12);
+        box.setPadding(new Insets(20));
+
+        nuovaCategoriaField.setPromptText("Es. Cascate, Vulcano...");
+        nuovaCategoriaField.getStyleClass().add("form-field");
+
+        Button salvaBtn = new Button("Salva Categoria");
+        salvaBtn.getStyleClass().add("btn-accent");
+        salvaBtn.setOnAction(e -> {
+            if(nuovaCategoriaField.getText().isBlank()) {
+                mostraErrore("Inserisci il nome della categoria."); return;
+            }
+            onSalvaCategoria.accept(nuovaCategoriaField.getText().trim());
+        });
+
+        box.getChildren().addAll(new Label("Nome della nuova Categoria:"), nuovaCategoriaField, salvaBtn);
+        return box;
+    }
+
     private VBox buildTabLuogo() {
         VBox box = new VBox(12);
         box.setPadding(new Insets(20));
@@ -187,6 +211,7 @@ public class GestioneGeograficaAdminView {
     public void setOnSalvaLuogo(Consumer<LuogoEsplorabile> handler) { this.onSalvaLuogo = handler; }
     public void setOnSalvaPaese(Consumer<String> handler) { this.onSalvaPaese = handler; }
     public void setOnSalvaZona(Consumer<String[]> handler) { this.onSalvaZona = handler; }
+    public void setOnSalvaCategoria(Consumer<String> handler) { this.onSalvaCategoria = handler; }
     public void setOnPaeseSelezionato(Consumer<String> handler) { this.onPaeseSelezionato = handler; }
     public void setOnAnnulla(Runnable handler) { this.onAnnulla = handler; }
     public ScrollPane getRoot() { return root; }
@@ -204,8 +229,9 @@ public class GestioneGeograficaAdminView {
         
         nuovoPaeseField.clear();
         paeseComboZona.setValue(null); nuovaZonaField.clear(); descZonaField.clear();
-        
+
         errorLabel.setVisible(false);
+        nuovaCategoriaField.clear();
     }
 
     private void tentaSalvaLuogo() {

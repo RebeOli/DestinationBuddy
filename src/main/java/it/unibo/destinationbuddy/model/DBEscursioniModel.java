@@ -146,4 +146,13 @@ public class DBEscursioniModel implements EscursioniModel {
             throw new it.unibo.destinationbuddy.data.DAOException(e);
         }
     }
+
+    @Override
+    public void aggiungiCategoria(String nomeCategoria) {
+        try (var statement = DAOUtils.prepare(connection, Queries.INSERISCI_CATEGORIA, nomeCategoria)) {
+            statement.executeUpdate();
+        } catch (Exception e) {
+            throw new it.unibo.destinationbuddy.data.DAOException(e);
+        }
+    }
 }

@@ -507,6 +507,16 @@ private void collegaGestioneGeoView() {
                 gestioneGeoView.pulisciForm();
             } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Zona."); }
         });
+
+        // 4. Salvataggio Categoria
+        gestioneGeoView.setOnSalvaCategoria(categoria -> {
+            try {
+                escursioniModel.aggiungiCategoria(categoria);
+                mostraAvviso("Successo", "Categoria '" + categoria + "' salvata nel database!");
+                gestioneGeoView.pulisciForm();
+                gestioneGeoView.setCategorie(escursioniModel.getCategorieLuoghi()); // Aggiorna a tendina
+            } catch (Exception e) { mostraAvviso("Errore", "Impossibile salvare la Categoria (forse esiste già?)."); }
+        });
     }
 
     private void collegaResocontoView() {

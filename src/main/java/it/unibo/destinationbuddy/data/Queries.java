@@ -539,6 +539,9 @@ public final class Queries {
 
     public static final String INSERISCI_ZONA =
         "INSERT INTO ZONE (nome_paese, nome, descrizione) VALUES (?, ?, ?)";
+
+    public static final String INSERISCI_CATEGORIA =
+        "INSERT INTO CATEGORIE (nome_categoria) VALUES (?)";
 }
 
 
