@@ -14,20 +14,13 @@ import java.io.File;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * DettaglioEscursioneView — mostra tutti i dati di un'Escursione completa.
  * Light Theme tramite classi CSS.
- *
- * UTILIZZO DAL CONTROLLER:
- *   DettaglioEscursioneView view = new DettaglioEscursioneView();
- *   view.setEscursione(escursione);
- *   view.setPostiRimanenti(n);
- *   view.setOnPrenota(exc -> controller.avviaPrenotazione(exc));
- *   view.setOnIndietro(() -> controller.tornaExplore());
- *   root.setCenter(view.getRoot());
  */
 public class DettaglioEscursioneView {
 
@@ -79,11 +72,12 @@ public class DettaglioEscursioneView {
         titoloLbl.setStyle("-fx-font-size: 26px;");
         titoloLbl.setWrapText(true);
 
-        // Luogo dell'escursione (paese, zona, luogo), preso dalla prima tappa disponibile
+        // Luogo dell'escursione: Unisce tutti i luoghi unici separati da " • "
         String posizione = trovaPosizione(exc);
         if (posizione != null) {
             Label posizioneLbl = new Label("📍 " + posizione);
             posizioneLbl.getStyleClass().add("text-muted");
+            posizioneLbl.setWrapText(true);
             header.getChildren().add(posizioneLbl);
         }
 
@@ -163,7 +157,6 @@ public class DettaglioEscursioneView {
             certBox, giornateBox, equipBox, recensioniBox, actions);
     }
 
-    /** Aggiorna il numero di posti rimanenti (chiamato dopo conferma prenotazione). */
     public void setPostiRimanenti(int posti) {
         // Per semplicità basta richiamare setEscursione con l'escursione aggiornata
     }
@@ -185,7 +178,7 @@ public class DettaglioEscursioneView {
         if (puoRecensire) {
             Button scriviBtn = new Button("Scrivi una recensione");
             scriviBtn.getStyleClass().add("btn-accent");
-            scriviBtn.setStyle("-fx-background-color: #854D0E; -fx-text-fill: white;"); // Stile distinto
+            scriviBtn.setStyle("-fx-background-color: #854D0E; -fx-text-fill: white;"); 
             scriviBtn.setOnAction(e -> mostraPopupRecensione(idEscursione, cfUtente));
             recensioniBox.getChildren().add(scriviBtn);
         }
@@ -196,16 +189,28 @@ public class DettaglioEscursioneView {
     public void setOnInviaRecensione(Consumer<Recensione> h) { this.onInviaRecensione = h; }
     public ScrollPane getRoot()                              { return root; }
 
-    /** Recupera "Luogo, Zona (Paese)" dalla prima tappa disponibile, o null se non c'è nessuna giornata/tappa. */
+    /** Raccoglie tutti i luoghi unici dell'escursione e li unisce con un puntino. */
     private String trovaPosizione(Escursione exc) {
         if (exc.giornate == null) return null;
+        
+        List<String> itinerario = new ArrayList<>();
+        
         for (var g : exc.giornate) {
-            if (g.tappe != null && !g.tappe.isEmpty()) {
-                var t = g.tappe.get(0);
-                return t.nomeLuogo + ", " + t.nomeZona + " (" + t.nomePaese + ")";
+            if (g.tappe != null) {
+                for (var t : g.tappe) {
+                    String stringaLuogo = t.nomeLuogo + ", " + t.nomeZona + " (" + t.nomePaese + ")";
+                    if (!itinerario.contains(stringaLuogo)) {
+                        itinerario.add(stringaLuogo);
+                    }
+                }
             }
         }
-        return null;
+        
+        if (itinerario.isEmpty()) {
+            return null;
+        }
+        
+        return String.join(" • ", itinerario);
     }
 
     // ── Helpers ───────────────────────────────────────────────────
@@ -220,18 +225,39 @@ public class DettaglioEscursioneView {
         return box;
     }
 
-    private HBox buildGiornataRow(Giornata g) {
-        HBox row = new HBox(12);
-        row.setPadding(new Insets(6, 0, 6, 0));
-        row.setStyle("-fx-border-color: transparent transparent -db-border transparent;"
-                + "-fx-border-width: 0 0 1 0;");
+    /** Costruisce la riga del programma: Giorno + Descrizione + Lista Tappe */
+    private VBox buildGiornataRow(Giornata g) {
+        VBox row = new VBox(6);
+        row.setPadding(new Insets(6, 0, 12, 0));
+        row.setStyle("-fx-border-color: transparent transparent #E0DCD3 transparent; -fx-border-width: 0 0 1 0;");
+        
+        // Riga superiore: numero giorno e descrizione
+        HBox header = new HBox(12);
         Label num = new Label("Giorno " + g.data);
         num.getStyleClass().add("text-accent");
         num.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-min-width: 80px;");
+        
         Label desc = new Label(g.programma != null ? g.programma : "");
         desc.getStyleClass().add("sidebar-item-text");
         desc.setWrapText(true);
-        row.getChildren().addAll(num, desc);
+        header.getChildren().addAll(num, desc);
+        
+        row.getChildren().add(header);
+
+        // Elenco delle tappe (indentato per grafica)
+        if (g.tappe != null && !g.tappe.isEmpty()) {
+            VBox tappeBox = new VBox(4);
+            tappeBox.setPadding(new Insets(4, 0, 0, 92)); // Indentazione per allinearlo alla descrizione
+
+            for (int i = 0; i < g.tappe.size(); i++) {
+                var t = g.tappe.get(i);
+                Label tappaLbl = new Label("Tappa " + (i + 1) + ": " + t.nomeLuogo + " (" + t.durata + "h)");
+                tappaLbl.setStyle("-fx-text-fill: #807B73; -fx-font-size: 12px;");
+                tappeBox.getChildren().add(tappaLbl);
+            }
+            row.getChildren().add(tappeBox);
+        }
+
         return row;
     }
 
