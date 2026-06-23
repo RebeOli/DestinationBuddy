@@ -102,5 +102,24 @@ public final class EscursionePreview {
             }
             return previews;
         }
+        public static List<EscursionePreview> listByGuida(Connection connection, String guidaCF) {
+            var lista = new ArrayList<EscursionePreview>();
+            try (
+                var statement = DAOUtils.prepare(connection, Queries.ESCURSIONI_PER_GUIDA, guidaCF);
+                var resultSet = statement.executeQuery()
+            ) {
+                while (resultSet.next()) {
+                    lista.add(new EscursionePreview(
+                        resultSet.getString("ID_escursione"),
+                        resultSet.getString("titolo"),
+                        resultSet.getString("difficolta"),
+                        resultSet.getDouble("costo")
+                    ));
+                }
+            } catch (Exception e) {
+                throw new DAOException(e);
+            }
+            return lista;
+        }
     }
 }

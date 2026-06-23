@@ -130,20 +130,19 @@ public class ExploreView {
         card.getStyleClass().add("exc-card"); // Usa il CSS per ombre, sfondi e bordi
         card.setCursor(javafx.scene.Cursor.HAND);
 
-        // Immagine placeholder con gradiente aggiornato al Light Theme
+        // Immagine placeholder gestita tramite CSS
         StackPane imgBox = new StackPane();
         imgBox.setPrefHeight(130);
-        javafx.scene.shape.Rectangle bg = new javafx.scene.shape.Rectangle(240, 130);
-        // Sfumatura da un azzurrino chiaro a un beige
-        bg.setFill(new javafx.scene.paint.LinearGradient(0, 0, 0, 1, true,
-                javafx.scene.paint.CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#2D4A35")),
-                new Stop(1, Color.web("#0E200E"))));
+        // Applichiamo la classe per lo sfondo sabbia sfumato
+        imgBox.getStyleClass().add("card-image-box"); 
+        
         Label icon = new Label("⛰");
-        icon.setFont(Font.font(40));
-        icon.setTextFill(Color.web(TEXT_MUTED));
-        icon.setOpacity(0.5);
-        imgBox.getChildren().addAll(bg, icon);
+        // Imposta solo la dimensione in Java, il colore e l'opacità le prende dal CSS
+        icon.setStyle("-fx-font-size: 50px;"); 
+        // Applichiamo la classe per l'icona color terracotta semi-trasparente
+        icon.getStyleClass().add("card-image-icon"); 
+        
+        imgBox.getChildren().add(icon);
 
         // Badge difficoltà
         Label badge = pill(exc.difficolta);

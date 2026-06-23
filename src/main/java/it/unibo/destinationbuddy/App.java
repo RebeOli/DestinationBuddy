@@ -29,6 +29,7 @@ public class App extends Application {
             CertificazioniModel certsModel      = new DBCertificazioniModel(connection);
             AdminModel          adminModel      = new DBAdminModel(connection);
             PrenotazioniModel   prenotModel     = new DBPrenotazioniModel(connection);
+            PostEscursioneModel postEscursioneModel = new DBPostEscursioneModel(connection);
 
             // Il controller fa tutto il resto
             AppController controller = new AppController(
@@ -37,7 +38,8 @@ public class App extends Application {
                 utentiModel,
                 certsModel,
                 adminModel,
-                prenotModel
+                prenotModel, 
+                postEscursioneModel
             );
             controller.avvia();
 

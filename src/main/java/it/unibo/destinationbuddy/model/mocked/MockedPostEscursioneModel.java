@@ -1,5 +1,7 @@
 package it.unibo.destinationbuddy.model.mocked;
 
+import java.util.List;
+
 import it.unibo.destinationbuddy.data.Recensione;
 import it.unibo.destinationbuddy.data.Resoconto;
 import it.unibo.destinationbuddy.model.PostEscursioneModel;
@@ -16,5 +18,10 @@ public class MockedPostEscursioneModel implements PostEscursioneModel {
     public boolean inserisciResoconto(Resoconto r) {
         System.out.println("[MOCK] Resoconto meteo inserito con successo per l'escursione " + r.idEscursione);
         return true;
+    }
+
+    @Override
+    public List<Resoconto> getResocontiGuida(String cfGuida) {
+        return List.of();
     }
 }

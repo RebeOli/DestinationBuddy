@@ -401,12 +401,12 @@ public final class Queries {
         """;
 
     //==================== QUERY PER PERSONA ====================
-    public static final String AUTENTICA_PERSONA = 
+    public static final String AUTENTICA_PERSONA =
         """
-        SELECT *
-        FROM PERSONE
-        WHERE EMAIL = ?
-        AND PASSWORD = ?
+        SELECT p.*, g.stato_account
+        FROM PERSONE p
+        LEFT JOIN GUIDE g ON p.CF = g.CF
+        WHERE p.email = ? AND p.password = ?
         """;
 
     public static final String ULTIMO_ABBONAMENTO_UTENTE =
@@ -483,6 +483,19 @@ public final class Queries {
     public static final String LIST_ZONE_PER_PAESE = 
         """
         SELECT nome FROM ZONE WHERE nome_paese = ? ORDER BY nome
+        """;
+    public static final String ESCURSIONI_PER_GUIDA =
+        """
+        SELECT ID_escursione, titolo, difficolta, costo
+        FROM ESCURSIONI
+        WHERE Guida_CF = ?
+        """;
+    public static final String RESOCONTI_GUIDA =
+        """
+        SELECT ID_escursione, data_inizio, data_fine, temperatura_rilevata, precipitazioni
+        FROM riepiloga
+        WHERE CF = ?
+        ORDER BY data_inizio DESC
         """;
 }
 

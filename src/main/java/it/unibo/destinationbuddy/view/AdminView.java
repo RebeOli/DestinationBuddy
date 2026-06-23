@@ -39,7 +39,7 @@ public class AdminView {
     private static final String TEXT_MUTED = "#807B73"; // Testo secondario
     // ──────────────────────────────────────────────────────────────────────────
 
-    private BiConsumer<String, String>  onValidaCert = (id, n) -> {};
+    private BiConsumer<String, String> onValidaCert = (id, n) -> {};    
     private Consumer<Persona> onAttivaGuida   = p -> {};
     private Consumer<Persona> onDisattivaGuida = p -> {};
 
@@ -105,8 +105,7 @@ public class AdminView {
         row.setPadding(new Insets(12, 14, 12, 14));
         row.getStyleClass().add("cert-row"); 
         
-        String statoDb = (p.statoAccount == null) ? "" : p.statoAccount.trim().toLowerCase();
-        boolean attiva = statoDb.equals("attivo") || statoDb.equals("1") || statoDb.equals("true");
+        boolean attiva = p.statoAccount;
         String statoVisivo = attiva ? "Attivo" : "Sospeso";
 
         VBox info = new VBox(3);
@@ -151,9 +150,9 @@ public class AdminView {
     }
 
     public void setOnValidaCert(BiConsumer<String, String> handler) { this.onValidaCert = handler; }
-    public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida    = handler; }
-    public void setOnDisattivaGuida(Consumer<Persona> handler) { this.onDisattivaGuida = handler; }
-    public ScrollPane getRoot()                                { return root; }
+    public void setOnAttivaGuida(Consumer<Persona> handler) { this.onAttivaGuida = handler; }
+    public void setOnDisattivaGuida(Consumer<Persona> handler){ this.onDisattivaGuida = handler; }
+    public ScrollPane getRoot() { return root; }
 
     // ── Righe ─────────────────────────────────────────────────────────────────
 
@@ -190,39 +189,6 @@ public class AdminView {
         });
 
         row.getChildren().addAll(info, approvaBtn);
-        return row;
-    }
-
-    private HBox buildGuidaRow(Persona p) {
-        HBox row = new HBox(14);
-        row.setAlignment(Pos.CENTER_LEFT);
-        row.setPadding(new Insets(12, 14, 12, 14));
-        row.getStyleClass().add("cert-row"); 
-        String statoDb = (p.statoAccount == null) ? "" : p.statoAccount.trim().toLowerCase();
-        boolean attiva = statoDb.equals("attivo") || statoDb.equals("1") || statoDb.equals("true");
-        
-        String statoVisivo = attiva ? "Attivo" : "Sospeso";
-
-        VBox info = new VBox(3);
-        HBox.setHgrow(info, Priority.ALWAYS);
-        Label nomeLbl = new Label(p.nome + " " + p.cognome);
-        nomeLbl.setFont(Font.font("System", FontWeight.BOLD, 13));
-        nomeLbl.setTextFill(Color.web(TEXT_DARK));
-        Label sub = new Label("CF: " + p.cf + "  ·  Stato: " + statoVisivo);
-        sub.setFont(Font.font("System", 11));
-        sub.setTextFill(Color.web(TEXT_MUTED));
-        info.getChildren().addAll(nomeLbl, sub);
-        Button toggleBtn = smallBtn(
-                attiva ? "Disattiva" : "Attiva",
-                ACCENT,
-                "#F9EAE1");
-                
-        toggleBtn.setOnAction(e -> {
-            if (attiva) onDisattivaGuida.accept(p);
-            else onAttivaGuida.accept(p);
-        });
-
-        row.getChildren().addAll(info, toggleBtn);
         return row;
     }
 

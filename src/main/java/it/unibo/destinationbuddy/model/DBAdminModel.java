@@ -1,14 +1,11 @@
 package it.unibo.destinationbuddy.model;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import it.unibo.destinationbuddy.data.DAOUtils;
 import it.unibo.destinationbuddy.data.Persona;
-import it.unibo.destinationbuddy.data.Queries;
 
 public class DBAdminModel implements AdminModel{
 

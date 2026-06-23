@@ -60,9 +60,9 @@ public class DBCertificazioniModel implements CertificazioniModel {
 
     @Override
     public void validaCertificazione(String idCertificazione, String nCertificazione) {
-        Certificazione.DAO.valida(connection, idCertificazione, nCertificazione );
+        // Passiamo entrambi i parametri al DAO per identificare la certificazione corretta
+        Certificazione.DAO.valida(connection, idCertificazione, nCertificazione);
         cacheInAttesa = Optional.empty();  // la certificazione validata non è più in attesa
-
     }
     
 }
