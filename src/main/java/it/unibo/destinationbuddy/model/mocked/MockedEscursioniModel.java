@@ -110,6 +110,19 @@ public class MockedEscursioniModel implements EscursioniModel {
         return List.of("Zona Alpina Generica", "Zona di Confine");
     }
 
+    // ⚡ IL METODO CHE MANCAVA PER COMPILARE!
+    @Override
+    public List<String> getLuoghiPerZona(String paese, String zona) {
+        if ("Abruzzo".equalsIgnoreCase(zona)) {
+            return List.of("Campo Imperatore", "Corno Grande");
+        } else if ("Toscana".equalsIgnoreCase(zona)) {
+            return List.of("Val d'Orcia Trail", "Monte Amiata");
+        } else if ("Alta Savoia".equalsIgnoreCase(zona)) {
+            return List.of("Aiguille du Midi", "Chamonix");
+        }
+        return List.of("Luogo di prova 1", "Luogo di prova 2");
+    }
+
     @Override
     public List<String> getCategorieLuoghi() {
         return List.of("Rifugio", "Bivacco", "Sentiero", "Via Ferrata", "Ghiacciaio", "Sito d'Arrampicata", "Grotta");
