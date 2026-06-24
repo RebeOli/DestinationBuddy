@@ -14,7 +14,6 @@ public final class Persona {
     public String cognome;
     public boolean tipoUtente;
     public boolean tipoAmministratore;
-    public String idAccount;
     public int escursioniEffettuate;
     public LocalDate dataIscrizione;
     public LocalDate dataAssunzione;
@@ -23,14 +22,13 @@ public final class Persona {
     public boolean statoAccount; 
 
     public Persona(String cf, String nome, String cognome, boolean tipoUtente, boolean tipoAmministratore,
-            String idAccount, int escursioniEffettuate, LocalDate dataIscrizione, LocalDate dataAssunzione,
+            int escursioniEffettuate, LocalDate dataIscrizione, LocalDate dataAssunzione,
             String email, String password, boolean statoAccount) {
         this.cf = cf;
         this.nome = nome == null ? "" : nome;
         this.cognome = cognome == null ? "" : cognome;
         this.tipoUtente = tipoUtente;
         this.tipoAmministratore = tipoAmministratore;
-        this.idAccount = idAccount == null ? "" : idAccount;
         this.escursioniEffettuate = escursioniEffettuate;
         this.dataIscrizione = dataIscrizione;
         this.dataAssunzione = dataAssunzione;
@@ -48,7 +46,6 @@ public final class Persona {
         result = prime * result + ((cognome == null) ? 0 : cognome.hashCode());
         result = prime * result + (tipoUtente ? 1231 : 1237);
         result = prime * result + (tipoAmministratore ? 1231 : 1237);
-        result = prime * result + ((idAccount == null) ? 0 : idAccount.hashCode());
         result = prime * result + escursioniEffettuate;
         result = prime * result + ((dataIscrizione == null) ? 0 : dataIscrizione.hashCode());
         result = prime * result + ((dataAssunzione == null) ? 0 : dataAssunzione.hashCode());
@@ -86,11 +83,6 @@ public final class Persona {
             return false;
         if (tipoAmministratore != other.tipoAmministratore)
             return false;
-        if (idAccount == null) {
-            if (other.idAccount != null)
-                return false;
-        } else if (!idAccount.equals(other.idAccount))
-            return false;
         if (escursioniEffettuate != other.escursioniEffettuate)
             return false;
         if (dataIscrizione == null) {
@@ -121,7 +113,7 @@ public final class Persona {
     @Override
     public String toString() {
         return "Persona [cf=" + cf + ", nome=" + nome + ", cognome=" + cognome + ", tipoUtente=" + tipoUtente
-                + ", tipoAmministratore=" + tipoAmministratore + ", idAccount=" + idAccount + ", escursioniEffettuate="
+                + ", tipoAmministratore=" + tipoAmministratore + ", escursioniEffettuate="
                 + escursioniEffettuate + ", dataIscrizione=" + dataIscrizione + ", dataAssunzione=" + dataAssunzione
                 + ", email=" + email + ", password=" + password + ", stato_account=" + statoAccount + "]";
     }
@@ -140,7 +132,6 @@ public final class Persona {
                     var cognome = resultSet.getString("cognome");
                     var tipoUtente = resultSet.getBoolean("tipo_utente");
                     var tipoAmministratore = resultSet.getBoolean("tipo_amministratore");
-                    var idAccount = resultSet.getString("ID_account");
                     var escursioniEffettuate = resultSet.getInt("escursioni_effettuate");
                     var sqlDataIscrizione = resultSet.getDate("data_iscrizione");
                     LocalDate dataIscrizione = (sqlDataIscrizione != null) ? sqlDataIscrizione.toLocalDate() : null;
@@ -148,7 +139,7 @@ public final class Persona {
                     LocalDate dataAssunzione = (sqlDataAssunzione != null) ? sqlDataAssunzione.toLocalDate() : null;
 
                     var statoAccount = resultSet.getBoolean("stato_account");
-                    var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, idAccount, escursioniEffettuate, dataIscrizione, dataAssunzione, email,password, statoAccount);
+                    var utente = new Persona(cf, nome, cognome, tipoUtente, tipoAmministratore, escursioniEffettuate, dataIscrizione, dataAssunzione, email,password, statoAccount);
                     return Optional.of(utente);
                 } else {
                     return Optional.empty();
@@ -167,7 +158,7 @@ public final class Persona {
         }
 
         public static void registraUtente(Connection connection, Persona u) {
-            try (var statement = DAOUtils.prepare(connection, Queries.REGISTRA_PERSONA, u.cf, u.nome, u.cognome, u.idAccount, u.email, u.password)) {
+            try (var statement = DAOUtils.prepare(connection, Queries.REGISTRA_PERSONA, u.cf, u.nome, u.cognome, u.email, u.password)) {
                 statement.executeUpdate();
             } catch (Exception e) {
                 throw new DAOException(e);
@@ -187,8 +178,7 @@ public final class Persona {
                             if (rsDettagli.next()) {
                                 Persona utente = new Persona(
                                     cf, rsDettagli.getString("nome"), rsDettagli.getString("cognome"),
-                                    rsDettagli.getBoolean("tipo_utente"), rsDettagli.getBoolean("tipo_amministratore"),
-                                    rsDettagli.getString("ID_account"), rsDettagli.getInt("escursioni_effettuate"),
+                                    rsDettagli.getBoolean("tipo_utente"), rsDettagli.getBoolean("tipo_amministratore"), rsDettagli.getInt("escursioni_effettuate"),
                                     rsDettagli.getDate("data_iscrizione") != null ? rsDettagli.getDate("data_iscrizione").toLocalDate() : null,
                                     rsDettagli.getDate("data_assunzione") != null ? rsDettagli.getDate("data_assunzione").toLocalDate() : null,
                                     rsDettagli.getString("email"), rsDettagli.getString("password"), false
@@ -212,8 +202,7 @@ public final class Persona {
                 while (resultSet.next()) {
                     Persona guida = new Persona(
                         resultSet.getString("CF"), resultSet.getString("nome"), resultSet.getString("cognome"),
-                        resultSet.getBoolean("tipo_utente"), resultSet.getBoolean("tipo_amministratore"),
-                        resultSet.getString("ID_account"), resultSet.getInt("escursioni_effettuate"),
+                        resultSet.getBoolean("tipo_utente"), resultSet.getBoolean("tipo_amministratore"), resultSet.getInt("escursioni_effettuate"),
                         resultSet.getDate("data_iscrizione") != null ? resultSet.getDate("data_iscrizione").toLocalDate() : null,
                         resultSet.getDate("data_assunzione") != null ? resultSet.getDate("data_assunzione").toLocalDate() : null,
                         resultSet.getString("email"), resultSet.getString("password"), 

@@ -156,7 +156,7 @@ public class AppController {
         );
 
         authView.setOnRegistra(campi -> {
-            var nuovoUtente = new Persona(campi[2], campi[0], campi[1], true, false, campi[2], 0, LocalDate.now(), null, campi[3], campi[4], false);
+            var nuovoUtente = new Persona(campi[2], campi[0], campi[1], true, false, 0, LocalDate.now(), null, campi[3], campi[4], false);
             utentiModel.registraUtente(nuovoUtente);
             authView.pulisciCampi();
             authView.mostraErroreLogin("");
