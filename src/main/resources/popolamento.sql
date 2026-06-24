@@ -100,13 +100,21 @@ INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('PADI-
 
 -- CERTIFICAZIONI UTENTI E GUIDE
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
-VALUES ('CERT-CAI', 'CAI-2020-ABZ', 'Club Alpino Italiano', '2020-05-15', '2030-05-15', 'Validata', 'NNANNA85M22F205Z', 'NNANNA85M22F205Z');
+VALUES ('CERT-CAI', 'CAI-2020-ABZ', 'Club Alpino Italiano', '2020-05-15', '2030-05-15', 'Validata', 'NNANNA85M22F205Z', NULL);
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
-VALUES ('PADI-OWD', 'PADI-2021-SAR', 'PADI International', '2021-06-10', '2031-06-10', 'Validata', 'BNCLCU80A01H501Y', 'BNCLCU80A01H501Y');
+VALUES ('PADI-OWD', 'PADI-2021-SAR', 'PADI International', '2021-06-10', '2031-06-10', 'Validata', 'OLVRBC05P64H199H', NULL);
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
-VALUES ('AMM-FIM', 'FIM-2023-TOS', 'Federazione Italiana Montagna', '2023-04-20', '2028-04-20', 'In attesa di validazione', 'VRDGLI90M41H501Z', 'VRDGLI90M41H501Z');
+VALUES ('AMM-FIM', 'FIM-2023-TOS', 'Federazione Italiana Montagna', '2023-04-20', '2028-04-20', 'In attesa di validazione', 'VRDGLI90M41H501Z', NULL);
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
-VALUES ('FFME-ALPI', 'FFME-2019-SAV', 'Fédération Française', '2019-09-05', '2029-09-05', 'Validata', 'DPNJEA85M01Z110X', 'DPNJEA85M01Z110X');
+VALUES ('FFME-ALPI', 'FFME-2019-SAV', 'Fédération Française', '2019-09-05', '2029-09-05', 'Validata', 'DPNJEA85M01Z110X', NULL);
+INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
+VALUES ('Brevetto Hiking', 'HIK-0123', 'CAI', '2020-05-15', '2030-05-15', 'Validata', 'OLVRBC05P64H199H', NULL);
+INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
+VALUES ('Brevetto Hiking', 'HIK-0124', 'CAI', '2020-05-15', '2030-05-15', 'Validata', 'MNDARN05P64H199H', NULL);
+INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
+VALUES ('Brevetto Hiking', 'HIK-0125', 'CAI', '2020-05-15', '2030-05-15', 'Validata', 'MZZCHR05P64H199H', NULL);
+INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
+VALUES ('PADI-OWD', 'PADI-2022-SAR', 'PADI International', '2021-06-10', '2031-06-10', 'Validata', 'MZZCHR05P64H199H', NULL);
 
 -- Certificazioni di livello Guida
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
