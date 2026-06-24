@@ -66,8 +66,8 @@ create table if not exists ABBONAMENTI (
 );
 
 create table if not exists ZONE (
-    nome_paese varchar(100) not null,
     nome varchar(100) not null,
+    nome_paese varchar(100) not null,
     descrizione text,
     constraint zone_pk primary key (nome_paese, nome)
 );

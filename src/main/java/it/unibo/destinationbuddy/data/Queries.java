@@ -10,8 +10,8 @@ public final class Queries {
         """
         INSERT INTO PERSONE (CF, nome, cognome, tipo_utente,
             tipo_amministratore, escursioni_effettuate,
-            data_iscrizione, email, password)
-        VALUES (?, ?, ?, 1, 0, ?, 0, CURRENT_DATE, ?, ?)
+            data_iscrizione, data_assunzione, email, password)
+        VALUES (?, ?, ?, 1, 0, ?, 0, CURRENT_DATE, NULL, ?, ?)
         """;
 
     public static final String SOTTOSCRIVI_ABBONAMENTO =

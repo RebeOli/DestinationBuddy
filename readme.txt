@@ -3,7 +3,7 @@ PROGETTO BASI DI DATI: DESTINATION BUDDY
 Autori: Chiara Mazzoni, Arianna Mondardini, Rebecca Olivieri
 ====================================================================
 
-1. REQUISITI DI SISTEMA
+REQUISITI DI SISTEMA
 --------------------------------------------------------------------
 Per eseguire correttamente l'applicativo sono necessari:
 - Java Development Kit (JDK) versione 21 (o superiore)
@@ -11,7 +11,7 @@ Per eseguire correttamente l'applicativo sono necessari:
 - Connessione a Internet attiva (per scaricare le dipendenze di Gradle al primo avvio)
 
 
-2. CONFIGURAZIONE DEL DATABASE
+CONFIGURAZIONE DEL DATABASE
 --------------------------------------------------------------------
 Prima di avviare l'applicazione, è necessario che il server MySQL sia in esecuzione.
 
@@ -32,7 +32,7 @@ c) Configurare le credenziali nel codice Java:
        * Per Mac con VM: decommentare `URL = "jdbc:mysql://10.211.55.3:3306/DestinationBuddy"`
 
 
-3. ISTRUZIONI PER L'AVVIO
+ISTRUZIONI PER L'AVVIO
 --------------------------------------------------------------------
 L'applicativo utilizza Gradle come sistema di build. È possibile avviarlo in due modi:
 
@@ -49,20 +49,20 @@ MODO B - Tramite IDE (VS Code, IntelliJ, Eclipse):
     3. Eseguire la classe tramite il tasto "Run" o "Play" dell'ambiente di sviluppo.
 
 
-4. CREDENZIALI DEMO
+CREDENZIALI DEMO
 --------------------------------------------------------------------
 Di seguito sono forniti gli account pre-configurati nel database per testare i diversi ruoli e funzionalità della piattaforma:
 
->> AMMINISTRATORE
+• AMMINISTRATORE
     - Email: admin@escursioni.it
     - Password: pass123
 
->> GUIDA CERTIFICATA (Può creare escursioni e inserire resoconti)
-        - Utente: Anna Neri
-        - Email: anna.guida@gmail.com
-        - Password: pass123
+• GUIDA CERTIFICATA (Può creare escursioni e inserire resoconti)
+    - Utente: Anna Neri
+    - Email: anna.guida@gmail.com
+    - Password: pass123
 
->> UTENTE BASE
-- Utente: Arianna Mondardini
-- Email: arianna@gmail.com
-- Password: pass123
+• UTENTE BASE
+    - Utente: Arianna Mondardini
+    - Email: arianna@gmail.com
+    - Password: pass123

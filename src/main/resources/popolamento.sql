@@ -1,57 +1,55 @@
 CREATE DATABASE IF NOT EXISTS DestinationBuddy;
 USE DestinationBuddy;
 
--- ==========================================
--- 1. PERSONE E GUIDE
--- ==========================================
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, data_assunzione, data_iscrizione, escursioni_effettuate) 
-VALUES ('RSSMRA80A01H501A', 'Mario', 'Rossi', 'ACC-001', 'admin@escursioni.it', 'pass123', 0, 1, '2020-01-15', '2020-01-15', 0);
+-- PERSONE E GUIDE
+-- Admin
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('RSSMRA80A01H501A', 'Mario', 'Rossi', 1, 1, 0,'2020-01-15', '2020-01-15', 'admin@escursioni.it', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('BNCGIA90B41F205Z', 'Giulia', 'Bianchi', 'ACC-002', 'giulia@gmail.com', 'pass123', 1, 0, 0, '2023-05-10');
+-- Utenti
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('BNCGIA90B41F205Z', 'Giulia', 'Bianchi', 1, 0, 0, '2023-05-10', NULL, 'giulia@gmail.com', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('MZZCHR05P64H199H', 'Chiara', 'Mazzoni', 'ACC-004', 'chiara@gmail.com', 'pass123', 1, 0, 0, '2025-09-10');
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('MZZCHR05P64H199H', 'Chiara', 'Mazzoni', 1, 0, 0, '2025-09-10', NULL, 'chiara@gmail.com', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('MNDARN05P64H199H', 'Arianna', 'Mondardini', 'ACC-005', 'arianna@gmail.com', 'pass123', 1, 0, 0, '2026-04-10');
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('MNDARN05P64H199H', 'Arianna', 'Mondardini', 1, 0, 0, '2026-04-10', NULL, 'arianna@gmail.com', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('OLVRBC05P64H199H', 'Rebecca', 'Olivieri', 'ACC-006', 'rebecca@gmail.com', 'pass123', 1, 0, 0, '2024-04-12');
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('OLVRBC05P64H199H', 'Rebecca', 'Olivieri', 1, 0, 0, '2024-04-12', NULL, 'rebecca@gmail.com', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione)
-VALUES ('RSSMRA80A01H501T', 'Mario', 'Verdi', 'ACC-TEST', 'mario.test@email.it', 'pass123', 1, 0, 0, CURRENT_DATE);
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password)
+VALUES ('RSSMRA80A01H501T', 'Mario', 'Verdi', 1, 0, 0, CURRENT_DATE, NULL, 'mario.test@email.it', 'pass123');
 
 -- Guide
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('NNANNA85M22F205Z', 'Anna', 'Neri', 'ACC-003', 'anna.guida@gmail.com', 'pass123', 0, 0, 0, '2018-04-10');
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('NNANNA85M22F205Z', 'Anna', 'Neri', 1, 0, 0, '2018-04-10', NULL, 'anna.guida@gmail.com', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('BNCLCU80A01H501Y', 'Luca', 'Bianchi', 'ACC-G1', 'luca@email.it', 'pass123', 0, 0, 0, CURRENT_DATE);
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('BNCLCU80A01H501Y', 'Luca', 'Bianchi', 1, 0, 0, CURRENT_DATE, NULL, 'luca@email.it', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('VRDGLI90M41H501Z', 'Giulia', 'Verdi', 'ACC-G2', 'giuliaguida@email.it', 'pass123', 0, 0, 0, CURRENT_DATE);
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('VRDGLI90M41H501Z', 'Giulia', 'Verdi', 1, 0, 0, CURRENT_DATE, NULL, 'giuliaguida@email.it', 'pass123');
 
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) 
-VALUES ('DPNJEA85M01Z110X', 'Jean', 'Dupont', 'ACC-G3', 'jean@email.fr', 'pass123', 0, 0, 0, CURRENT_DATE);
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) 
+VALUES ('DPNJEA85M01Z110X', 'Jean', 'Dupont', 1, 0, 0, CURRENT_DATE, NULL, 'jean@email.fr', 'pass123');
 
 -- Utenti per test sospensione
-INSERT INTO PERSONE (CF, nome, cognome, ID_account, email, password, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione) VALUES 
-('HATER00000000001', 'Pino', 'Arrabbiato', 'ACC-H1', 'hater1@mail.com', 'pass', 1, 0, 0, CURRENT_DATE),
-('HATER00000000002', 'Gino', 'Deluso', 'ACC-H2', 'hater2@mail.com', 'pass', 1, 0, 0, CURRENT_DATE),
-('HATER00000000003', 'Rino', 'Triste', 'ACC-H3', 'hater3@mail.com', 'pass', 1, 0, 0, CURRENT_DATE),
-('HATER00000000004', 'Nino', 'Furioso', 'ACC-H4', 'hater4@mail.com', 'pass', 1, 0, 0, CURRENT_DATE),
-('HATER00000000005', 'Tino', 'Scontento', 'ACC-H5', 'hater5@mail.com', 'pass', 1, 0, 0, CURRENT_DATE),
-('HATER00000000006', 'Dino', 'Amareggiato', 'ACC-H6', 'hater6@mail.com', 'pass', 1, 0, 0, CURRENT_DATE);
+INSERT INTO PERSONE (CF, nome, cognome, tipo_utente, tipo_amministratore, escursioni_effettuate, data_iscrizione, data_assunzione, email, password) VALUES 
+('HATER00000000001', 'Pino', 'Arrabbiato', 1, 0, 0, CURRENT_DATE, NULL, 'hater1@mail.com', 'pass'),
+('HATER00000000002', 'Gino', 'Deluso', 1, 0, 0, CURRENT_DATE, NULL, 'hater2@mail.com', 'pass'),
+('HATER00000000003', 'Rino', 'Triste', 1, 0, 0, CURRENT_DATE, NULL, 'hater3@mail.com', 'pass'),
+('HATER00000000004', 'Nino', 'Furioso', 1, 0, 0, CURRENT_DATE, NULL, 'hater4@mail.com', 'pass'),
+('HATER00000000005', 'Tino', 'Scontento', 1, 0, 0, CURRENT_DATE, NULL, 'hater5@mail.com', 'pass'),
+('HATER00000000006', 'Dino', 'Amareggiato', 1, 0, 0, CURRENT_DATE, NULL, 'hater6@mail.com', 'pass');
 
 INSERT INTO GUIDE (CF, stato_account) VALUES ('NNANNA85M22F205Z', 1);
 INSERT INTO GUIDE (CF, stato_account) VALUES ('BNCLCU80A01H501Y', 1);
 INSERT INTO GUIDE (CF, stato_account) VALUES ('VRDGLI90M41H501Z', 1);
 INSERT INTO GUIDE (CF, stato_account) VALUES ('DPNJEA85M01Z110X', 1);
 
--- ==========================================
--- 2. LUOGHI E CATEGORIE
--- ==========================================
+-- LUOGHI E CATEGORIE
 INSERT INTO PAESI (Nome) VALUES ('Italia');
 INSERT INTO PAESI (Nome) VALUES ('Francia');
 INSERT INTO PAESI (Nome) VALUES ('Spagna');
@@ -84,9 +82,8 @@ VALUES ('Francia', 'Alta Savoia', 'Aiguille du Midi', 3842, 'Difficile', 'Invern
 INSERT INTO LUOGHI_ESPLORABILI (nome_paese, nome_zona, nome, quota, difficolta_accesso, periodo_consigliato, nome_categoria) 
 VALUES ('Spagna', 'Andalusia', 'Cabo de Gata', 15, 'Media', 'Primavera', 'Mare');
 
--- ==========================================
--- 3. TIPOLOGIE CERTIFICAZIONE
--- ==========================================
+-- TIPOLOGIE CERTIFICAZIONE
+
 INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('CERT-CAI', 'Avanzato');
 INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('PADI-OWD', 'Base');
 INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('AMM-FIM', 'Intermedio');
@@ -101,9 +98,7 @@ INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('UIAGM
 INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('AIGAE-AMB', 'Guida');
 INSERT INTO TIPOLOGIE_CERTIFICAZIONE (ID_certificazione, livello) VALUES ('PADI-INSTR', 'Guida');
 
--- ==========================================
--- 4. CERTIFICAZIONI UTENTI E GUIDE
--- ==========================================
+-- CERTIFICAZIONI UTENTI E GUIDE
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
 VALUES ('CERT-CAI', 'CAI-2020-ABZ', 'Club Alpino Italiano', '2020-05-15', '2030-05-15', 'Validata', 'NNANNA85M22F205Z', 'NNANNA85M22F205Z');
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
@@ -123,9 +118,8 @@ VALUES ('AIGAE-AMB', 'AIGAE-2021-TOS', 'AIGAE Italia', '2021-03-20', '2026-03-20
 INSERT INTO CERTIFICAZIONI (ID_certificazione, n_certificazione, ente_rilasciante, data_rilascio, data_scadenza, stato_validazione, CF, Guida_CF)
 VALUES ('UIAGM-ALPI', 'UIAGM-2016-FRA', 'SNGM France', '2016-09-05', '2029-09-05', 'Validata', 'DPNJEA85M01Z110X', 'DPNJEA85M01Z110X');
 
--- ==========================================
--- 5. TIPOLOGIE ESCURSIONE
--- ==========================================
+
+-- TIPOLOGIE ESCURSIONE
 INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Trekking');
 INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Snorkeling');
 INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Hiking');
@@ -135,9 +129,7 @@ INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Speleologia');
 INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Mountain bike');
 INSERT INTO TIPOLOGIE_ESCURSIONE (ID_tipologia) VALUES ('Ferrata');
 
--- ==========================================
--- 6. CERTIFICAZIONI RICHIESTE PER TIPOLOGIA
--- ==========================================
+-- CERTIFICAZIONI RICHIESTE PER TIPOLOGIA
 INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Alpinismo', 'FFME-ALPI');
 INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Alpinismo', 'CERT-CAI');
 INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Snorkeling', 'PADI-OWD');
@@ -149,9 +141,7 @@ INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Mountain bike', 
 INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Ferrata', 'Brevetto Ferrata');
 INSERT INTO richiede (ID_tipologia, ID_certificazione) VALUES ('Ferrata', 'CERT-CAI');
 
--- ==========================================
--- 7. EQUIPAGGIAMENTO
--- ==========================================
+-- EQUIPAGGIAMENTO
 INSERT INTO EQUIPAGGIAMENTI (ID_categoria, costo_totale_giornaliero) VALUES ('Zaino tecnico', 5.00);
 INSERT INTO EQUIPAGGIAMENTI (ID_categoria, costo_totale_giornaliero) VALUES ('Scarponi', 8.00);
 INSERT INTO EQUIPAGGIAMENTI (ID_categoria, costo_totale_giornaliero) VALUES ('Imbracatura', 6.00);
@@ -193,33 +183,30 @@ INSERT INTO PEZZI (ID_pezzo, nome, costo_giornaliero, disponibilita, ID_categori
 INSERT INTO PEZZI (ID_pezzo, nome, costo_giornaliero, disponibilita, ID_categoria) VALUES ('PZ-012', 'Casco ferrata Kong', 4.00, 1, 'Casco ferrata');
 INSERT INTO PEZZI (ID_pezzo, nome, costo_giornaliero, disponibilita, ID_categoria) VALUES ('PZ-013', 'Kit ferrata completo', 9.00, 1, 'Set ferrata (kit + imbrago)');
 
--- ==========================================
--- 8. ESCURSIONI
--- ==========================================
+-- ESCURSIONI
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-001', 'Trekking sul Gran Sasso', 'Splendida escursione in quota.', 'Intermedia', 20, 35.50, '2024-07-05', '2024-07-20', 'NNANNA85M22F205Z');
+VALUES ('ESC-001', 'Trekking sul Gran Sasso', 'Splendida escursione in quota.', 'Intermedia', 20, 35.50, '2024-06-05', '2024-06-20', 'NNANNA85M22F205Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-002', 'Snorkeling a Cala Goloritzé', 'Esplorazione dei fondali sardi.', 'Facile', 15, 45.00, '2026-06-01', '2026-06-25', 'BNCLCU80A01H501Y');
+VALUES ('ESC-002', 'Snorkeling a Cala Goloritzé', 'Esplorazione dei fondali sardi.', 'Facile', 15, 45.00, '2026-06-01', '2026-06-30', 'BNCLCU80A01H501Y');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-003', 'Passeggiata in Val d''Orcia', 'Trekking leggero tra i cipressi toscani.', 'Facile', 25, 25.00, '2026-04-10', '2026-04-30', 'VRDGLI90M41H501Z');
+VALUES ('ESC-003', 'Passeggiata in Val d''Orcia', 'Trekking leggero tra i cipressi toscani.', 'Facile', 25, 25.00, '2026-05-01', '2026-07-01', 'VRDGLI90M41H501Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
 VALUES ('ESC-004', 'Aiguille du Midi', 'Alpinismo sul Monte Bianco.', 'Difficile', 8, 150.00, '2026-11-01', '2026-12-15', 'DPNJEA85M01Z110X');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
 VALUES ('ESC-005', 'Notturna alle Tre Cime', 'Trekking sotto le stelle sulle Dolomiti.', 'Intermedia', 12, 55.00, '2026-08-01', '2026-08-20', 'NNANNA85M22F205Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-006', 'Speleologia nelle Grotte di Frasassi', 'Esplorazione guidata delle grotte carsiche marchigiane.', 'Difficile', 10, 60.00, '2026-09-01', '2026-09-20', 'NNANNA85M22F205Z');
+VALUES ('ESC-006', 'Speleologia nelle Grotte di Frasassi', 'Esplorazione guidata delle grotte carsiche marchigiane.', 'Difficile', 10, 60.00, '2026-06-01', '2026-08-20', 'NNANNA85M22F205Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-007', 'Anello del Monte Bianco in MTB', 'Percorso panoramico in mountain bike tra Italia e Francia.', 'Intermedia', 14, 70.00, '2026-07-10', '2026-08-10', 'BNCLCU80A01H501Y');
+VALUES ('ESC-007', 'Anello del Monte Bianco in MTB', 'Percorso panoramico in mountain bike tra Italia e Francia.', 'Intermedia', 14, 70.00, '2026-06-10', '2026-07-10', 'BNCLCU80A01H501Y');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-008', 'Ferrata delle Mésules', 'Via ferrata panoramica sulle Dolomiti, adatta a esperti.', 'Difficile', 8, 65.00, '2026-07-20', '2026-08-15', 'VRDGLI90M41H501Z');
+VALUES ('ESC-008', 'Ferrata delle Mésules', 'Via ferrata panoramica sulle Dolomiti, adatta a esperti.', 'Difficile', 8, 65.00, '2026-06-01', '2026-07-01', 'VRDGLI90M41H501Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
-VALUES ('ESC-009', 'Tramonto a Cabo de Gata', 'Passeggiata costiera in Andalusia.', 'Facile', 15, 20.00, '2026-01-01', '2026-12-31', 'VRDGLI90M41H501Z');
+VALUES ('ESC-009', 'Tramonto a Cabo de Gata', 'Passeggiata costiera in Andalusia.', 'Facile', 15, 20.00, '2026-01-01', '2026-04-01', 'VRDGLI90M41H501Z');
 INSERT INTO ESCURSIONI (ID_escursione, titolo, descrizione, difficolta, numero_partecipanti, costo, data_apertura_iscrizione, data_chiusura_iscrizione, Guida_CF)
 VALUES ('ESC-999', 'Tour Disastroso', 'Tutto è andato storto dall''inizio alla fine.', 'Facile', 10, 10.00, '2023-01-01', '2023-02-01', 'DPNJEA85M01Z110X');
 
--- ==========================================
--- 9. ASSUME (escursione -> tipologia)
--- ==========================================
+-- ASSUME (escursione -> tipologia)
+
 INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-001', 'Trekking');
 INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-002', 'Snorkeling');
 INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-003', 'Hiking');
@@ -231,16 +218,15 @@ INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-008', 'Ferrata');
 INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-009', 'Hiking');
 INSERT INTO assume (ID_escursione, ID_tipologia) VALUES ('ESC-999', 'Trekking');
 
--- ==========================================
 -- 10. GIORNATE E TAPPE
--- ==========================================
-INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2026-07-15', 'Ritrovo a Campo Imperatore');
-INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2026-07-16', 'Salita al Corno Grande');
-INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2026-07-17', 'Discesa e rientro');
+
+INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2024-07-15', 'Ritrovo a Campo Imperatore');
+INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2024-07-16', 'Salita al Corno Grande');
+INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-001', '2024-07-17', 'Discesa e rientro');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-002', '2026-07-01', 'Immersione e relax in spiaggia');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-002', '2026-07-02', 'Esplorazione grotte costiere');
-INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-003', '2026-05-10', 'Trekking e degustazione in collina');
-INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-003', '2026-05-11', 'Visita borgo di Pienza e degustazione');
+INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-003', '2026-08-10', 'Trekking e degustazione in collina');
+INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-003', '2026-08-11', 'Visita borgo di Pienza e degustazione');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-004', '2026-12-20', 'Ascesa tecnica su neve e ghiaccio');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-004', '2026-12-21', 'Vetta e bivacco in quota');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-004', '2026-12-22', 'Discesa tecnica e rientro');
@@ -254,9 +240,9 @@ INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-008', '2026-0
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-009', '2026-06-21', 'Camminata e osservazione del tramonto');
 INSERT INTO GIORNATE (ID_escursione, data, programma) VALUES ('ESC-999', '2023-03-01', 'Giornata di pioggia e fango');
 
-INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01', 4.5, 'ESC-001', '2026-07-15', 'Italia', 'Abruzzo', 'Campo Imperatore');
-INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01b', 6.0, 'ESC-001', '2026-07-16', 'Italia', 'Abruzzo', 'Campo Imperatore');
-INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01c', 3.0, 'ESC-001', '2026-07-17', 'Italia', 'Abruzzo', 'Campo Imperatore');
+INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01', 4.5, 'ESC-001', '2024-07-15', 'Italia', 'Abruzzo', 'Campo Imperatore');
+INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01b', 6.0, 'ESC-001', '2024-07-16', 'Italia', 'Abruzzo', 'Campo Imperatore');
+INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01c', 3.0, 'ESC-001', '2024-07-17', 'Italia', 'Abruzzo', 'Campo Imperatore');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T02', 3.0, 'ESC-002', '2026-07-01', 'Italia', 'Sardegna', 'Cala Goloritzé');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T02b', 4.0, 'ESC-002', '2026-07-02', 'Italia', 'Sardegna', 'Cala Goloritzé');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T03', 5.0, 'ESC-003', '2026-05-10', 'Italia', 'Toscana', 'Val d''Orcia Trail');
@@ -274,30 +260,23 @@ INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona,
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T09a', 3.0, 'ESC-009', '2026-06-21', 'Spagna', 'Andalusia', 'Cabo de Gata');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T999', 2.0, 'ESC-999', '2023-03-01', 'Italia', 'Abruzzo', 'Campo Imperatore');
 
--- ==========================================
--- 11. PRENOTAZIONI
--- ==========================================
+-- PRENOTAZIONI
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('BNCGIA90B41F205Z', 'ESC-001', '2024-06-15', 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('BNCGIA90B41F205Z', 'ESC-005', CURRENT_DATE, 'Completata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-002', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-001', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-001', '2024-06-15', 'Completata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-004', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-002', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-003', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-004', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-005', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-009', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000001', 'ESC-999', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000002', 'ESC-999', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000003', 'ESC-999', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000004', 'ESC-999', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000005', 'ESC-999', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000006', 'ESC-999', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-002', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-008', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000001', 'ESC-999', '2023-01-15' , 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000002', 'ESC-999', '2023-01-15', 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000003', 'ESC-999', '2023-01-15', 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000004', 'ESC-999', '2023-01-15', 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000005', 'ESC-999', '2023-01-15', 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000006', 'ESC-999', '2023-01-15', 'Completata');
 
--- ==========================================
--- 12. RECENSIONI
--- ==========================================
+--  RECENSIONI
 INSERT INTO RECENSIONI (titolo, CF, voto, immagini, descrizione, stato_recensione, ID_escursione)
 VALUES ('Giornata Fantastica', 'BNCGIA90B41F205Z', 5, 'foto_gransasso.jpg', 'Panorama mozzafiato.', 'Approvata', 'ESC-001');
 INSERT INTO RECENSIONI (titolo, voto, immagini, descrizione, stato_recensione, CF, ID_escursione)
@@ -326,25 +305,18 @@ INSERT INTO RECENSIONI (titolo, voto, immagini, descrizione, stato_recensione, C
 ('Terribile', 1, NULL, 'Un incubo nel fango.', 'Approvata', 'HATER00000000005', 'ESC-999'),
 ('Sconsigliatissimo', 2, NULL, 'Pessima esperienza, guida distratta.', 'Approvata', 'HATER00000000006', 'ESC-999');
 
--- ==========================================
--- 13. RIEPILOGHI
--- ==========================================
+-- RIEPILOGHI
 INSERT INTO riepiloga (ID_escursione, data_inizio, data_fine, temperatura_rilevata, precipitazioni, CF)
 VALUES ('ESC-001', '2024-07-05', '2024-07-05', 18.5, 0.0, 'NNANNA85M22F205Z');
 
--- ==========================================
--- 14. ABBONAMENTI
--- ==========================================
+-- ABBONAMENTI
 INSERT INTO tipologie_abbonamento (costo_mensile, durata, sconto_noleggio, vantaggi_accesso) 
 VALUES 
 (9.90, 1, 0.10, 'Accesso prioritario e Sconto Noleggio 10%'), 
 (7.90, 6, 0.20, 'Accesso prioritario e Sconto Noleggio 20%'), 
 (5.90, 12, 0.30, 'Accesso prioritario e Sconto Noleggio 30%');
 
-
--- ==========================================
--- 15. RICALCOLO ESCURSIONI_EFFETTUATE (attributo ridondante)
--- ==========================================
+-- RICALCOLO ESCURSIONI_EFFETTUATE (attributo ridondante)
 SET SQL_SAFE_UPDATES = 0;
 
 UPDATE PERSONE p
