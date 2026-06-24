@@ -7,7 +7,6 @@ create table if not exists PERSONE (
     cognome varchar(50) not null,
     tipo_utente bit,
     tipo_amministratore bit,
-    ID_account varchar(50) not null,
     escursioni_effettuate int not null default 0,
     data_iscrizione date not null,
     data_assunzione date,
@@ -204,8 +203,6 @@ create table if not exists TAPPE (
     constraint tappe_pk primary key (ID_tappa)
 );
 
-
--- Constraints -----------------------------------------------------------------
 
 alter table GUIDE add constraint guide_references_persone
 foreign key (CF) references PERSONE (CF);

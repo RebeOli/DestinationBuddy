@@ -9,7 +9,7 @@ public final class Queries {
     public static final String REGISTRA_PERSONA =
         """
         INSERT INTO PERSONE (CF, nome, cognome, tipo_utente,
-            tipo_amministratore, ID_account, escursioni_effettuate,
+            tipo_amministratore, escursioni_effettuate,
             data_iscrizione, email, password)
         VALUES (?, ?, ?, 1, 0, ?, 0, CURRENT_DATE, ?, ?)
         """;
