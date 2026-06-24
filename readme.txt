@@ -1,7 +1,6 @@
-====================================================================
+
 PROGETTO BASI DI DATI: DESTINATION BUDDY
 Autori: Chiara Mazzoni, Arianna Mondardini, Rebecca Olivieri
-====================================================================
 
 REQUISITI DI SISTEMA
 --------------------------------------------------------------------

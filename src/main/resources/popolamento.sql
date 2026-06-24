@@ -245,8 +245,8 @@ INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona,
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T01c', 3.0, 'ESC-001', '2024-07-17', 'Italia', 'Abruzzo', 'Campo Imperatore');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T02', 3.0, 'ESC-002', '2026-07-01', 'Italia', 'Sardegna', 'Cala Goloritzé');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T02b', 4.0, 'ESC-002', '2026-07-02', 'Italia', 'Sardegna', 'Cala Goloritzé');
-INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T03', 5.0, 'ESC-003', '2026-05-10', 'Italia', 'Toscana', 'Val d''Orcia Trail');
-INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T03b', 3.5, 'ESC-003', '2026-05-11', 'Italia', 'Toscana', 'Val d''Orcia Trail');
+INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T03', 5.0, 'ESC-003', '2026-08-10', 'Italia', 'Toscana', 'Val d''Orcia Trail');
+INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T03b', 3.5, 'ESC-003', '2026-08-11', 'Italia', 'Toscana', 'Val d''Orcia Trail');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T04', 8.0, 'ESC-004', '2026-12-20', 'Francia', 'Alta Savoia', 'Aiguille du Midi');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T04b', 10.0, 'ESC-004', '2026-12-21', 'Francia', 'Alta Savoia', 'Aiguille du Midi');
 INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona, nome_luogo) VALUES ('T04c', 5.0, 'ESC-004', '2026-12-22', 'Francia', 'Alta Savoia', 'Aiguille du Midi');
@@ -262,13 +262,13 @@ INSERT INTO TAPPE (ID_tappa, durata, ID_escursione, data, nome_paese, nome_zona,
 
 -- PRENOTAZIONI
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('BNCGIA90B41F205Z', 'ESC-001', '2024-06-15', 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-002', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-002', CURRENT_DATE, 'Confermata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-001', '2024-06-15', 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-002', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-003', CURRENT_DATE, 'Completata');
-INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-008', CURRENT_DATE, 'Completata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MNDARN05P64H199H', 'ESC-003', CURRENT_DATE, 'Confermata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-003', CURRENT_DATE, 'Confermata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('OLVRBC05P64H199H', 'ESC-002', CURRENT_DATE, 'Confermata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('MZZCHR05P64H199H', 'ESC-003', CURRENT_DATE, 'Confermata');
+INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('RSSMRA80A01H501T', 'ESC-008', CURRENT_DATE, 'Confermata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000001', 'ESC-999', '2023-01-15' , 'Completata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000002', 'ESC-999', '2023-01-15', 'Completata');
 INSERT INTO prenota (CF, ID_escursione, data_prenotazione, stato) VALUES ('HATER00000000003', 'ESC-999', '2023-01-15', 'Completata');
